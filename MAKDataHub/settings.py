@@ -25,7 +25,7 @@ SECRET_KEY = 'k)rie=jguysq9!x54z1*13v32om-i$qiptr8)v#a91_+d5q000'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['makengineering.pythonanywhere.com']
 
 
 # Application definition
@@ -75,17 +75,17 @@ WSGI_APPLICATION = 'MAKDataHub.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
     # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'makdb',
-    #     'USER': 'makengineering',
-    #     'PASSWORD': 'admin123$',
-    #     'HOST': 'makengineering.mysql.pythonanywhere-services.com',
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'makdb',
+        'USER': 'makengineering',
+        'PASSWORD': 'admin123$',
+        'HOST': 'makengineering.mysql.pythonanywhere-services.com',
+    }
 }
 
 
