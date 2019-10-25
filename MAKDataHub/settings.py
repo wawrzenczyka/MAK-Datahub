@@ -81,7 +81,7 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'makdb',
+        'NAME': 'makengineering$makdb',
         'USER': 'makengineering',
         'PASSWORD': 'admin123$',
         'HOST': 'makengineering.mysql.pythonanywhere-services.com',
