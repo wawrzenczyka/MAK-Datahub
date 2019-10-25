@@ -1,0 +1,9 @@
+{% if file_list %}
+    <ul>
+    {% for df in file_list %}
+        <li><a href="{% url 'uploader:details' df.id %}">{{ df }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No files are available.</p>
+{% endif %}
