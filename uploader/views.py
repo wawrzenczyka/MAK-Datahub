@@ -33,7 +33,6 @@ def details(request, df_id):
     
     response = HttpResponse(content, content_type="text/csv")
     response['Content-Disposition'] = f'attachment; filename="{str(df)}.csv"'
-    
 
     return response
 
