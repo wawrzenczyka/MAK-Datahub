@@ -1,9 +1,9 @@
 import csv
 import uuid
+import services.google_drive_service as drive
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404, StreamingHttpResponse
-from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -29,10 +29,12 @@ def index(request):
 def details(request, df_id):
     df = get_object_or_404(DataFile, pk=df_id)
 
-    with open(df.file_uri, 'rb') as f:
-        response = HttpResponse(f.read(), content_type="text/csv")
-        response['Content-Disposition'] = f'attachment; filename="{str(df)}.csv"'
+    content = drive.get_file(df.file_uri)
     
+    response = HttpResponse(content, content_type="text/csv")
+    response['Content-Disposition'] = f'attachment; filename="{str(df)}.csv"'
+    
+
     return response
 
 @csrf_exempt
@@ -52,9 +54,7 @@ def add(request):
                 dev = Device(id = request.POST['device_id'], token = token)
                 dev.save()
 
-            fs = FileSystemStorage()
-            filename = fs.save(file_data.name, file_data)
-            file_uri = fs.url(filename)
+            file_uri = drive.save_file(file_data)
 
             df = DataFile(file_uri = file_uri, device = dev, \
                 start_date = request.POST['start_date'], end_date = request.POST['end_date'])
