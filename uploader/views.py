@@ -3,7 +3,7 @@ import uuid
 import services.google_drive_service as drive
 
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, Http404, StreamingHttpResponse
+from django.http import HttpResponse, Http404, StreamingHttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -53,12 +53,14 @@ def add(request):
                 dev = Device(id = request.POST['device_id'], token = token)
                 dev.save()
 
-            file_uri = drive.save_file(file_data)
-
-            df = DataFile(file_uri = file_uri, device = dev, \
-                start_date = request.POST['start_date'], end_date = request.POST['end_date'])
+            df = DataFile(device = dev, start_date = request.POST['start_date'],
+                end_date = request.POST['end_date'])
+            
+            filename = str(df)
+            file_uri = drive.save_file(file_data, filename)
+            df.file_uri = file_uri
             df.save()
 
-            return HttpResponse(file_uri + ' ' + str(token))
-        return HttpResponse('Invalid form')
-    return HttpResponse('Upload should be POST')
+            return JsonResponse({ 'id': file_uri, 'token': str(token) })
+        return JsonResponse({ 'error': 'Invalid form' })
+    return JsonResponse({ 'error': 'Upload should be POST' })

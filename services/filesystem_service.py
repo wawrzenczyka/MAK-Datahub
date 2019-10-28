@@ -1,8 +1,8 @@
 from django.core.files.storage import FileSystemStorage
 
-def save_file(f):
+def save_file(f, filename):
     fs = FileSystemStorage()
-    filename = fs.save(f.name, f)
+    fs.save(filename, f)
     return fs.url(filename)
     
 def get_file(file_id):

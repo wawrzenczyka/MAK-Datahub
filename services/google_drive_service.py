@@ -66,13 +66,13 @@ gauth.SaveCredentialsFile("token.json")
 
 drive = GoogleDrive(gauth)
 
-def save_file(f):
+def save_file(f, filename):
     content = b''
 
     for chunk in f.chunks():
         content += chunk
 
-    drive_file = drive.CreateFile({ 'title': f.name })
+    drive_file = drive.CreateFile({ 'title': filename })
     drive_file.SetContentString(content.decode("utf-8"))
     drive_file.Upload()
 
