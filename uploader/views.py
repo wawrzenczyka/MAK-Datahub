@@ -42,21 +42,24 @@ def add(request):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             file_data = request.FILES['file']
+
             token = request.POST['token']
+            device_id = request.POST['device_id']
+            start_date = request.POST['start_date']
+            end_date = request.POST['end_date']
 
             try:
-                dev = Device.objects.get(id = request.POST['device_id'])
+                dev = Device.objects.get(id = device_id)
                 if token != dev.token:
                     return HttpResponse('Invalid token')
             except ObjectDoesNotExist:
                 token = uuid.uuid4()
-                dev = Device(id = request.POST['device_id'], token = token)
+                dev = Device(id = device_id, token = token)
                 dev.save()
 
-            df = DataFile(device = dev, start_date = request.POST['start_date'],
-                end_date = request.POST['end_date'])
+            df = DataFile(device = dev, start_date = start_date, end_date = end_date)
             
-            filename = str(df)
+            filename = f'{device_id} (<{start_date}> - <{end_date}>)'
             file_uri = drive.save_file(file_data, filename)
             df.file_uri = file_uri
             df.save()
