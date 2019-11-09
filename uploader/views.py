@@ -43,18 +43,22 @@ def add(request):
         if form.is_valid():
             file_data = request.FILES['file']
 
-            token = request.POST['token']
+            app_token = request.POST['app_token']
+            device_token = request.POST['device_token']
             device_id = request.POST['device_id']
             start_date = request.POST['start_date']
             end_date = request.POST['end_date']
 
+            if app_token != '944d5555-48bf-48b2-b690-0065b9ba0bdd':
+                return JsonResponse({ 'error': 'Invalid application token, access denied' })
+
             try:
                 dev = Device.objects.get(id = device_id)
-                if token != dev.token:
+                if device_token != dev.token:
                     return HttpResponse('Invalid token')
             except ObjectDoesNotExist:
-                token = uuid.uuid4()
-                dev = Device(id = device_id, token = token)
+                device_token = uuid.uuid4()
+                dev = Device(id = device_id, token = device_token)
                 dev.save()
 
             df = DataFile(device = dev, start_date = start_date, end_date = end_date)
@@ -64,6 +68,6 @@ def add(request):
             df.file_uri = file_uri
             df.save()
 
-            return JsonResponse({ 'id': file_uri, 'token': str(token) })
+            return JsonResponse({ 'drive_id': file_uri, 'device_token': str(device_token) })
         return JsonResponse({ 'error': 'Invalid form' })
     return JsonResponse({ 'error': 'Upload should be POST' })
