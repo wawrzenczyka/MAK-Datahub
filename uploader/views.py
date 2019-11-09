@@ -31,8 +31,8 @@ def details(request, df_id):
 
     content = drive.get_file(df.file_uri)
     
-    response = HttpResponse(content, content_type="text/csv")
-    response['Content-Disposition'] = f'attachment; filename="{str(df)}.csv"'
+    response = HttpResponse(content, content_type="application/octet-stream")
+    response['Content-Disposition'] = f'attachment; filename="{str(df)}.bin"'
 
     return response
 
