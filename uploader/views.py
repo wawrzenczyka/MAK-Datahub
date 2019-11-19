@@ -55,7 +55,7 @@ def add(request):
             try:
                 dev = Device.objects.get(id = device_id)
                 if device_token != dev.token:
-                    return HttpResponse('Invalid token')
+                    return JsonResponse({ 'error': 'Invalid device token, access denied' })
             except ObjectDoesNotExist:
                 device_token = uuid.uuid4()
                 dev = Device(id = device_id, token = device_token)
