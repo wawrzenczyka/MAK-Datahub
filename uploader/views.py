@@ -45,7 +45,8 @@ def add(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            file_data = request.FILES['file']
+            sensor_file_data = request.FILES['sensor_file']
+            event_file_data = request.FILES['event_file']
 
             app_token = request.POST['app_token']
             device_token = request.POST['device_token']
@@ -73,7 +74,7 @@ def add(request):
             df = DataFile(device = dev, start_date = start_date)
             
             filename = f'{device_id}_{file_data.name}'
-            file_uri = drive.save_file(file_data, filename)
+            file_uri = drive.save_file(sensor_file_data, filename)
             df.file_uri = file_uri
             df.save()
             logging.error(f'Device id: ${device_id}, start_date: ${start_date} - Data file uploaded, returning device token ${device_token}')
