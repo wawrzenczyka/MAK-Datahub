@@ -52,7 +52,7 @@ def add(request):
             device_id = request.POST['device_id']
             start_date = request.POST['start_date']
 
-            logging.debug(f'Device id: ${device_id}, upload request\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
+            logging.error(f'Device id: ${device_id}, upload request\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
 
             if app_token != '944d5555-48bf-48b2-b690-0065b9ba0bdd':
                 logging.error(f'Device id: ${device_id}, start date: ${start_date} - Invalid application token ${app_token}')
@@ -60,12 +60,12 @@ def add(request):
 
             try:
                 dev = Device.objects.get(id = device_id)
-                logging.debug(f'Device id: ${device_id}, start_date: ${start_date} - Device already exists')
+                logging.error(f'Device id: ${device_id}, start_date: ${start_date} - Device already exists')
                 if device_token != dev.token:
                     logging.error(f'Device id: ${device_id}, start_date: ${start_date} - Invalid device token ${device_token}')
                     return JsonResponse({ 'error': 'Invalid device token, access denied' })
             except Device.DoesNotExist:
-                logging.debug(f'Device id: ${device_id}, start_date: ${start_date} - Device created, generating token')
+                logging.error(f'Device id: ${device_id}, start_date: ${start_date} - Device created, generating token')
                 device_token = uuid.uuid4()
                 dev = Device(id = device_id, token = device_token)
                 dev.save()
@@ -76,7 +76,7 @@ def add(request):
             file_uri = drive.save_file(file_data, filename)
             df.file_uri = file_uri
             df.save()
-            logging.debug(f'Device id: ${device_id}, start_date: ${start_date} - Data file uploaded, returning device token ${device_token}')
+            logging.error(f'Device id: ${device_id}, start_date: ${start_date} - Data file uploaded, returning device token ${device_token}')
 
             return JsonResponse({ 'device_token': str(device_token) })
         logging.error(f'Invalid form, parsing error')
