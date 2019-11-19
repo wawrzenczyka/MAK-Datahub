@@ -68,6 +68,6 @@ def add(request):
             df.file_uri = file_uri
             df.save()
 
-            return JsonResponse({ 'drive_id': file_uri, 'device_token': str(device_token) })
+            return JsonResponse({ 'device_token': str(device_token) })
         return JsonResponse({ 'error': 'Invalid form' })
     return JsonResponse({ 'error': 'Upload should be POST' })
