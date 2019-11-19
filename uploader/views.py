@@ -2,8 +2,6 @@ import csv
 import uuid
 import logging
 
-logging.basicConfig(filename='app.log', filemode='w', format='%(levelname)s - %(message)s')
-
 import services.google_drive_service as drive
 
 from django.shortcuts import render, get_object_or_404
@@ -53,7 +51,7 @@ def add(request):
             device_id = request.POST['device_id']
             start_date = request.POST['start_date']
 
-            logging.error(f'Device id: ${device_id}, upload request\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
+            logging.debug(f'Device id: ${device_id}, upload request\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
 
             if app_token != '944d5555-48bf-48b2-b690-0065b9ba0bdd':
                 logging.error(f'Device id: ${device_id}, start date: ${start_date} - Invalid application token ${app_token}')
@@ -61,23 +59,29 @@ def add(request):
 
             try:
                 dev = Device.objects.get(id = device_id)
-                logging.error(f'Device id: ${device_id}, start_date: ${start_date} - Device already exists')
+                logging.debug(f'Device id: ${device_id}, start_date: ${start_date} - Device already exists')
                 if device_token != dev.token:
                     logging.error(f'Device id: ${device_id}, start_date: ${start_date} - Invalid device token ${device_token}')
                     return JsonResponse({ 'error': 'Invalid device token, access denied' })
             except Device.DoesNotExist:
-                logging.error(f'Device id: ${device_id}, start_date: ${start_date} - Device created, generating token')
+                logging.debug(f'Device id: ${device_id}, start_date: ${start_date} - Device created, generating token')
                 device_token = uuid.uuid4()
                 dev = Device(id = device_id, token = device_token)
                 dev.save()
 
-            df = DataFile(device = dev, start_date = start_date)
+            sensor_df = DataFile(device = dev, start_date = start_date, file_type = 'S')            
+            sensor_filename = f'{device_id}_{sensor_file_data.name}'
+            file_uri = drive.save_file(sensor_file_data, sensor_filename)
+            sensor_df.file_uri = file_uri
+            sensor_df.save()            
             
-            filename = f'{device_id}_{file_data.name}'
-            file_uri = drive.save_file(sensor_file_data, filename)
-            df.file_uri = file_uri
-            df.save()
-            logging.error(f'Device id: ${device_id}, start_date: ${start_date} - Data file uploaded, returning device token ${device_token}')
+            event_df = DataFile(device = dev, start_date = start_date, file_type = 'E')            
+            event_filename = f'{device_id}_{event_file_data.name}'
+            file_uri = drive.save_file(event_file_data, event_filename)
+            event_df.file_uri = file_uri
+            event_df.save()
+            
+            logging.debug(f'Device id: ${device_id}, start_date: ${start_date} - Data files uploaded, returning device token ${device_token}')
 
             return JsonResponse({ 'device_token': str(device_token) })
         logging.error(f'Invalid form, parsing error')
