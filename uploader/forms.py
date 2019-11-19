@@ -6,4 +6,3 @@ class UploadFileForm(forms.Form):
     app_token = forms.CharField(max_length=36)
     device_token = forms.CharField(max_length=36)
     start_date = forms.DateTimeField()
-    end_date = forms.DateTimeField()

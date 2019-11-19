@@ -11,7 +11,6 @@ class DataFile(models.Model):
     file_uri = models.CharField('file URI', max_length=200)
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
     start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
 
     def __str__(self):
-        return f'{self.device.id} (<{self.start_date.strftime("%Y-%m-%d %H:%M:%S")}> - <{self.end_date.strftime("%Y-%m-%d %H:%M:%S")}>)'
+        return f'{self.device.id}_{self.start_date.strftime("%Y%m%d_%H%M%S")}'

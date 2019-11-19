@@ -47,7 +47,6 @@ def add(request):
             device_token = request.POST['device_token']
             device_id = request.POST['device_id']
             start_date = request.POST['start_date']
-            end_date = request.POST['end_date']
 
             if app_token != '944d5555-48bf-48b2-b690-0065b9ba0bdd':
                 return JsonResponse({ 'error': 'Invalid application token, access denied' })
@@ -63,7 +62,7 @@ def add(request):
 
             df = DataFile(device = dev, start_date = start_date, end_date = end_date)
             
-            filename = f'{device_id} (<{start_date}> - <{end_date}>)'
+            filename = f'{device_id}_{file_data.name}'
             file_uri = drive.save_file(file_data, filename)
             df.file_uri = file_uri
             df.save()
