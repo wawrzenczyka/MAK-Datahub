@@ -14,4 +14,4 @@ class DataFile(models.Model):
     file_type = models.CharField(max_length=1)
 
     def __str__(self):
-        return f'{self.device.id}_{self.start_date.strftime("%Y%m%d_%H%M%S")}'
+        return f'{self.file_type}_{self.device.id}_{self.start_date.strftime("%Y%m%d_%H%M%S")}'
