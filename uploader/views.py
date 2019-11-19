@@ -19,7 +19,7 @@ class Echo:
         return value
 
 def index(request):
-    file_list = DataFile.objects.order_by('-start_date', '-device_id')
+    file_list = DataFile.objects.order_by('device_id', '-start_date')
     
     context = {
         'file_list': file_list,
