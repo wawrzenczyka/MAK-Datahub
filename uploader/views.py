@@ -60,7 +60,7 @@ def add(request):
                 dev = Device(id = device_id, token = device_token)
                 dev.save()
 
-            df = DataFile(device = dev, start_date = start_date, end_date = end_date)
+            df = DataFile(device = dev, start_date = start_date)
             
             filename = f'{device_id}_{file_data.name}'
             file_uri = drive.save_file(file_data, filename)
