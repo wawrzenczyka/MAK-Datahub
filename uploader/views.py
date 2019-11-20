@@ -11,6 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from .models import DataFile, Device
 from .forms import UploadFileForm
+from application_access_token import app_access_token
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,7 @@ def add(request):
 
             logger.debug(f'Device id: ${device_id}, upload request\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
 
-            if app_token != '944d5555-48bf-48b2-b690-0065b9ba0bdd':
+            if app_token != app_access_token:
                 logger.error(f'Device id: ${device_id}, start date: ${start_date} - Invalid application token ${app_token}')
                 return JsonResponse({ 'error': f'Invalid application token ${app_token}, access denied' })
 
@@ -88,7 +89,7 @@ def add(request):
             form_errors = 'Invalid form\n\t'
             for field in form.errors:
                 form_errors += f'Field ${field} error: ${form.errors[field]}\n\t'
-            logging.error(form_errors)
+            logger.error(form_errors)
             return JsonResponse({ 'error': form_errors })
     logger.error(f'Non-POST request received')
     return JsonResponse({ 'error': 'Upload should be POST' })
