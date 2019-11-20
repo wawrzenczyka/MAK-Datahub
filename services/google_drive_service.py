@@ -22,8 +22,20 @@ gauth.SaveCredentialsFile("token.json")
 
 drive = GoogleDrive(gauth)
 
-def save_file(f, filename):
-    drive_file = drive.CreateFile({ 'title': filename })
+def save_file(f, folder, filename):
+    file_list = drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
+
+    folder_id = None
+    for root_file in file_list:
+        if root_file['title'] == folder:
+            folder_id = root_file['id']
+
+    if (folder_id == None):
+        drive_folder = drive.CreateFile({ 'title': folder, "mimeType": "application/vnd.google-apps.folder" })
+        drive_folder.Upload()
+        folder_id = drive_folder['id']
+
+    drive_file = drive.CreateFile({ 'title': filename, "parents": [{ "kind": "drive#fileLink", "id": folder_id }] })
 
     tmp_filename = None
     with NamedTemporaryFile(delete=False) as tmp_f:

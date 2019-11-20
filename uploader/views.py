@@ -72,13 +72,13 @@ def add(request):
 
             sensor_df = DataFile(device = dev, start_date = start_date, file_type = 'S')            
             sensor_filename = f'{device_id}_{sensor_file_data.name}'
-            file_uri = drive.save_file(sensor_file_data, sensor_filename)
+            file_uri = drive.save_file(sensor_file_data, device_id, sensor_filename)
             sensor_df.file_uri = file_uri
-            sensor_df.save()            
+            sensor_df.save()
             
             event_df = DataFile(device = dev, start_date = start_date, file_type = 'E')            
             event_filename = f'{device_id}_{event_file_data.name}'
-            file_uri = drive.save_file(event_file_data, event_filename)
+            file_uri = drive.save_file(event_file_data, device_id, event_filename)
             event_df.file_uri = file_uri
             event_df.save()
             
