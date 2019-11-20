@@ -15,6 +15,9 @@ from .forms import UploadFileForm
 logger = logging.getLogger(__name__)
 
 def index(request):
+    if request.method != 'GET':
+        return HttpResponse('Invalid method')
+    
     file_list = DataFile.objects.order_by('device_id', '-start_date')
     
     context = {
@@ -23,6 +26,9 @@ def index(request):
     return render(request, 'uploader/index.html', context)
 
 def details(request, df_id):
+    if request.method != 'GET':
+        return HttpResponse('Invalid method')
+
     df = get_object_or_404(DataFile, pk=df_id)
 
     content = drive.get_file(df.file_uri)
@@ -33,7 +39,7 @@ def details(request, df_id):
     return response
 
 @csrf_exempt
-def add(request):    
+def add(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
