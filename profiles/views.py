@@ -5,6 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from uploader.models import Device
+from .models import ProfileFile
 from .forms import GetProfileForm
 from application_access_token import app_access_token
 
@@ -30,9 +31,11 @@ def get_profile(request):
                     logger.error(f'Device id: ${device_id} getting profile - Invalid device token ${device_token}')
                     return JsonResponse({ 'error': f'Invalid device token ${device_token}, access denied' })
                 else:
-                    # dev = Device.objects.get(id = '12381')
-                    # device_files = dev.datafile_set.all()
-                    return JsonResponse({ 'profile': [0, 0, 0, 0] })
+                    try:
+                        profile_filename = dev.profilefile
+                        return JsonResponse({ 'profile': [0, 0, 0, 0] })
+                    except ProfileFile.DoesNotExist:
+                        return JsonResponse({ 'error': 'Profile is not yet ready' })
             except Device.DoesNotExist:
                 logger.error(f'Device id: ${device_id} getting profile - Device is not registered')
                 return JsonResponse({ 'error': 'Device is not registered' })

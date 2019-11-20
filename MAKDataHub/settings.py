@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['makengineering.pythonanywhere.com', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'profiles.apps.ProfilesConfig',
     'uploader.apps.UploaderConfig',
     'django.contrib.admin',
     'django.contrib.auth',
