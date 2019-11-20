@@ -33,7 +33,7 @@ def get_profile(request):
                 else:
                     try:
                         profile_filename = dev.profilefile
-                        return JsonResponse({ 'profile': [0, 0, 0, 0], creation_date: "2019-10-01 12:00:00" })
+                        return JsonResponse({ 'profile': [0, 0, 0, 0], 'creation_date': "2019-10-01 12:00:00" })
                     except ProfileFile.DoesNotExist:
                         return JsonResponse({ 'error': 'Profile is not yet ready' })
             except Device.DoesNotExist:
