@@ -77,7 +77,7 @@ def add(request):
             
             logger.debug(f'Device id: ${device_id}, start_date: ${start_date} - Data files uploaded, returning device token ${device_token}')
 
-            return JsonResponse({ 'device_token': str(device_token), 'sensor_file': sensor_file_data.filename, 'event_file': event_file_data.filename })
+            return JsonResponse({ 'device_token': str(device_token), 'sensor_file': sensor_file_data.name, 'event_file': event_file_data.name })
         else:
             form_errors = 'Invalid form\n\t'
             for field in form.errors:
