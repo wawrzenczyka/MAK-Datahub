@@ -13,6 +13,10 @@ from .models import DataFile, Device
 from .forms import UploadFileForm
 from application_access_token import app_access_token
 
+from services.simple_auth_service import SimpleAuthService
+from services.device_service import DeviceService
+from services.data_file_service import DataFileService
+
 logger = logging.getLogger(__name__)
 
 def index(request):
@@ -54,33 +58,22 @@ def add(request):
 
             logger.info(f'Device id: ${device_id}, upload request\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
 
-            if app_token != app_access_token:
-                logger.error(f'Device id: ${device_id}, start date: ${start_date} - Invalid application token ${app_token}')
+            if not SimpleAuthService.verify_app_token(app_token):
                 return JsonResponse({ 'error': f'Invalid application token ${app_token}, access denied' })
 
-            try:
-                dev = Device.objects.get(id = device_id)
-                logger.info(f'Device id: ${device_id}, start_date: ${start_date} - Device already exists')
-                if device_token != dev.token:
-                    logger.error(f'Device id: ${device_id}, start_date: ${start_date} - Invalid device token ${device_token}')
-                    return JsonResponse({ 'error': f'Invalid device token ${device_token}, access denied' })
-            except Device.DoesNotExist:
-                logger.info(f'Device id: ${device_id}, start_date: ${start_date} - Device created, generating token')
-                device_token = uuid.uuid4()
-                dev = Device(id = device_id, token = device_token)
-                dev.save()
+            device = DeviceService.get_device(device_id)
 
-            sensor_df = DataFile(device = dev, start_date = start_date, file_type = 'S')            
-            sensor_filename = f'{device_id}_{sensor_file_data.name}'
-            file_uri = drive.save_file(sensor_file_data, device_id, sensor_filename)
-            sensor_df.file_uri = file_uri
-            sensor_df.save()
-            
-            event_df = DataFile(device = dev, start_date = start_date, file_type = 'E')            
-            event_filename = f'{device_id}_{event_file_data.name}'
-            file_uri = drive.save_file(event_file_data, device_id, event_filename)
-            event_df.file_uri = file_uri
-            event_df.save()
+            if device != None:
+                if not SimpleAuthService.verify_device_token(device, device_token):
+                    return JsonResponse({ 'error': f'Invalid device token ${device_token}, access denied' })
+                    
+                logger.info(f'Device ${device_id} present in the database')
+            else:
+                device = DeviceService.create_device(device_id)
+                logger.info(f'Device ${device_id} created, assigned token ${device.token}')
+
+            sensor_data_file = DataFileService.create_data_file(sensor_file_data, device, start_date, 'S')
+            event_data_file = DataFileService.create_data_file(event_file_data, device, start_date, 'E')
             
             logger.info(f'Device id: ${device_id}, start_date: ${start_date} - Data files uploaded, returning device token ${device_token}')
 
