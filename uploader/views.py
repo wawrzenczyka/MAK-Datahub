@@ -52,7 +52,7 @@ def add(request):
             device_id = request.POST['device_id']
             start_date = request.POST['start_date']
 
-            logger.debug(f'Device id: ${device_id}, upload request\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
+            logger.info(f'Device id: ${device_id}, upload request\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
 
             if app_token != app_access_token:
                 logger.error(f'Device id: ${device_id}, start date: ${start_date} - Invalid application token ${app_token}')
@@ -60,12 +60,12 @@ def add(request):
 
             try:
                 dev = Device.objects.get(id = device_id)
-                logger.debug(f'Device id: ${device_id}, start_date: ${start_date} - Device already exists')
+                logger.info(f'Device id: ${device_id}, start_date: ${start_date} - Device already exists')
                 if device_token != dev.token:
                     logger.error(f'Device id: ${device_id}, start_date: ${start_date} - Invalid device token ${device_token}')
                     return JsonResponse({ 'error': f'Invalid device token ${device_token}, access denied' })
             except Device.DoesNotExist:
-                logger.debug(f'Device id: ${device_id}, start_date: ${start_date} - Device created, generating token')
+                logger.info(f'Device id: ${device_id}, start_date: ${start_date} - Device created, generating token')
                 device_token = uuid.uuid4()
                 dev = Device(id = device_id, token = device_token)
                 dev.save()
@@ -82,7 +82,7 @@ def add(request):
             event_df.file_uri = file_uri
             event_df.save()
             
-            logger.debug(f'Device id: ${device_id}, start_date: ${start_date} - Data files uploaded, returning device token ${device_token}')
+            logger.info(f'Device id: ${device_id}, start_date: ${start_date} - Data files uploaded, returning device token ${device_token}')
 
             return JsonResponse({ 'device_token': str(device_token), 'sensor_file': sensor_file_data.name, 'event_file': event_file_data.name })
         else:

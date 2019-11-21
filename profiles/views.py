@@ -26,7 +26,7 @@ def get_profile(request):
 
             try:
                 dev = Device.objects.get(id = device_id)
-                logger.debug(f'Device id: ${device_id} getting profile - Success')
+                logger.info(f'Device id: ${device_id} getting profile - Success')
                 if device_token != dev.token:
                     logger.error(f'Device id: ${device_id} getting profile - Invalid device token ${device_token}')
                     return JsonResponse({ 'error': f'Invalid device token ${device_token}, access denied' })
