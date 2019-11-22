@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def index(request):
     if request.method != 'GET':
         return HttpResponse('Invalid method')
-    
+
     file_list = DataFileService.get_data_file_list()
     
     context = {
@@ -52,32 +52,34 @@ def add(request):
             app_token, device_token, device_id, start_date = \
                 request.POST['app_token'], request.POST['device_token'], request.POST['device_id'], request.POST['start_date']
 
-            logger.info(f'Device id: ${device_id}, upload request\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
+            logger.info(f'Upload request received for device ${device_id}\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
 
             if not SimpleAuthService.verify_app_token(app_token):
-                return JsonResponse({ 'error': f'Invalid application token ${app_token}, access denied' })
+                logger.error(f'Upload request DENIED for device ${device_id} - application token ${app_token} is not valid')
+                return JsonResponse({ 'error': f'Invalid application token ${app_token}' })
 
             device = DeviceService.get_device(device_id)
 
             if device != None:
                 if not SimpleAuthService.verify_device_token(device, device_token):
-                    return JsonResponse({ 'error': f'Invalid device token ${device_token}, access denied' })
+                    logger.error(f'Upload request DENIED for device ${device_id} - device token ${device_token} is not valid')
+                    return JsonResponse({ 'error': f'Invalid device token ${device_token}' })
                     
-                logger.info(f'Device ${device_id} present in the database')
+                logger.info(f'Upload request for device ${device_id} - device ${device_id} present in the database')
             else:
                 device = DeviceService.create_device(device_id)
-                logger.info(f'Device ${device_id} created, assigned token ${device.token}')
+                logger.info(f'Upload request for device ${device_id} - device created, assigned token ${device.token}')
 
             sensor_data_file = DataFileService.create_data_file(sensor_file_data, device, start_date, 'S')
+            logger.info(f'Upload request for device ${device_id} - sensor file uploaded')
             event_data_file = DataFileService.create_data_file(event_file_data, device, start_date, 'E')
-            
-            logger.info(f'Device id: ${device_id}, start_date: ${start_date} - Data files uploaded, returning device token ${device_token}')
+            logger.info(f'Upload request for device ${device_id} - event file uploaded')
 
             return JsonResponse({ 'device_token': device.token, 'sensor_file': sensor_file_data.name, 'event_file': event_file_data.name })
         else:
             error = get_form_error_message(form)
-            logger.error(error)
+            logger.error(f'Upload request DENIED for device ${device_id} - ' + error)
             return JsonResponse({ 'error': error })
-    logger.error(f'Non-POST request received')
+    logger.error(f'Received non-POST upload request')
     return JsonResponse({ 'error': 'Upload should be POST' })
 

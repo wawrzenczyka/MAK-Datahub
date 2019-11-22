@@ -134,7 +134,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{asctime}|{levelname}|{module}|{message}',
+            'format': '{asctime}|{levelname}|{name}|{message}',
             'style': '{',
         },
     },
@@ -147,10 +147,19 @@ LOGGING = {
         },
     },
     'loggers': {
-        '': {
+        'profiles': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
+        },
+        'uploader': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'googleapiclient.discovery': {
+            'handlers': ['file'],
+            'level': 'ERROR',
         },
     },
 }
