@@ -20,5 +20,4 @@ class ProfileService:
     @classmethod
     def update_profiles(cls):
         # TODO: profile creation
-        print("Profile created!")
         pass
