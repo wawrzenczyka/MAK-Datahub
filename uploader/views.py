@@ -8,12 +8,12 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .forms import UploadFileForm
 
-from services.simple_auth_service import SimpleAuthService
-from services.device_service import DeviceService
-from services.data_file_service import DataFileService
-from services.google_drive_service import GoogleDriveService
+from core.services.simple_auth_service import SimpleAuthService
+from core.services.device_service import DeviceService
+from core.services.data_file_service import DataFileService
+from core.services.google_drive_service import GoogleDriveService
 
-from utils import get_form_error_message
+from core.utils import get_form_error_message
 
 logger = logging.getLogger(__name__)
 

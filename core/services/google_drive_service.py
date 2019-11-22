@@ -4,7 +4,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from tempfile import NamedTemporaryFile, mkdtemp
 
-from services.abstract_file_handler_service import AbstractFileHandlerService
+from .abstract_file_handler_service import AbstractFileHandlerService
 
 def create_drive_connection():
     gauth = GoogleAuth()

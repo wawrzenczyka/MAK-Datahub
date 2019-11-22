@@ -1,7 +1,7 @@
 import logging
 import datetime # remove later after deleting the stub
 
-from profiles.models import ProfileFile
+from ..models import ProfileFile
 
 class ProfileService:
     logger = logging.getLogger(__name__)

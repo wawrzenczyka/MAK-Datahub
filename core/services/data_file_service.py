@@ -1,7 +1,7 @@
 import logging
-from services.google_drive_service import GoogleDriveService
+from .google_drive_service import GoogleDriveService
 
-from uploader.models import DataFile
+from ..models import DataFile
 
 class DataFileService:
     logger = logging.getLogger(__name__)

@@ -6,7 +6,7 @@ from django_apscheduler.jobstores import register_events, register_job
 from django_apscheduler.models import DjangoJobExecution
 
 from django.conf import settings
-from services.profile_service import ProfileService
+from .services.profile_service import ProfileService
 
 class Scheduler:
     scheduler = BackgroundScheduler(settings.SCHEDULER_CONFIG)

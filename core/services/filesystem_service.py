@@ -1,6 +1,6 @@
 from django.core.files.storage import FileSystemStorage
 
-from services.abstract_file_handler_service import AbstractFileHandlerService
+from .abstract_file_handler_service import AbstractFileHandlerService
 
 class FileSystemService(AbstractFileHandlerService):
     @classmethod

@@ -1,7 +1,7 @@
 import logging
 import uuid
 
-from uploader.models import Device
+from ..models import Device
 
 class DeviceService:
     logger = logging.getLogger(__name__)

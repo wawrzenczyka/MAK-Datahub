@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import DataFile, Device, ProfileFile
+
+admin.site.register(DataFile)
+admin.site.register(Device)
+admin.site.register(ProfileFile)

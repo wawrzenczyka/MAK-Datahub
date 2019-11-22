@@ -6,11 +6,11 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .forms import GetProfileForm
 
-from services.simple_auth_service import SimpleAuthService
-from services.device_service import DeviceService
-from services.profile_service import ProfileService
+from core.services.simple_auth_service import SimpleAuthService
+from core.services.device_service import DeviceService
+from core.services.profile_service import ProfileService
 
-from utils import get_form_error_message
+from core.utils import get_form_error_message
 
 logger = logging.getLogger(__name__)
 
