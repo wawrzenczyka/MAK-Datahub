@@ -1,14 +1,12 @@
 import logging
 
-from application_access_token import app_access_token
-from uploader.models import Device
-
 class SimpleAuthService:
     logger = logging.getLogger(__name__)
+    application_access_token = '944d5555-48bf-48b2-b690-0065b9ba0bdd'
 
     @classmethod
     def verify_app_token(cls, app_token):
-        if app_token != app_access_token:
+        if app_token != cls.application_access_token:
             cls.logger.error(f'Invalid application token ${app_token}')
             return False
         return True

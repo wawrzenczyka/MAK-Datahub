@@ -2,20 +2,18 @@ import csv
 import uuid
 import logging
 
-import services.google_drive_service as drive
-
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, Http404, StreamingHttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import ObjectDoesNotExist
 
-from .models import DataFile, Device
 from .forms import UploadFileForm
-from application_access_token import app_access_token
 
 from services.simple_auth_service import SimpleAuthService
 from services.device_service import DeviceService
 from services.data_file_service import DataFileService
+from services.google_drive_service import GoogleDriveService
+
+from utils import get_form_error_message
 
 logger = logging.getLogger(__name__)
 
@@ -23,23 +21,25 @@ def index(request):
     if request.method != 'GET':
         return HttpResponse('Invalid method')
     
-    file_list = DataFile.objects.order_by('device_id', '-start_date')
+    file_list = DataFileService.get_data_file_list()
     
     context = {
         'file_list': file_list,
     }
     return render(request, 'uploader/index.html', context)
 
-def details(request, df_id):
+def details(request, data_file_id):
     if request.method != 'GET':
         return HttpResponse('Invalid method')
 
-    df = get_object_or_404(DataFile, pk=df_id)
+    data_file = DataFileService.get_data_file(data_file_id)
+    if data_file == None:
+        return HttpResponse('File not found')
 
-    content = drive.get_file(df.file_uri)
+    content = GoogleDriveService.get_file(data_file.file_uri)
     
     response = HttpResponse(content, content_type="application/octet-stream")
-    response['Content-Disposition'] = f'attachment; filename="{str(df)}.bin"'
+    response['Content-Disposition'] = f'attachment; filename="{str(data_file)}.bin"'
 
     return response
 
@@ -48,13 +48,9 @@ def add(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            sensor_file_data = request.FILES['sensor_file']
-            event_file_data = request.FILES['event_file']
-
-            app_token = request.POST['app_token']
-            device_token = request.POST['device_token']
-            device_id = request.POST['device_id']
-            start_date = request.POST['start_date']
+            sensor_file_data, event_file_data = request.FILES['sensor_file'], request.FILES['event_file']
+            app_token, device_token, device_id, start_date = \
+                request.POST['app_token'], request.POST['device_token'], request.POST['device_id'], request.POST['start_date']
 
             logger.info(f'Device id: ${device_id}, upload request\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
 
@@ -77,12 +73,11 @@ def add(request):
             
             logger.info(f'Device id: ${device_id}, start_date: ${start_date} - Data files uploaded, returning device token ${device_token}')
 
-            return JsonResponse({ 'device_token': str(device_token), 'sensor_file': sensor_file_data.name, 'event_file': event_file_data.name })
+            return JsonResponse({ 'device_token': device.token, 'sensor_file': sensor_file_data.name, 'event_file': event_file_data.name })
         else:
-            form_errors = 'Invalid form\n\t'
-            for field in form.errors:
-                form_errors += f'Field ${field} error: ${form.errors[field]}\n\t'
-            logger.error(form_errors)
-            return JsonResponse({ 'error': form_errors })
+            error = get_form_error_message(form)
+            logger.error(error)
+            return JsonResponse({ 'error': error })
     logger.error(f'Non-POST request received')
     return JsonResponse({ 'error': 'Upload should be POST' })
+
