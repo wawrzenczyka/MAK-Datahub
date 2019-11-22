@@ -16,3 +16,9 @@ class ProfileService:
             return ProfileFile(device = device, creation_date = datetime.datetime.now(), file_uri = '1234'), [[0, 0], [0, 0]]
         except ProfileFile.DoesNotExist:
             return None, None
+
+    @classmethod
+    def update_profiles(cls):
+        # TODO: profile creation
+        print("Profile created!")
+        pass

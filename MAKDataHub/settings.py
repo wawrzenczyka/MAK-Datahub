@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['makengineering.pythonanywhere.com', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'core.apps.CoreConfig',
     'profiles.apps.ProfilesConfig',
     'uploader.apps.UploaderConfig',
     'django.contrib.admin',
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -153,3 +155,14 @@ LOGGING = {
         },
     },
 }
+
+SCHEDULER_CONFIG = {
+    "apscheduler.jobstores.default": {
+        "class": "django_apscheduler.jobstores:DjangoJobStore"
+    },
+    'apscheduler.executors.processpool': {
+        "type": "threadpool"
+    },
+}
+
+SCHEDULER_AUTOSTART = True
