@@ -1,10 +1,15 @@
 from django.core.files.storage import FileSystemStorage
 
-def save_file(f, filename):
-    fs = FileSystemStorage()
-    fs.save(filename, f)
-    return fs.url(filename)
-    
-def get_file(file_id):
-    with open(file_id, 'rb') as f:
-        return f.read()
+from services.abstract_file_handler_service import AbstractFileHandlerService
+
+class FileSystemService(AbstractFileHandlerService):
+    @classmethod
+    def save_file(cls, f, folder, filename):
+        fs = FileSystemStorage()
+        fs.save(f'{folder}/{filename}', f)
+        return fs.url(filename)
+        
+    @classmethod
+    def get_file(cls, file_id):
+        with open(file_id, 'rb') as f:
+            return f.read()
