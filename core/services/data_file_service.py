@@ -17,7 +17,7 @@ class DataFileService:
 
     @classmethod
     def get_data_file_list(cls):
-        return DataFile.objects.order_by('device_id', '-start_date')
+        return DataFile.objects.order_by('-start_date', 'device_id')
 
     @classmethod
     def get_data_file(cls, id):

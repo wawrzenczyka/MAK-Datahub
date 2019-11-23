@@ -52,7 +52,8 @@ def add(request):
             app_token, device_token, device_id, start_date = \
                 request.POST['app_token'], request.POST['device_token'], request.POST['device_id'], request.POST['start_date']
 
-            logger.info(f'Upload request received for device ${device_id}\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}')
+            logger.info(f'Upload request received for device ${device_id}\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}' + 
+                f'\n\tsensor file: ${sensor_file_data.name}\n\tevent file: ${event_file_data.name}')
 
             if not SimpleAuthService.verify_app_token(app_token):
                 logger.error(f'Upload request DENIED for device ${device_id} - application token ${app_token} is not valid')
@@ -71,9 +72,9 @@ def add(request):
                 logger.info(f'Upload request for device ${device_id} - device created, assigned token ${device.token}')
 
             sensor_data_file = DataFileService.create_data_file(sensor_file_data, device, start_date, 'S')
-            logger.info(f'Upload request for device ${device_id} - sensor file uploaded')
+            logger.info(f'Upload request for device ${device_id} - sensor file ${sensor_file_data.name} uploaded')
             event_data_file = DataFileService.create_data_file(event_file_data, device, start_date, 'E')
-            logger.info(f'Upload request for device ${device_id} - event file uploaded')
+            logger.info(f'Upload request for device ${device_id} - event file ${event_file_data.name} uploaded')
 
             return JsonResponse({ 'device_token': device.token, 'sensor_file': sensor_file_data.name, 'event_file': event_file_data.name })
         else:
