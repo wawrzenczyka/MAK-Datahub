@@ -1,3 +1,6 @@
+from tzlocal import get_localzone
+from pytz import timezone
+
 from django.db import models
 
 class Device(models.Model):
@@ -14,7 +17,8 @@ class DataFile(models.Model):
     file_type = models.CharField(max_length=1)
 
     def __str__(self):
-        return f'{self.file_type}_{self.device.id}_{self.start_date.strftime("%Y%m%d_%H%M%S")}'
+        tz = timezone('Europe/Warsaw')
+        return f'{self.file_type}_{self.device.id}_{self.start_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
 
 class ProfileFile(models.Model):
     device = models.OneToOneField(
@@ -26,4 +30,5 @@ class ProfileFile(models.Model):
     creation_date = models.DateTimeField()
 
     def __str__(self):
-        return f'PROFILE_{self.device.id}_{self.creation_date.strftime("%Y%m%d_%H%M%S")}'
+        tz = timezone('Europe/Warsaw')
+        return f'PROFILE_{self.device.id}_{self.creation_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'

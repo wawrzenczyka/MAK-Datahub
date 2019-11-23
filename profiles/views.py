@@ -23,7 +23,7 @@ def get_profile(request):
             device_token = request.GET['device_token']
             device_id = request.GET['device_id']
 
-            logger.info(f'Get profile request for device ${device_id} received')
+            logger.info(f'Get profile request for device ${device_id} received\n\tapp_token: ${app_token}\n\tdevice_token: ${device_token}')
 
             if not SimpleAuthService.verify_app_token(app_token):
                 logger.error(f'Get profile request DENIED for device ${device_id} - application token ${app_token} is not valid')
