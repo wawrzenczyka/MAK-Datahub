@@ -1,19 +1,20 @@
 from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
-from .abstract_file_handler_service import AbstractFileHandlerService
+from .abstract_file_storage_service import AbstractFileStorageService
 
-class FileSystemService(AbstractFileHandlerService):
-    @classmethod
-    def save_file(cls, f, folder, filename):
+class FileSystemService(AbstractFileStorageService):
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+
+    def save_file(self, f, folder, filename):
         assert type(f) is InMemoryUploadedFile and type(folder) is str and type(filename) is str
 
         fs = FileSystemStorage()
         fs.save(f'{folder}/{filename}', f)
         return fs.url(filename)
         
-    @classmethod
-    def get_file(cls, file_id):
+    def get_file(self, file_id):
         assert type(file_id) is str
         with open(file_id, 'rb') as f:
             return f.read()

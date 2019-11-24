@@ -4,10 +4,10 @@ from django.utils import timezone # remove later after deleting the stub
 from ..models import ProfileFile, Device
 
 class ProfileService:
-    logger = logging.getLogger(__name__)
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 
-    @classmethod
-    def get_profile_model_and_file(cls, device):
+    def get_profile_model_and_file(self, device):
         assert type(device) is Device
 
         try:
@@ -19,7 +19,6 @@ class ProfileService:
         except ProfileFile.DoesNotExist:
             return None, None
 
-    @classmethod
-    def update_profiles(cls):
+    def update_profiles(self):
         # TODO: profile creation
         pass

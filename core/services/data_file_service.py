@@ -7,26 +7,25 @@ from ..models import DataFile, Device
 from .google_drive_service import GoogleDriveService
 
 class DataFileService:
-    logger = logging.getLogger(__name__)
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+        self.file_storage_service = GoogleDriveService()
 
-    @classmethod
-    def create_data_file(cls, file_data, device, start_date, file_type):
+    def create_data_file(self, file_data, device, start_date, file_type):
         assert type(file_data) is InMemoryUploadedFile and type(device) is Device and (type(start_date) is str or type(start_date) is datetime)
         assert file_type == 'S' or file_type == 'E'
 
         data_file = DataFile(device = device, start_date = start_date, file_type = file_type)
         sensor_filename = f'{device.id}_{file_data.name}'
-        file_uri = GoogleDriveService.save_file(file_data, device.id, sensor_filename)
+        file_uri = self.file_storage_service.save_file(file_data, device.id, sensor_filename)
         data_file.file_uri = file_uri
         data_file.save()
         return data_file
 
-    @classmethod
-    def get_data_file_list(cls):
+    def get_data_file_list(self):
         return DataFile.objects.order_by('-start_date', 'device_id')
 
-    @classmethod
-    def get_data_file(cls, id):
+    def get_data_file(self, id):
         assert type(id) is int
 
         try:

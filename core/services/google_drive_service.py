@@ -1,11 +1,12 @@
 import os
+import logging
 
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from tempfile import NamedTemporaryFile, mkdtemp
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
-from .abstract_file_handler_service import AbstractFileHandlerService
+from .abstract_file_storage_service import AbstractFileStorageService
 
 def create_drive_connection():
     gauth = GoogleAuth()
@@ -26,13 +27,14 @@ def create_drive_connection():
 
     return GoogleDrive(gauth)
 
-class GoogleDriveService(AbstractFileHandlerService):
-    drive = create_drive_connection()
+class GoogleDriveService(AbstractFileStorageService):
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+        self.drive = create_drive_connection()
 
-    @classmethod
-    def save_file(cls, f, folder, filename):
+    def save_file(self, f, folder, filename):
         assert type(f) is InMemoryUploadedFile and type(folder) is str and type(filename) is str
-        file_list = cls.drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
+        file_list = self.drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
 
         folder_id = None
         for root_file in file_list:
@@ -40,11 +42,11 @@ class GoogleDriveService(AbstractFileHandlerService):
                 folder_id = root_file['id']
 
         if (folder_id == None):
-            drive_folder = cls.drive.CreateFile({ 'title': folder, "mimeType": "application/vnd.google-apps.folder" })
+            drive_folder = self.drive.CreateFile({ 'title': folder, "mimeType": "application/vnd.google-apps.folder" })
             drive_folder.Upload()
             folder_id = drive_folder['id']
 
-        drive_file = cls.drive.CreateFile({ 'title': filename, "parents": [{ "kind": "drive#fileLink", "id": folder_id }] })
+        drive_file = self.drive.CreateFile({ 'title': filename, "parents": [{ "kind": "drive#fileLink", "id": folder_id }] })
 
         tmp_filename = None
         with NamedTemporaryFile(delete=False) as tmp_f:
@@ -63,10 +65,9 @@ class GoogleDriveService(AbstractFileHandlerService):
 
         return drive_file_id
 
-    @classmethod
-    def get_file(cls, file_id):
+    def get_file(self, file_id):
         assert type(file_id) is str
-        drive_file = cls.drive.CreateFile({ 'id': file_id })
+        drive_file = self.drive.CreateFile({ 'id': file_id })
 
         tmp_filename = os.path.join(mkdtemp(), str(file_id))
         drive_file.GetContentFile(tmp_filename)

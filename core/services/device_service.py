@@ -4,10 +4,10 @@ import uuid
 from ..models import Device
 
 class DeviceService:
-    logger = logging.getLogger(__name__)
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 
-    @classmethod
-    def get_device(cls, device_id):
+    def get_device(self, device_id):
         assert type(device_id) is str
 
         try:
@@ -16,12 +16,10 @@ class DeviceService:
         except Device.DoesNotExist:
             return None
 
-    @classmethod
-    def create_device(cls, device_id):
+    def create_device(self, device_id):
         assert type(device_id) is str
         
         device_token = uuid.uuid4()
         dev = Device(id = device_id, token = device_token)
         dev.save()
-        cls.logger.info(f'Device ${device_id} created')
         return dev
