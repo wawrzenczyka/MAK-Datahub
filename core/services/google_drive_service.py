@@ -3,6 +3,7 @@ import os
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from tempfile import NamedTemporaryFile, mkdtemp
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from .abstract_file_handler_service import AbstractFileHandlerService
 
@@ -30,6 +31,7 @@ class GoogleDriveService(AbstractFileHandlerService):
 
     @classmethod
     def save_file(cls, f, folder, filename):
+        assert type(f) is InMemoryUploadedFile and type(folder) is str and type(filename) is str
         file_list = cls.drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
 
         folder_id = None
@@ -63,6 +65,7 @@ class GoogleDriveService(AbstractFileHandlerService):
 
     @classmethod
     def get_file(cls, file_id):
+        assert type(file_id) is str
         drive_file = cls.drive.CreateFile({ 'id': file_id })
 
         tmp_filename = os.path.join(mkdtemp(), str(file_id))

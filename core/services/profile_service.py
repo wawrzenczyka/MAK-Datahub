@@ -1,13 +1,15 @@
 import logging
 from django.utils import timezone # remove later after deleting the stub
 
-from ..models import ProfileFile
+from ..models import ProfileFile, Device
 
 class ProfileService:
     logger = logging.getLogger(__name__)
 
     @classmethod
     def get_profile_model_and_file(cls, device):
+        assert type(device) is Device
+
         try:
             # TODO: get real profile
             ## profile_model = device.profilefile

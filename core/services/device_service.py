@@ -8,6 +8,8 @@ class DeviceService:
 
     @classmethod
     def get_device(cls, device_id):
+        assert type(device_id) is str
+
         try:
             dev = Device.objects.get(id = device_id)
             return dev
@@ -16,6 +18,8 @@ class DeviceService:
 
     @classmethod
     def create_device(cls, device_id):
+        assert type(device_id) is str
+        
         device_token = uuid.uuid4()
         dev = Device(id = device_id, token = device_token)
         dev.save()
