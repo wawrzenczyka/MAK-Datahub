@@ -161,5 +161,10 @@ LOGGING = {
             'handlers': ['file'],
             'level': 'ERROR',
         },
+        'core': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
     },
 }
