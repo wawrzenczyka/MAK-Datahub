@@ -12,7 +12,6 @@ class DataFileService:
         self.file_storage_service = GoogleDriveService()
 
     def create_data_file(self, file_data, device, start_date, file_type):
-        self.logger.info(f'Data types: {type(file_data)}, {type(device)}, {type(start_date)}')
         assert (type(file_data) is InMemoryUploadedFile or type(file_data) is TemporaryUploadedFile) and type(device) is Device and (type(start_date) is str or type(start_date) is datetime)
         assert file_type == 'S' or file_type == 'E'
 
