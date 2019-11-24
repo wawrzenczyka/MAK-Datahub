@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 
 from ..models import DataFile, Device
 from .google_drive_service import GoogleDriveService
@@ -13,7 +13,7 @@ class DataFileService:
 
     def create_data_file(self, file_data, device, start_date, file_type):
         self.logger.info(f'Data types: {type(file_data)}, {type(device)}, {type(start_date)}')
-        # assert type(file_data) is InMemoryUploadedFile and type(device) is Device and (type(start_date) is str or type(start_date) is datetime)
+        assert (type(file_data) is InMemoryUploadedFile or type(file_data) is TemporaryUploadedFile) and type(device) is Device and (type(start_date) is str or type(start_date) is datetime)
         assert file_type == 'S' or file_type == 'E'
 
         data_file = DataFile(device = device, start_date = start_date, file_type = file_type)
