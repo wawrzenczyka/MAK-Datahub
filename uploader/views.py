@@ -52,9 +52,9 @@ def add(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            sensor_file_data, event_file_data = request.FILES['sensor_file'], request.FILES['event_file']
+            sensor_file_data, event_file_data = form.cleaned_data['sensor_file'], form.cleaned_data['event_file']
             app_token, device_token, device_id, start_date = \
-                request.POST['app_token'], request.POST['device_token'], request.POST['device_id'], request.POST['start_date']
+                form.cleaned_data['app_token'], form.cleaned_data['device_token'], form.cleaned_data['device_id'], form.cleaned_data['start_date']
 
             __logger.info(f'Upload request received for device ${device_id}\n\tdevice_token: ${device_token}\n\tapp_token: ${app_token}\n\tstart_date: ${start_date}' + 
                 f'\n\tsensor file: ${sensor_file_data.name}\n\tevent file: ${event_file_data.name}')
@@ -82,10 +82,9 @@ def add(request):
 
             return JsonResponse({ 'device_token': device.token, 'sensor_file': sensor_file_data.name, 'event_file': event_file_data.name })
         else:
-            if request.POST['device_id'] != None:
-                device_id_string = f'(device ${str(request.POST['device_id'])}) '
-            else
-                device_id_string = f'(device id not submitted) '
+            device_id_string = f'(device id not submitted) '
+            if 'device_id' in request.POST:
+                device_id_string = f'(device ${str(request.POST["device_id"])}) '
             error = get_form_error_message(form)
             __logger.error(f'Upload request DENIED {device_id_string}- ' + error)
             return JsonResponse({ 'error': error })

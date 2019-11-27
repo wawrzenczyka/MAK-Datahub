@@ -22,9 +22,9 @@ def get_profile(request):
     if request.method == 'GET':
         form = GetProfileForm(request.GET, request.FILES)
         if form.is_valid():
-            app_token = request.GET['app_token']
-            device_token = request.GET['device_token']
-            device_id = request.GET['device_id']
+            app_token = form.cleaned_data['app_token']
+            device_token = form.cleaned_data['device_token']
+            device_id = form.cleaned_data['device_id']
 
             __logger.info(f'Get profile request for device ${device_id} received\n\tapp_token: ${app_token}\n\tdevice_token: ${device_token}')
 
@@ -49,8 +49,11 @@ def get_profile(request):
                 __logger.info(f'Get profile request for device ${device_id} - profile not ready')
                 return JsonResponse({ 'profile_ready': False })
         else:
+            device_id_string = f'(device id not submitted) '
+            if 'device_id' in request.POST:
+                device_id_string = f'(device ${str(request.POST["device_id"])}) '
             error = get_form_error_message(form)
-            __logger.error(f'Get profile request DENIED for device ${device_id} - ' + error)
+            __logger.error(f'Get profile request DENIED {device_id_string}- ' + error)
             return JsonResponse({ 'error': error })
     __logger.error(f'Received non-GET get profile request')
     return JsonResponse({ 'error': 'Get profile request should be GET' })
