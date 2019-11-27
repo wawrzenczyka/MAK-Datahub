@@ -82,8 +82,12 @@ def add(request):
 
             return JsonResponse({ 'device_token': device.token, 'sensor_file': sensor_file_data.name, 'event_file': event_file_data.name })
         else:
+            if request.POST['device_id'] != None:
+                device_id_string = f'(device ${str(request.POST['device_id'])}) '
+            else
+                device_id_string = f'(device id not submitted) '
             error = get_form_error_message(form)
-            __logger.error(f'Upload request DENIED - ' + error)
+            __logger.error(f'Upload request DENIED {device_id_string}- ' + error)
             return JsonResponse({ 'error': error })
     __logger.error(f'Received non-POST upload request')
     return JsonResponse({ 'error': 'Upload should be POST' })
