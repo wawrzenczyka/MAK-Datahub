@@ -1,9 +1,10 @@
+from ProfileCreator.helpers.file_helper import is_opened_binary
+from ProfileCreator.common.sensor_reading import SensorReading
 import json
 from typing import BinaryIO
 from typing import TextIO
-from ProfileCreator.helpers.file_helper import is_opened_binary
-from ProfileCreator.common.sensor_reading import SensorReading
 import datetime
+import os
 
 class SensorParser:
     int4_max = 2**31 - 1 
@@ -78,7 +79,10 @@ class SensorParser:
 
     def toBinary(self, readings: List[SensorReadings]) -> bytes:
         tmp_file = "tmp_%s" % datetime.timestamp(datetime.now())
-        with open(tmp_file, "wb") as file:
-            self.writeFile(self, readings, file)
-        with open(tmp_file, "rb") as file:
-            file.read()
+        try:
+            with open(tmp_file, "wb") as file:
+                self.writeFile(self, readings, file)
+            with open(tmp_file, "rb") as file:
+                file.read()
+        finally:
+            os.remove(tmp_file)

@@ -122,6 +122,9 @@ class SensorParserTests(unittest.TestCase):
 
     def tmpFilename(self) -> str:
         return "data/tmp/%d" % datetime.timestamp(datetime.now())
+    
+    def relativeFilename(self, filename: str) -> str:
+        return 
 
     def test_binaryFile_ifWellFormated_isParsedAndSaved_correctly(self):
         with open("data/sensor_config.json") as file:
@@ -166,7 +169,8 @@ class SensorParserTests(unittest.TestCase):
                     parser.writeFile(readings, file)
                 with open(tmp_filename, 'rb') as file:
                     readings_read = parser.parseFile(file)
-                self.assertListEqual(readings, readings_read)
+                for (it1, it2) in zip(readings, readings_read):
+                    self.assertTrue(it2.almostEqual(it1))
 
     def test_listOfSensorReadings_isFromattedAndRead_correctly(self):
         with open("data/sensor_config.json") as file:
