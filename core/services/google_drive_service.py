@@ -79,3 +79,8 @@ class GoogleDriveService(AbstractFileStorageService):
 
         os.remove(tmp_filename)
         return content
+
+    def download_file(self, file_id, filename):
+        assert type(file_id) is str
+        drive_file = self.drive.CreateFile({ 'id': file_id })
+        drive_file.GetContentFile(filename)

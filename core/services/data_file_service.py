@@ -32,3 +32,12 @@ class DataFileService:
             return data_file
         except DataFile.DoesNotExist:
             return None
+
+    def get_data_files_for_device(self, device_id):
+        assert type(device_id) is str
+        
+        try:
+            device = Device.objects.get(id = id)
+            return device.datafile_set.all()
+        except DataFile.DoesNotExist:
+            return None

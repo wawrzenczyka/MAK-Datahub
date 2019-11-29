@@ -16,6 +16,9 @@ class DeviceService:
         except Device.DoesNotExist:
             return None
 
+    def get_all_devices(self):
+        return Device.objects.all()
+
     def create_device(self, device_id):
         assert type(device_id) is str
         
