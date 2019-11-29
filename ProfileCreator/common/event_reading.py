@@ -21,5 +21,4 @@ class EventReading:
             self.EventType == other.EventType
 
     def __hash__(self):
-        return hash((self.Timestamp, self.Gravity, self.MagneticField, self.Gyroscope,
-            self.Gravity, self.LinearAcceleration, self.Rotation))
+        return hash((self.Timestamp, self.EventType))

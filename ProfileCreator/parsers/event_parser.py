@@ -1,8 +1,8 @@
-from ProfileCreator.common.event_reading import EventReading, EventType
-from typing import BinaryIO
-from typing import TextIO
+from ..common.event_reading import EventReading, EventType
+from ..helpers.file_helper import is_opened_binary
+from typing import BinaryIO, TextIO, List
 import os
-import datetime
+from datetime import datetime
 class EventParser:
     def __init__(self):
         pass
@@ -21,17 +21,18 @@ class EventParser:
         expected_count = (len(data) - 8) / 12
         i = 0
         while True:
-            bytes_timestamp = data[i*12, i*12+8]
+            bytes_timestamp = data[(i*12):(i*12+8)]
             timestamp = int.from_bytes(bytes_timestamp, byteorder='big', signed=False)
             if timestamp == 0:
                 break
             if i == expected_count:
                 raise ValueError("Last timestamp was not 0")
-            event_type = EventType(int.from_bytes(data[i*12 + 8, i*12 + 12]))
+            event_type = EventType(int.from_bytes(data[(i*12 + 8):(i*12 + 12)]))
             result.append(EventReading(timestamp, event_type))
             i += 1
-        if i < exected:
+        if i < expected_count:
             raise ValueError("Encountered timestamp 0 in the middle of data")
+        return result
 
 
     def writeFile(self, readings: List[EventReading], file: BinaryIO) -> None:
@@ -42,12 +43,15 @@ class EventParser:
             file.write(reading.EventType.value.to_bytes(4, byteorder="big"))
         file.write((0).to_bytes(8, byteorder="big"))
 
-    def toBinary(self, readings: List[SensorReadings]) -> bytes:
-        tmp_file = "tmp_%s" % datetime.timestamp(datetime.now())
+    def toBinary(self, readings: List[EventReading]) -> bytes:
+        tmp_file = "tmp_%s" % datetime.now().strftime("%m%d%Y%H%M%S")
         try:
             with open(tmp_file, "wb") as file:
-                self.writeFile(self, readings, file)
+                self.writeFile(readings, file)
             with open(tmp_file, "rb") as file:
-                file.read()
+                return file.read()
         finally:
-            os.remove(tmp_file)
+            try:
+                os.remove(tmp_file)
+            except Exception:
+                pass

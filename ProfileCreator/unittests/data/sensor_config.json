@@ -5,6 +5,6 @@
         "gyroscope": 100.0,
         "gravity": 32.0,
         "linearAcceleration": 32.0,
-        "rotationMax": 10.0
+        "rotation": 10.0
     }
 }
