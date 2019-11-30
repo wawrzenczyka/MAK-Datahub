@@ -10,7 +10,7 @@ class EventParser:
     def parseFile(self, file: BinaryIO) -> List[EventReading]:
         if not is_opened_binary(file):
             raise ValueError("file is not opened as a binary stream")
-        return parseData(file.read())
+        return self.parseData(file.read())
 
     def parseData(self, data: bytes) -> List[EventReading]:
         result = []
@@ -27,7 +27,7 @@ class EventParser:
                 break
             if i == expected_count:
                 raise ValueError("Last timestamp was not 0")
-            event_type = EventType(int.from_bytes(data[(i*12 + 8):(i*12 + 12)]))
+            event_type = EventType(int.from_bytes(data[(i*12 + 8):(i*12 + 12)], byteorder='big', signed=False))
             result.append(EventReading(timestamp, event_type))
             i += 1
         if i < expected_count:
