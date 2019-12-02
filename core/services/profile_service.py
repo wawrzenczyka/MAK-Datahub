@@ -1,12 +1,25 @@
-import logging
+import logging, json
 from django.utils import timezone # remove later after deleting the stub
 
 from ..models import ProfileFile, Device
+from .ml_service import MLService
 
 class ProfileService:
     def __init__(self):
+        self.ml_service = MLService()
         self.logger = logging.getLogger(__name__)
 
+    def authorize(self, device, sensor_data_string):
+        assert type(device) is Device
+        assert type(sensor_data_string) is str
+
+        sensor_data = json.loads(sensor_data_string)
+
+        df = self.ml_service.create_dataframe_from_jsondata(sensor_data)        
+        aggregated_df = self.ml_service.aggregate_data_portion_with_stats_functions(df)
+
+        return self.ml_service.predict(aggregated_df, device.id)
+        
     def get_profile_model_and_file(self, device):
         assert type(device) is Device
 
