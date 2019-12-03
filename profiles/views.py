@@ -60,8 +60,8 @@ def get_profile(request):
 
 @csrf_exempt
 def get_auth_result(request):
-    if request.method == 'GET':
-        form = GetAuthResultForm(request.GET, request.FILES)
+    if request.method == 'POST':
+        form = GetAuthResultForm(request.POST, request.FILES)
 
         if form.is_valid():
             app_token = form.cleaned_data['app_token']
@@ -98,5 +98,5 @@ def get_auth_result(request):
             error = get_form_error_message(form)
             __logger.error(f'Get auth result request DENIED {device_id_string}- ' + error)
             return JsonResponse({ 'error': error })
-    __logger.error(f'Received non-GET get auth result request')
-    return JsonResponse({ 'error': 'Get auth result request should be GET' })
+    __logger.error(f'Received non-POST get auth result request')
+    return JsonResponse({ 'error': 'Get auth result request should be POST' })
