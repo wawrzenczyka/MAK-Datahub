@@ -18,7 +18,7 @@ class ProfileService:
         df = self.ml_service.create_dataframe_from_jsondata(sensor_data)        
         aggregated_df = self.ml_service.aggregate_data_portion_with_stats_functions(df)
 
-        return self.ml_service.predict(aggregated_df, device.id)
+        return bool(self.ml_service.predict(aggregated_df, device.id)[0])
         
     def get_profile_model_and_file(self, device):
         assert type(device) is Device

@@ -2,8 +2,10 @@ import logging, os
 import joblib
 
 import pandas as pd
+import numpy as np
 
 from sklearn import preprocessing
+from sklearn.feature_selection import RFECV
 from sklearn.ensemble import RandomForestClassifier
 
 class MLService:
@@ -11,10 +13,11 @@ class MLService:
         self.logger = logging.getLogger(__name__)
         if os.path.exists('model.joblib'):
             model = joblib.load('model.joblib')
-            if type(model) is RandomForestClassifier:
-                self.model = model
+            if type(model) is RFECV:
                 self.has_model = True
-        self.has_model = False
+                self.model = model
+        else:
+            self.has_model = False
     
     def create_dataframe_from_jsondata(self, sensor_data):
         columns = ['Time', \
