@@ -10,6 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 class MLService:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+        
         if os.path.exists('model.joblib'):
             model = joblib.load('model.joblib')
             if type(model) is RFECV:

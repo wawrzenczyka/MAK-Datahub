@@ -18,8 +18,8 @@ from core.utils import get_form_error_message
 __logger = logging.getLogger(__name__)
 __auth_service = SimpleAuthService()
 __device_service = DeviceService()
-__data_file_service = DataFileService()
 __file_storage_service = GoogleDriveService()
+__data_file_service = DataFileService(__file_storage_service)
 
 def index(request):
     if request.method != 'GET':

@@ -2,11 +2,10 @@ import logging, json
 from django.utils import timezone # remove later after deleting the stub
 
 from ..models import ProfileFile, Device
-from .ml_service import MLService
 
 class ProfileService:
-    def __init__(self):
-        self.ml_service = MLService()
+    def __init__(self, ml_service):
+        self.ml_service = ml_service
         self.logger = logging.getLogger(__name__)
 
     def authorize(self, device, sensor_data_string):

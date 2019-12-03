@@ -9,13 +9,14 @@ from .forms import GetProfileForm, GetAuthResultForm
 from core.services.simple_auth_service import SimpleAuthService
 from core.services.device_service import DeviceService
 from core.services.profile_service import ProfileService
+from core.services.ml_service import MLService
 
 from core.utils import get_form_error_message
 
 __logger = logging.getLogger(__name__)
 __auth_service = SimpleAuthService()
 __device_service = DeviceService()
-__profile_service = ProfileService()
+__profile_service = ProfileService(MLService())
 
 @csrf_exempt
 def get_profile(request):

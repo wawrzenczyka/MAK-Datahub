@@ -4,12 +4,11 @@ from datetime import datetime
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 
 from ..models import DataFile, Device
-from .google_drive_service import GoogleDriveService
 
 class DataFileService:
-    def __init__(self):
+    def __init__(self, file_storage_service):
         self.logger = logging.getLogger(__name__)
-        self.file_storage_service = GoogleDriveService()
+        self.file_storage_service = file_storage_service
 
     def create_data_file(self, file_data, device, start_date, file_type):
         assert (type(file_data) is InMemoryUploadedFile or type(file_data) is TemporaryUploadedFile) and type(device) is Device and (type(start_date) is str or type(start_date) is datetime)
