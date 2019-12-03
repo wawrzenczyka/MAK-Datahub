@@ -47,6 +47,7 @@ class MLService:
             return None
         
         predicted_y = self.model.predict(x)
+        self.logger(f'Prediction for data from class ${expected_y} - predicted class ${predicted_y}')
         return predicted_y == expected_y
 
     def recalculate_model(self):
