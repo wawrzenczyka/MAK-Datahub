@@ -4,7 +4,6 @@ import joblib
 import pandas as pd
 import numpy as np
 
-from sklearn import preprocessing
 from sklearn.feature_selection import RFECV
 from sklearn.ensemble import RandomForestClassifier
 
@@ -45,10 +44,8 @@ class MLService:
     def predict(self, x, expected_y):
         if not self.has_model:
             return None
-
-        normalized_x = preprocessing.scale(x)
         
-        predicted_y = self.model.predict(normalized_x)
+        predicted_y = self.model.predict(x)
         return predicted_y == expected_y
 
     def recalculate_model(self):
