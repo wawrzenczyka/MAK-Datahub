@@ -74,7 +74,7 @@ class MLService:
         #     return None
         ###
         class_index = np.where(model.classes_ == 1)[0]
-        yes_probability = probabilities[0][class_index]
+        yes_probability = probabilities[0][class_index][0]
 
         detailed_proba_log = ''
         for i in range(len(probabilities[0])):
