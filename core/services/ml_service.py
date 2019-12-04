@@ -52,7 +52,7 @@ class MLService:
         if len(np.where(self.model.classes_ == expected_y)) == 0:
             return None
         class_index = np.where(self.model.classes_ == expected_y)[0]
-        yes_probability = probabilities[1][class_index]
+        yes_probability = probabilities[0][class_index]
 
         detailed_proba_log = ''
         for i in range(len(probabilities)):
