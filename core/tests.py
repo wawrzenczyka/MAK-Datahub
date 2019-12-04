@@ -184,17 +184,10 @@ class ProfileServiceTestCase(TestCase):
         self.ml_service.aggregate_data_portion_with_stats_functions = MagicMock(return_value = aggregated_data_portion_df)
         device = Device(id = '1', token = '1234')
 
-        self.ml_service.predict = MagicMock(return_value = np.array([True]))
+        self.ml_service.predict = MagicMock(return_value = 0.7)
         received_auth_result = self.profile_service.authorize(device, '["one_sensor_data_portion"]')
 
-        self.assertIsInstance(received_auth_result, bool)
-        self.assertEqual(received_auth_result, True)
-
-        self.ml_service.predict = MagicMock(return_value = np.array([False]))
-        received_auth_result = self.profile_service.authorize(device, '["one_sensor_data_portion"]')
-
-        self.assertIsInstance(received_auth_result, bool)
-        self.assertEqual(received_auth_result, False)
+        self.assertEqual(received_auth_result, 0.7)
 
 from .services.simple_auth_service import SimpleAuthService
 

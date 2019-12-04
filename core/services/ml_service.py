@@ -47,8 +47,18 @@ class MLService:
             return None
         
         predicted_y = self.model.predict(x)
-        self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${predicted_y}')
-        return predicted_y == expected_y
+
+        probabilities = self.model.predict_proba(x)
+        yes_probability = np.sum(probabilities[self.model.classes_ == expected_y])
+
+        if yes_probability == 0:
+            return None
+
+        detailed_proba_log = ''
+        for i in range(len(probabilities)):
+            detailed_proba_log += f'\n\tprobability of {self.model.classes_[i]}: {probabilities[i] * 100}%'
+        self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${predicted_y}' + detailed_proba_log)
+        return yes_probability
 
     def recalculate_model(self):
         pass

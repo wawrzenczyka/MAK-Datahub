@@ -85,10 +85,10 @@ def get_auth_result(request):
                 __logger.error(f'Get auth result request DENIED for device ${device_id} - device not registered')
                 return JsonResponse({ 'error': f'Device ${device_id} is not registered' })
             
-            auth_result = __profile_service.authorize(device, sensor_data)
-            if (auth_result != None):
-                __logger.info(f'Get auth result request for device ${device_id} - profile ready, auth result: ${auth_result}')
-                return JsonResponse({ 'profile_ready': True, 'auth_result': auth_result })
+            yes_proba = __profile_service.authorize(device, sensor_data)
+            if (yes_proba != None):
+                __logger.info(f'Get auth result request for device ${device_id} - profile ready, probability of matching user: ${yes_proba}')
+                return JsonResponse({ 'profile_ready': True, 'matching_user_probability': yes_proba })
             else:
                 __logger.info(f'Get auth result request for device ${device_id} - profile not ready')
                 return JsonResponse({ 'profile_ready': False })
