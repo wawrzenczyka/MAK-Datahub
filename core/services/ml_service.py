@@ -52,11 +52,11 @@ class MLService:
         if len(np.where(self.model.classes_ == expected_y)) == 0:
             return None
         class_index = np.where(self.model.classes_ == expected_y)[0]
-        yes_probability = probabilities[0][class_index]
+        yes_probability = probabilities[0][class_index][0]
 
         detailed_proba_log = ''
-        for i in range(len(probabilities)):
-            detailed_proba_log += f'\n\tprobability of {self.model.classes_[i]}: {probabilities[i] * 100}%'
+        for i in range(len(probabilities[0])):
+            detailed_proba_log += f'\n\tprobability of {self.model.classes_[i]}: {probabilities[0][i] * 100}%'
         self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${predicted_y}' + detailed_proba_log)
         return yes_probability
 
