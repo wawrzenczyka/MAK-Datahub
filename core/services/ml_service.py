@@ -56,7 +56,7 @@ class MLService:
 
         detailed_proba_log = ''
         for i in range(len(probabilities[0])):
-            detailed_proba_log += f'\n\tprobability of {self.model.classes_[i]}: {probabilities[0][i] * 100}%'
+            detailed_proba_log += f'\n\tProbability of {self.model.classes_[i]}: {probabilities[0][i] * 100}%'
         self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${predicted_y}' + detailed_proba_log)
         return yes_probability
 

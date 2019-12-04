@@ -87,7 +87,7 @@ def get_auth_result(request):
             
             yes_proba = __profile_service.authorize(device, sensor_data)
             if (yes_proba != None):
-                __logger.info(f'Get auth result request for device ${device_id} - profile ready, probability of matching user: ${yes_proba}')
+                __logger.info(f'Get auth result request for device ${device_id} - profile ready, probability of matching user: ${yes_proba * 100}%')
                 return JsonResponse({ 'profile_ready': True, 'matching_user_probability': yes_proba })
             else:
                 __logger.info(f'Get auth result request for device ${device_id} - profile not ready')
