@@ -67,6 +67,7 @@ class MLService:
         model = self.models[expected_y]
         ###
 
+        predicted_y = model.predict(x)
         probabilities = model.predict_proba(x)
         ### Global model
         # if expected_y not in model.classes_:
