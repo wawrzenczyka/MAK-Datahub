@@ -54,10 +54,10 @@ class MLService:
         return agg_df.reset_index(drop = True)
 
     def predict(self, x, expected_y):
-        if not self.has_model:
-            return None
         
         ### Global model
+        # if not self.has_model:
+        #     return None
         # model = self.model
         ###
 
@@ -72,13 +72,13 @@ class MLService:
         # if expected_y not in model.classes_:
         #     return None
         ###
-        class_index = np.where(model.classes_ == expected_y)[0]
-        yes_probability = probabilities[0][class_index][0]
+        class_index = np.where(model.classes_ == 1)[0]
+        yes_probability = probabilities[0][class_index]
 
         detailed_proba_log = ''
         for i in range(len(probabilities[0])):
-            detailed_proba_log += f'\n\tProbability of {model.classes_[i]}: {probabilities[0][i] * 100}%'
-        self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${predicted_y}' + detailed_proba_log)
+            detailed_proba_log += f'\n\tProbability of {bool(model.classes_[i])}: {probabilities[0][i] * 100}%'
+        self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${bool(predicted_y)}' + detailed_proba_log)
         return yes_probability
 
     def recalculate_model(self):
