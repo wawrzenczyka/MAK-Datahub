@@ -11,11 +11,22 @@ class MLService:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         
-        if os.path.exists('model.joblib'):
-            model = joblib.load('model.joblib')
-            if type(model) is RFECV:
-                self.has_model = True
-                self.model = model
+        ### Global model
+        # if os.path.exists('model.joblib'):
+        #     model = joblib.load('model.joblib')
+        #     if type(model) is RFECV:
+        #         self.has_model = True
+        #         self.model = model
+        ###
+        ### Local models
+        if os.path.exists('device_models'):
+            self.models = {}
+            subfolders = [(f.name, f.path) for f in os.scandir('device_models') if f.is_dir()]
+            for device_id, device_path in subfolders:
+                model = joblib.load(os.path.join(device_path, 'model.joblib'))
+                if type(model) is RFECV:
+                    self.models[device_id] = model
+        ###
         else:
             self.has_model = False
     
@@ -46,17 +57,27 @@ class MLService:
         if not self.has_model:
             return None
         
-        predicted_y = self.model.predict(x)
+        ### Global model
+        # model = self.model
+        ###
 
-        probabilities = self.model.predict_proba(x)
-        if len(np.where(self.model.classes_ == expected_y)) == 0:
+        ### Device models
+        if expected_y not in self.models:
             return None
-        class_index = np.where(self.model.classes_ == expected_y)[0]
+        model = self.models[expected_y]
+        ###
+
+        probabilities = model.predict_proba(x)
+        ### Global model
+        # if expected_y not in model.classes_:
+        #     return None
+        ###
+        class_index = np.where(model.classes_ == expected_y)[0]
         yes_probability = probabilities[0][class_index][0]
 
         detailed_proba_log = ''
         for i in range(len(probabilities[0])):
-            detailed_proba_log += f'\n\tProbability of {self.model.classes_[i]}: {probabilities[0][i] * 100}%'
+            detailed_proba_log += f'\n\tProbability of {model.classes_[i]}: {probabilities[0][i] * 100}%'
         self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${predicted_y}' + detailed_proba_log)
         return yes_probability
 
