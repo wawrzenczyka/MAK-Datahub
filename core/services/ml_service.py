@@ -49,10 +49,10 @@ class MLService:
         predicted_y = self.model.predict(x)
 
         probabilities = self.model.predict_proba(x)
-        yes_probability = np.sum(probabilities[self.model.classes_ == expected_y])
-
-        if yes_probability == 0:
+        if len(numpy.where(self.model.classes_, expected_y)) == 0:
             return None
+        class_index = numpy.where(self.model.classes_, expected_y)[0]
+        yes_probability = probabilities[class_index]
 
         detailed_proba_log = ''
         for i in range(len(probabilities)):
