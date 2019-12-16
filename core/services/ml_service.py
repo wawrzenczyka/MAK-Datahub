@@ -76,6 +76,9 @@ class MLService:
     def predict(self, x, expected_y):
         if expected_y not in self.models:
             return None
+
+        self.logger.info(f'Prediction for data from class ${expected_y} - input vector:\n\t${x.iloc[0, :].values.tolist()}')
+
         model = self.models[expected_y]
 
         predicted_y = model.predict(x)[0]
