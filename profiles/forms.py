@@ -20,7 +20,7 @@ class GetAuthResultForm(forms.Form):
             if type(json_data) is not list:
                 raise forms.ValidationError("Invalid json structure")
             for json_row in json_data:
-                if len(json_row) != 6*4 + 1:
+                if len(json_row) != 6*3 + 1:
                     raise forms.ValidationError("Json should have 19 columns")
                 if type(json_row) is not list:
                     raise forms.ValidationError("Invalid json structure")
