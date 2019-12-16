@@ -62,8 +62,6 @@ class MLService:
                 'RotX', 'RotY', 'RotZ', 'RotMgn', \
         ]]
 
-        self.logger.info(f'Prediction input data:\n\t${df.values.tolist()}')
-
         return df
 
     def aggregate_data_portion_with_stats_functions(self, sensor_df):
@@ -80,8 +78,6 @@ class MLService:
     def predict(self, x, expected_y):
         if expected_y not in self.models:
             return None
-
-        self.logger.info(f'Prediction for data from class ${expected_y} - input vector:\n\t${x.iloc[0, :].values.tolist()}')
 
         model = self.models[expected_y]
 
