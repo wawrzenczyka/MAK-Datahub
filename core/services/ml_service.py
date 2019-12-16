@@ -62,7 +62,7 @@ class MLService:
                 'RotX', 'RotY', 'RotZ', 'RotMgn', \
         ]]
 
-        self.logger.info(f'Prediction for data from class ${expected_y} - input data:\n\t${df.values.tolist()}')
+        self.logger.info(f'Prediction input data:\n\t${df.values.tolist()}')
 
         return df
 
