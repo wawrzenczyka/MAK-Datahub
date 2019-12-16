@@ -79,7 +79,7 @@ class MLService:
         model = self.models[expected_y]
 
         predicted_y = model.predict(x)[0]
-        self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${bool(predicted_y == 1)}')
+        self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${bool(predicted_y == 1)}\n\tSample score: ${model.score_samples(x)[0]}')
 
         if predicted_y == 1:
             return 1.0
