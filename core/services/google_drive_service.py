@@ -80,7 +80,12 @@ class GoogleDriveService(AbstractFileStorageService):
         os.remove(tmp_filename)
         return content
 
-    def download_file(self, file_id, filename):
+    def download_file(self, file_id):
         assert type(file_id) is str
         drive_file = self.drive.CreateFile({ 'id': file_id })
-        drive_file.GetContentFile(filename)
+
+        tmp_filename = os.path.join(mkdtemp(), str(file_id))
+        drive_file.GetContentFile(tmp_filename)
+        del drive_file
+        
+        return tmp_filename

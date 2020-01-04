@@ -38,6 +38,24 @@ class DataFileService:
         
         try:
             device = Device.objects.get(id = id)
-            return device.datafile_set.all()
+            return device.datafile_set.all().order_by('start_date')
+        except DataFile.DoesNotExist:
+            return None
+
+    def get_event_files_for_device(self, device_id):
+        assert type(device_id) is str
+        
+        try:
+            device = Device.objects.get(id = device_id)
+            return device.datafile_set.filter(file_type = 'E').order_by('start_date')
+        except DataFile.DoesNotExist:
+            return None
+
+    def get_sensor_files_for_device(self, device_id):
+        assert type(device_id) is str
+        
+        try:
+            device = Device.objects.get(id = device_id)
+            return device.datafile_set.filter(file_type = 'S').order_by('start_date')
         except DataFile.DoesNotExist:
             return None
