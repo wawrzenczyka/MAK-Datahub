@@ -97,6 +97,7 @@ class Command(BaseCommand):
                 # TODO: move this part to service
                 reading_list = prev_reading_list + current_reading_list + next_reading_list
                 unlock_df = self.data_extraction_service.create_unlock_df_from_readings(unlock_timestamp, reading_list)
+                unlock_df = self.data_extraction_service.aggregate_df_with_stats_functions(unlock_df)
                 unlock_df = self.data_extraction_service.add_device_id_to_unlock_df(unlock_df, device.id)
                 
                 if unlock_df is not None:
