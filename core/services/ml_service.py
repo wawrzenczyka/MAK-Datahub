@@ -82,19 +82,20 @@ class MLService:
         return agg_df.reset_index(drop = True)
 
     def predict(self, x, expected_y):
-        if expected_y not in self.models:
-            return None
+        return 0.0
+        # if expected_y not in self.models:
+        #     return None
 
-        model = self.models[expected_y]
+        # model = self.models[expected_y]
 
-        predicted_y = model.predict(x)[0]
-        self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${bool(predicted_y == 1)}\n\tSample score: ${model.score_samples(x)[0]}')
+        # predicted_y = model.predict(x)[0]
+        # self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${bool(predicted_y == 1)}\n\tSample score: ${model.score_samples(x)[0]}')
 
-        # if predicted_y == 1:
-        #     return 1.0
-        # else:
-        #     return 0.0
-        return model.score_samples(x)[0]
+        # # if predicted_y == 1:
+        # #     return 1.0
+        # # else:
+        # #     return 0.0
+        # return model.score_samples(x)[0]
 
     def rfe_rf_oversampled_10_features(self, X, y, device_id):
         y_device = np.where(y == device_id, 1, 0)
@@ -114,6 +115,9 @@ class MLService:
             + f'\n\tClassification report:\n{classification_report(y_test, selector.predict(X_test))}')
 
         return selector
+
+    def get_class_sample_count(self, y, device_id):
+        return np.sum(y == device_id)
 
     # def predict(self, x, expected_y):
 
