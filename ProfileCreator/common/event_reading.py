@@ -4,8 +4,9 @@ class EventType(Enum):
     TOUCH = 0
     SCREEN_ON = 1
     SCREEN_OFF = 2
-    UNLOCKED = 3
+    USER_PRESENT = 3
     UNLOCKED_BIOMETRICALLY = 4
+    UNLOCKED = 5
 
 class EventReading:
     def __init__(self, timestamp: int, eventType: EventType):
