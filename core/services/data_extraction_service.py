@@ -18,7 +18,7 @@ class DataExtractionService:
         try:
             event_list = self.event_parser.parseFile(open(event_file_path, 'rb'))
             for event in event_list:
-                if (event.EventType == EventType.UNLOCKED):
+                if (event.EventType == EventType.USER_PRESENT):
                     unlocks.append(event.Timestamp)
         except ValueError:
             self.logger.error(f'Parsing error in file {event_file_path}')
