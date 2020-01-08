@@ -73,8 +73,6 @@ class Command(BaseCommand):
                 unlocks += file_events
                 os.remove(filename)
 
-                break
-
             self.logger.info(f'Data processing: device {device.id}, {len(unlocks)} new unlocks')
             
             unlocks.sort()
@@ -147,8 +145,9 @@ class Command(BaseCommand):
                 os.remove(next_sensor_file)
 
             device_unlock_data = self.data_extraction_service.transform_df_list_to_df(unlock_dfs)
-            self.logger.info(f'Data processing: device {device.id}, {len(device_unlock_data)} samples extracted')
-            unlock_data.append(device_unlock_data)
+            self.logger.info(f'Data processing: device {device.id}, {len(device_unlock_data) if device_unlock_data is not None else "no"} samples extracted')
+            if device_unlock_data is not None:
+                unlock_data.append(device_unlock_data)
 
         unlock_data = self.data_extraction_service.transform_df_list_to_df(unlock_data)
         # unlock_data.to_pickle('unlock_data.pkl')
