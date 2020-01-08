@@ -26,6 +26,9 @@ class DataExtractionService:
         return unlocks
 
     def get_readings_from_sensor_files(self, sensor_file_path):
+        if sensor_file_path is None:
+            return []
+
         try:
             return self.sensor_parser.parseFile(open(sensor_file_path, 'rb'))
         except ValueError:
@@ -162,4 +165,6 @@ class DataExtractionService:
         return None
 
     def add_device_id_to_unlock_df(self, unlock_df, device_id):
+        if unlock_df is None:
+            return None
         return unlock_df.assign(DeviceId = device_id)

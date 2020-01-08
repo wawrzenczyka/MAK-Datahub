@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 class AbstractFileStorageService(ABC):
     @abstractmethod
-    def save_file(cls, f, folder, filename):
+    def save_form_file(cls, f, folder, filename):
         pass
 
     @abstractmethod

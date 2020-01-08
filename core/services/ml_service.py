@@ -4,9 +4,14 @@ import joblib
 import pandas as pd
 import numpy as np
 
-# from sklearn.feature_selection import RFECV
-# from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import LocalOutlierFactor
+from sklearn.feature_selection import RFECV, RFE
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+
+from imblearn.over_sampling import SMOTE
 
 class MLService:
     def __init__(self):
@@ -27,6 +32,7 @@ class MLService:
                 model = joblib.load(os.path.join(device_path, 'model.joblib'))
                 # if type(model) is RFECV:
                 if type(model) is LocalOutlierFactor:
+                    self.has_model = True
                     self.models[device_id] = model
         ###
         else:
@@ -89,6 +95,25 @@ class MLService:
         # else:
         #     return 0.0
         return model.score_samples(x)[0]
+
+    def rfe_rf_oversampled_10_features(self, X, y, device_id):
+        y_device = np.where(y == device_id, 1, 0)
+        self.logger.info(f'Profile creation: device {device_id}, {np.sum(y_device)} / {len(y_device)} samples')
+
+        X_oversampled, y_oversampled = SMOTE().fit_resample(X, y_device)
+        self.logger.info(f'Profile creation (post-oversampling): device {device_id}, {np.sum(y_device)} / {len(y_device)} samples')
+
+        X_train, X_test, y_train, y_test = train_test_split(X_oversampled, y_oversampled, test_size=0.2)
+
+        cv = StratifiedKFold(5)
+        classifier = RandomForestClassifier(n_estimators = 100)
+        selector = RFE(classifier, n_features_to_select=10, step=1)
+        selector = selector.fit(X_train, y_train)
+
+        self.logger.info(f'Profile creation: device {device_id}\n\tSelector score: {selector.score(X_test, y_test)}' 
+            + f'\n\tClassification report:\n{classification_report(y_test, selector.predict(X_test))}')
+
+        return selector
 
     # def predict(self, x, expected_y):
 

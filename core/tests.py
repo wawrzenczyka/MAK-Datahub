@@ -87,7 +87,7 @@ class DataFileServiceTestCase(TestCase):
         self.mockDataFile2.save()
 
         self.file_storage_service = GoogleDriveService()
-        self.file_storage_service.save_file = MagicMock(return_value = 'sample_drive_id')
+        self.file_storage_service.save_form_file = MagicMock(return_value = 'sample_drive_id')
         self.file_storage_service.get_file = MagicMock(return_value = 'sample_file_content')
 
         self.data_file_service = DataFileService(self.file_storage_service)
@@ -162,10 +162,11 @@ class DataFileServiceTestCase(TestCase):
 
         data_file = self.data_file_service.create_data_file(correct_file_data, correct_device, correct_start_date, correct_file_type)
 
-        self.file_storage_service.save_file.assert_called_once()
+        self.file_storage_service.save_form_file.assert_called_once()
 
 from .services.profile_service import ProfileService
 from .services.ml_service import MLService
+from .services.google_drive_service import GoogleDriveService
 
 import pandas as pd
 import numpy as np
@@ -174,8 +175,9 @@ import numpy as np
 class ProfileServiceTestCase(TestCase):
     def setUp(self):
         self.ml_service = MLService()
+        self.file_storage_service = GoogleDriveService()
 
-        self.profile_service = ProfileService(self.ml_service)
+        self.profile_service = ProfileService(self.ml_service, self.file_storage_service)
 
     def test_Authorize_WhenCalled_ReturnsMLPredictionResult(self):
         data_portion_df = pd.DataFrame()

@@ -7,7 +7,7 @@ class FileSystemService(AbstractFileStorageService):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def save_file(self, f, folder, filename):
+    def save_form_file(self, f, folder, filename):
         assert (type(f) is InMemoryUploadedFile or type(f) is TemporaryUploadedFile) and type(folder) is str and type(filename) is str
 
         fs = FileSystemStorage()

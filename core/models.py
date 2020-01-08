@@ -20,15 +20,20 @@ class DataFile(models.Model):
         tz = timezone('Europe/Warsaw')
         return f'{self.file_type}_{self.device.id}_{self.start_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
 
-class ProfileFile(models.Model):
-    device = models.OneToOneField(
-        Device,
-        on_delete=models.CASCADE,
-        primary_key=True,
-    )
-    file_uri = models.CharField(max_length=200)
-    creation_date = models.DateTimeField()
+class ProfileCreationRun(models.Model):
+    run_date = models.DateTimeField()
+    parsed_unlock_files_uri = models.DateTimeField()
+    unlock_data_uri = models.DateTimeField()
 
     def __str__(self):
         tz = timezone('Europe/Warsaw')
-        return f'PROFILE_{self.device.id}_{self.creation_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
+        return f'RUN_{self.creation_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
+
+class ProfileFile(models.Model):
+    device = models.ForeignKey(Device, on_delete=models.CASCADE)
+    profile_file_uri = models.CharField(max_length=200)
+    run = models.ForeignKey(ProfileCreationRun, on_delete=models.CASCADE)
+
+    def __str__(self):
+        tz = timezone('Europe/Warsaw')
+        return f'PROFILE_{self.device.id}_{self.run.creation_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
