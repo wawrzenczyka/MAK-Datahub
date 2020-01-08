@@ -68,7 +68,7 @@ class DataExtractionService:
         rot_mgn = []
 
         for reading in reading_list:
-            if unlock_timestamp - 10000 <= reading.Timestamp <= unlock_timestamp + 5000:
+            if unlock_timestamp - self.PREUNLOCK_TIME <= reading.Timestamp <= unlock_timestamp + self.POSTUNLOCK_TIME:
                 def mgn(vector):
                     return math.sqrt(vector[0]**2 + vector[1]**2 + vector[2]**2)
                 time.append(reading.Timestamp)
