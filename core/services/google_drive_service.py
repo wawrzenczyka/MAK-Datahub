@@ -3,7 +3,7 @@ import os, logging, pickle, joblib
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from pydrive.files import ApiRequestError
-from tempfile import NamedTemporaryFile, mkdtemp
+from tempfile import NamedTemporaryFile, mkdtemp, TemporaryFile
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 
 from .abstract_file_storage_service import AbstractFileStorageService
@@ -57,20 +57,16 @@ class GoogleDriveService(AbstractFileStorageService):
 
         return drive_file_id
 
-    def save_unlock_data(self, start_date, parsed_unlock_files, unlock_data):
-        unlock_data_folder_id = self.__get_or_create_folder_id('unlock_info', None)
-        current_unlock_data_folder_id = self.__get_or_create_folder_id(start_date.strftime("%Y%m%d_%H%M%S"), 
-            unlock_data_folder_id)
+    def save_event_data(self, event_data, start_date, filename):
+        event_data_folder_id = self.__get_or_create_folder_id('event_info', None)
+        current_event_data_folder_id = self.__get_or_create_folder_id(start_date.strftime("%Y%m%d_%H%M%S"), 
+            event_data_folder_id)
 
-        parsed_unlock_files_file = self.drive.CreateFile({ 'title': 'parsed_unlock_files.pkl', 
-            "parents": [{ "kind": "drive#fileLink", "id": current_unlock_data_folder_id }] })
-        unlock_data_file = self.drive.CreateFile({ 'title': 'unlock_data.pkl', 
-            "parents": [{ "kind": "drive#fileLink", "id": current_unlock_data_folder_id }] })
+        event_data_file = self.drive.CreateFile({ 'title': f'{filename}.pkl', 
+            "parents": [{ "kind": "drive#fileLink", "id": current_event_data_folder_id }] })
 
-        self.__upload_bytes(pickle.dumps(parsed_unlock_files), parsed_unlock_files_file)
-        self.__upload_bytes(pickle.dumps(unlock_data), unlock_data_file)
-
-        return parsed_unlock_files_file['id'], unlock_data_file['id']
+        self.__upload_bytes(pickle.dumps(event_data), event_data_file)
+        return event_data_file['id']
 
     def upload_profile(self, selector, start_date, device_id):
         profiles_folder_id = self.__get_or_create_folder_id('profiles', None)
@@ -80,7 +76,13 @@ class GoogleDriveService(AbstractFileStorageService):
         profile_file = self.drive.CreateFile({ 'title': f'{device_id}.joblib', 
             "parents": [{ "kind": "drive#fileLink", "id": current_profiles_folder_id }] })
         
-        self.__upload_bytes(joblib.dumps(selector), profile_file)
+        bytes_obj = None
+        with TemporaryFile() as f:
+            joblib.dump(selector, f)
+            f.seek(0)
+            bytes_obj = f.read()
+
+        self.__upload_bytes(bytes_obj, profile_file)
 
         return profile_file['id']
 

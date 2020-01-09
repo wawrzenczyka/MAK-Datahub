@@ -99,10 +99,10 @@ class MLService:
 
     def rfe_rf_oversampled_10_features(self, X, y, device_id):
         y_device = np.where(y == device_id, 1, 0)
-        self.logger.info(f'Profile creation: device {device_id}, {np.sum(y_device)} / {len(y_device)} samples')
+        self.logger.info(f'Profile creation: device {device_id}, {np.sum(y_device)} class / {len(y_device)} total samples')
 
         X_oversampled, y_oversampled = SMOTE().fit_resample(X, y_device)
-        self.logger.info(f'Profile creation (post-oversampling): device {device_id}, {np.sum(y_device)} / {len(y_device)} samples')
+        self.logger.info(f'Profile creation (post-oversampling): device {device_id}, {np.sum(y_oversampled)} class / {len(y_oversampled)} total samples')
 
         X_train, X_test, y_train, y_test = train_test_split(X_oversampled, y_oversampled, test_size=0.2)
 

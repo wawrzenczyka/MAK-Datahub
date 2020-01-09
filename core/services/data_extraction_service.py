@@ -3,27 +3,32 @@ import numpy as np
 import pandas as pd
 
 from ProfileCreator.parsers.sensors_parser import SensorParser
-from ProfileCreator.parsers.event_parser import EventParser, EventType
+from ProfileCreator.parsers.event_parser import EventParser, EventType, EventReading
 
 class DataExtractionService:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.sensor_parser = SensorParser(open('ProfileCreator/parsers/sensor_config.json'))
         self.event_parser = EventParser()
+
         self.PREUNLOCK_TIME = 3000
         self.POSTUNLOCK_TIME = 1000
+        self.CONTINUOUS_AUTH_INTERVAL = 20000
 
     def extract_events(self, event_file_path):
         unlocks = []
+        screen_offs = []
         try:
             event_list = self.event_parser.parseFile(open(event_file_path, 'rb'))
             for event in event_list:
                 if (event.EventType == EventType.USER_PRESENT):
-                    unlocks.append(event.Timestamp)
+                    unlocks.append(event)
+                if (event.EventType == EventType.SCREEN_OFF):
+                    screen_offs.append(event)
         except ValueError:
             self.logger.error(f'Parsing error in file {event_file_path}')
 
-        return unlocks
+        return unlocks, screen_offs
 
     def get_readings_from_sensor_files(self, sensor_file_path):
         if sensor_file_path is None:
@@ -34,7 +39,33 @@ class DataExtractionService:
         except ValueError:
             return []
 
-    def create_unlock_df_from_readings(self, unlock_timestamp, reading_list):
+    def generate_continuous_auth_checkpoints(self, unlocks, screen_offs):
+        checkpoints = []
+        for i, unlock in enumerate(unlocks):
+            next_screen_off = 0
+            try:
+                next_screen_off = next(v.Timestamp for i, v in enumerate(screen_offs) if v.Timestamp > unlock.Timestamp)
+            except StopIteration:
+                next_screen_off = math.inf
+
+            next_unlock = unlocks[i + 1].Timestamp if i < len(unlocks) - 1 else math.inf
+
+            checkpoint = unlock.Timestamp + self.CONTINUOUS_AUTH_INTERVAL
+            checkpoints_after_unlock = 0
+            while checkpoint < next_unlock and checkpoint < next_screen_off:
+                if next_unlock == math.inf and next_screen_off == math.inf:
+                    break
+                checkpoints.append(EventReading(checkpoint, EventType.CONTINUOUS_AUTH_CHECKPOINT))
+                checkpoint += self.CONTINUOUS_AUTH_INTERVAL
+                
+                checkpoints_after_unlock += 1
+                if checkpoints_after_unlock == 100:
+                    break
+
+        return checkpoints
+
+
+    def create_df_from_readings(self, event_timestamp, reading_list, pre_event_interval = 0, post_event_interval = 0):
         time = []
 
         acc_x = []
@@ -68,7 +99,7 @@ class DataExtractionService:
         rot_mgn = []
 
         for reading in reading_list:
-            if unlock_timestamp - self.PREUNLOCK_TIME <= reading.Timestamp <= unlock_timestamp + self.POSTUNLOCK_TIME:
+            if event_timestamp - pre_event_interval <= reading.Timestamp <= event_timestamp + post_event_interval:
                 def mgn(vector):
                     return math.sqrt(vector[0]**2 + vector[1]**2 + vector[2]**2)
                 time.append(reading.Timestamp)
@@ -156,7 +187,7 @@ class DataExtractionService:
             .groupby('temp')\
             .agg([np.min, np.max, np.mean, np.median, np.std, pd.Series.kurt, pd.Series.skew, pd.Series.mad, pd.Series.sem])
         agg_df.columns = ['_'.join(col).strip() for col in agg_df.columns.values]
-        agg_df = agg_df.reset_index(drop = True)
+        agg_df = agg_df.dropna().reset_index(drop = True)
         return agg_df
 
     def transform_df_list_to_df(self, df_list):
@@ -164,7 +195,7 @@ class DataExtractionService:
             return pd.concat(df_list).reset_index(drop = True)
         return None
 
-    def add_device_id_to_unlock_df(self, unlock_df, device_id):
-        if unlock_df is None:
+    def add_device_id_to_df(self, df, device_id):
+        if df is None:
             return None
-        return unlock_df.assign(DeviceId = device_id)
+        return df.assign(DeviceId = device_id)

@@ -22,8 +22,9 @@ class DataFile(models.Model):
 
 class ProfileCreationRun(models.Model):
     run_date = models.DateTimeField()
-    parsed_unlock_files_uri = models.DateTimeField()
-    unlock_data_uri = models.DateTimeField()
+    parsed_event_files_uri = models.CharField(max_length=200)
+    unlock_data_uri = models.CharField(max_length=200)
+    checkpoint_data_uri = models.CharField(max_length=200)
 
     def __str__(self):
         tz = timezone('Europe/Warsaw')
@@ -31,8 +32,9 @@ class ProfileCreationRun(models.Model):
 
 class ProfileFile(models.Model):
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
-    profile_file_uri = models.CharField(max_length=200)
     run = models.ForeignKey(ProfileCreationRun, on_delete=models.CASCADE)
+    profile_file_uri = models.CharField(max_length=200)
+    profile_type = models.CharField(max_length=20)
 
     def __str__(self):
         tz = timezone('Europe/Warsaw')

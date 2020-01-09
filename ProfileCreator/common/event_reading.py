@@ -7,6 +7,7 @@ class EventType(Enum):
     USER_PRESENT = 3
     UNLOCKED_BIOMETRICALLY = 4
     UNLOCKED = 5
+    CONTINUOUS_AUTH_CHECKPOINT = 10
 
 class EventReading:
     def __init__(self, timestamp: int, eventType: EventType):
