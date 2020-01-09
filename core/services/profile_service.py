@@ -58,7 +58,7 @@ class ProfileService:
                 continue
             
             selector = self.ml_service.rfe_rf_oversampled_10_features(X, y, device_id)
-            profile_file_uri = self.storage_service.upload_profile(selector, run.run_date, device_id)
+            profile_file_uri = self.storage_service.upload_profile(selector, run.run_date, device_id, profile_type)
             connection.close()
             profile_file = ProfileFile(device = Device.objects.get(id = device_id), profile_file_uri = profile_file_uri, run = run, profile_type = profile_type)
             profile_file.save()
