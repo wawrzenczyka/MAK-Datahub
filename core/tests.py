@@ -167,6 +167,7 @@ class DataFileServiceTestCase(TestCase):
 from .services.profile_service import ProfileService
 from .services.ml_service import MLService
 from .services.google_drive_service import GoogleDriveService
+from .services.data_extraction_service import DataExtractionService
 
 import pandas as pd
 import numpy as np
@@ -177,7 +178,7 @@ class ProfileServiceTestCase(TestCase):
         self.ml_service = MLService()
         self.file_storage_service = GoogleDriveService()
 
-        self.profile_service = ProfileService(self.ml_service, self.file_storage_service)
+        self.profile_service = ProfileService(self.ml_service, self.file_storage_service, DataExtractionService())
 
     def test_Authorize_WhenCalled_ReturnsMLPredictionResult(self):
         data_portion_df = pd.DataFrame()

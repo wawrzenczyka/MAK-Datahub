@@ -22,7 +22,7 @@ class Command(BaseCommand):
         self.google_drive_service = GoogleDriveService()
         self.data_file_service = DataFileService(self.google_drive_service)
         self.ml_service = MLService()
-        self.profile_service = ProfileService(self.ml_service, self.google_drive_service)
+        self.profile_service = ProfileService(self.ml_service, self.google_drive_service, self.data_extraction_service)
 
         self.PREUNLOCK_TIME = 3000
         self.POSTUNLOCK_TIME = 1000
@@ -173,7 +173,7 @@ class Command(BaseCommand):
             device_checkpoint_data = self.data_extraction_service.transform_df_list_to_df(checkpoint_dfs)
 
             self.logger.info(f'Data processing: device {device.id}, {len(device_unlock_data) if device_unlock_data is not None else "no"} unlock samples extracted')
-            self.logger.info(f'Data processing: device {device.id}, {len(device_checkpoint_data) if device_unlock_data is not None else "no"} continuous data samples extracted')
+            self.logger.info(f'Data processing: device {device.id}, {len(device_checkpoint_data) if device_checkpoint_data is not None else "no"} continuous data samples extracted')
             if device_unlock_data is not None:
                 unlock_data.append(device_unlock_data)            
             if device_checkpoint_data is not None:
