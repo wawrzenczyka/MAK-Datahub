@@ -178,6 +178,38 @@ class DataExtractionService:
 
         return df
 
+    def create_df_from_json_data(self, sensor_data):
+        columns = ['Time', \
+            'AccX', 'AccY', 'AccZ', \
+            'MgfX', 'MgfY', 'MgfZ', \
+            'GyrX', 'GyrY', 'GyrZ', \
+            'GrvX', 'GrvY', 'GrvZ', \
+            'LinX', 'LinY', 'LinZ', \
+            'RotX', 'RotY', 'RotZ', \
+        ]
+
+        def magnitude(x, y, z):
+            return np.sqrt(x**2 + y**2 + z**2)
+        
+        df = pd.DataFrame(sensor_data, columns = columns)
+        df = df\
+            .assign(AccMgn = magnitude(df.AccX, df.AccY, df.AccZ))\
+            .assign(MgfMgn = magnitude(df.MgfX, df.MgfY, df.MgfZ))\
+            .assign(GyrMgn = magnitude(df.GyrX, df.GyrY, df.GyrZ))\
+            .assign(GrvMgn = magnitude(df.GrvX, df.GrvY, df.GrvZ))\
+            .assign(LinMgn = magnitude(df.LinX, df.LinY, df.LinZ))\
+            .assign(RotMgn = magnitude(df.RotX, df.RotY, df.RotZ))\
+            .loc[:, ['Time', \
+                'AccX', 'AccY', 'AccZ', 'AccMgn', \
+                'MgfX', 'MgfY', 'MgfZ', 'MgfMgn', \
+                'GyrX', 'GyrY', 'GyrZ', 'GyrMgn', \
+                'GrvX', 'GrvY', 'GrvZ', 'GrvMgn', \
+                'LinX', 'LinY', 'LinZ', 'LinMgn', \
+                'RotX', 'RotY', 'RotZ', 'RotMgn', \
+        ]]
+
+        return df
+    
     def aggregate_df_with_stats_functions(self, df):
         if len(df.index) == 0:
             return None

@@ -1,41 +1,55 @@
-import logging, json
+import logging, json, joblib, os
 
 from django.utils import timezone # remove later after deleting the stub
 from django.db import connection
 
+from sklearn_porter import Porter
+
 from ..models import ProfileFile, Device, ProfileCreationRun
 
 class ProfileService:
-    def __init__(self, ml_service, storage_service):
+    def __init__(self, ml_service, storage_service, data_extraction_service):
+        self.logger = logging.getLogger(__name__)
         self.ml_service = ml_service
         self.storage_service = storage_service
-        self.logger = logging.getLogger(__name__)
-
+        self.data_extraction_service = data_extraction_service
+    
     def authorize(self, device, sensor_data_string):
         assert type(device) is Device
         assert type(sensor_data_string) is str
 
         sensor_data = json.loads(sensor_data_string)
 
-        df = self.ml_service.create_dataframe_from_jsondata(sensor_data)        
-        aggregated_df = self.ml_service.aggregate_data_portion_with_stats_functions(df)
+        df = self.data_extraction_service.create_df_from_json_data(sensor_data)        
+        aggregated_df = self.data_extraction_service.aggregate_df_with_stats_functions(df)
+        profile_info, profile = self.get_latest_profile_for_device(device, 'UNLOCK')
 
-        return self.ml_service.predict(aggregated_df, device.id)
+        if profile_info is None or profile is None:
+            return None
         
-    def get_profile_model_and_file(self, device):
-        assert type(device) is Device
+        return self.ml_service.predict(profile, aggregated_df, device.id)
 
-        # TODO: get real profile
-        # profile_file = device.profilefile_set.order_by('-run__run_date').first()
-        # if profile_file is None:
-        #     return None, None
-        # profile = storage_service.get_file(profile_model.file_uri)
-        # return profile_file, profile
+    def get_latest_profile_for_device(self, device, profile_type):
+        latest_profile = device.profilefile_set.filter(profile_type = profile_type).order_by('-run__run_date').first()
 
-        try:
-            return ProfileFile(device = device, creation_date = timezone.now(), file_uri = '1234'), [[0, 0], [0, 0]]
-        except ProfileFile.DoesNotExist:
+        if latest_profile is None:
             return None, None
+        
+        profile_filename = self.storage_service.download_file(latest_profile.profile_file_uri)
+        profile = joblib.load(profile_filename)
+        os.remove(profile_filename)
+
+        return latest_profile, profile
+
+    def serialize_profile(self, profile):
+        estimator = profile.estimator_
+        support = profile.support_
+
+        porter = Porter(estimator, language='js')
+        serialized_profile = porter.export(embed_data=True)
+        serialized_support = json.dumps(support.tolist())
+        
+        return serialized_profile, serialized_support
 
     def create_profile_creation_run(self, run_date, parsed_event_files_uri, unlock_data_uri, checkpoint_data_uri):
         run = ProfileCreationRun(run_date = run_date, unlock_data_uri = unlock_data_uri, parsed_event_files_uri = parsed_event_files_uri, checkpoint_data_uri = checkpoint_data_uri)

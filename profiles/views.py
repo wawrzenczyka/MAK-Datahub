@@ -11,13 +11,14 @@ from core.services.device_service import DeviceService
 from core.services.profile_service import ProfileService
 from core.services.google_drive_service import GoogleDriveService
 from core.services.ml_service import MLService
+from core.services.data_extraction_service import DataExtractionService
 
 from core.utils import get_form_error_message
 
 __logger = logging.getLogger(__name__)
 __auth_service = SimpleAuthService()
 __device_service = DeviceService()
-__profile_service = ProfileService(MLService(), GoogleDriveService())
+__profile_service = ProfileService(MLService(), GoogleDriveService(), DataExtractionService())
 
 @csrf_exempt
 def get_profile(request):
@@ -43,10 +44,11 @@ def get_profile(request):
                 __logger.error(f'Get profile request DENIED for device ${device_id} - device not registered')
                 return JsonResponse({ 'error': f'Device ${device_id} is not registered' })
             
-            profile_model, profile = __profile_service.get_profile_model_and_file(device)
-            if (profile_model != None):
-                __logger.info(f'Get profile request for device ${device_id} - profile ready, created: ${profile_model.creation_date}')
-                return JsonResponse({ 'profile_ready': True, 'profile': profile, 'creation_date': profile_model.creation_date })
+            profile_info, profile = __profile_service.get_latest_profile_for_device(device, 'UNLOCK')
+            if (profile_info != None):
+                __logger.info(f'Get profile request for device ${device_id} - profile ready, created: ${profile_info.creation_date}')
+                serialized_profile, serialized_support = __profile_service.serialize_profile(profile)
+                return JsonResponse({ 'profile_ready': True, 'profile': serialized_profile, 'support': serialized_support, 'creation_date': profile_info.creation_date })
             else:
                 __logger.info(f'Get profile request for device ${device_id} - profile not ready')
                 return JsonResponse({ 'profile_ready': False })
