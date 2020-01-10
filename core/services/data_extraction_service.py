@@ -18,15 +18,16 @@ class DataExtractionService:
     def extract_events(self, event_file_path):
         unlocks = []
         screen_offs = []
-        try:
-            event_list = self.event_parser.parseFile(open(event_file_path, 'rb'))
-            for event in event_list:
-                if (event.EventType == EventType.USER_PRESENT):
-                    unlocks.append(event)
-                if (event.EventType == EventType.SCREEN_OFF):
-                    screen_offs.append(event)
-        except ValueError:
-            self.logger.error(f'Parsing error in file {event_file_path}')
+        if event_file_path is not None:
+            try:
+                event_list = self.event_parser.parseFile(open(event_file_path, 'rb'))
+                for event in event_list:
+                    if (event.EventType == EventType.SCREEN_ON):
+                        unlocks.append(event)
+                    if (event.EventType == EventType.SCREEN_OFF):
+                        screen_offs.append(event)
+            except ValueError:
+                self.logger.error(f'Parsing error in file {event_file_path}')
 
         return unlocks, screen_offs
 

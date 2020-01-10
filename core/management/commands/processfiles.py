@@ -124,7 +124,7 @@ class Command(BaseCommand):
 
                 if prev_sensor_file is None and index > 0 \
                         and ( \
-                            (event.EventType == EventType.USER_PRESENT and event_date - datetime.timedelta(milliseconds=self.PREUNLOCK_TIME) < sensor_files[index].start_date) \
+                            (event.EventType == EventType.SCREEN_ON and event_date - datetime.timedelta(milliseconds=self.PREUNLOCK_TIME) < sensor_files[index].start_date) \
                             or (event.EventType == EventType.CONTINUOUS_AUTH_CHECKPOINT and event_date - datetime.timedelta(milliseconds=self.CONTINUOUS_AUTH_INTERVAL) < sensor_files[index].start_date) \
                         ):
                     # download prev file
@@ -133,7 +133,7 @@ class Command(BaseCommand):
                         self.data_extraction_service.get_readings_from_sensor_files(prev_sensor_file)
 
                 if next_sensor_file is None and index < len(sensor_files) - 1 \
-                        and event.EventType == EventType.USER_PRESENT \
+                        and event.EventType == EventType.SCREEN_ON \
                         and event_date + datetime.timedelta(milliseconds=self.POSTUNLOCK_TIME) > sensor_files[index + 1].start_date:
                     # download next file
                     next_sensor_file = self.google_drive_service.download_file(sensor_files[index + 1].file_uri)
@@ -142,7 +142,7 @@ class Command(BaseCommand):
 
                 reading_list = prev_reading_list + current_reading_list + next_reading_list
 
-                if event.EventType == EventType.USER_PRESENT:
+                if event.EventType == EventType.SCREEN_ON:
                     unlock_df = self.data_extraction_service.create_df_from_readings(event_timestamp, reading_list, \
                         self.PREUNLOCK_TIME, self.POSTUNLOCK_TIME)
                     unlock_df = self.data_extraction_service.aggregate_df_with_stats_functions(unlock_df)
