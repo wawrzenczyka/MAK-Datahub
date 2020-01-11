@@ -68,7 +68,7 @@ class GoogleDriveService(AbstractFileStorageService):
         self.__upload_bytes(pickle.dumps(event_data), event_data_file)
         return event_data_file['id']
 
-    def upload_profile(self, selector, start_date, device_id, profile_type):
+    def save_profile(self, selector, start_date, device_id, profile_type):
         profiles_folder_id = self.__get_or_create_folder_id('profiles', None)
         current_profiles_folder_id = self.__get_or_create_folder_id(start_date.strftime("%Y%m%d_%H%M%S"), 
             profiles_folder_id)
