@@ -82,7 +82,8 @@ class Command(BaseCommand):
                 unlocks += file_unlocks
                 screen_offs += file_screen_offs
 
-            checkpoints = self.data_extraction_service.generate_continuous_auth_checkpoints(unlocks, screen_offs)
+            # checkpoints = self.data_extraction_service.generate_continuous_auth_checkpoints(unlocks, screen_offs)
+            checkpoints = []
             self.logger.info(f'Data processing: device {device.id}, {len(unlocks)} new unlocks')
             self.logger.info(f'Data processing: device {device.id}, {len(checkpoints)} new continuous data points')
 
@@ -180,7 +181,7 @@ class Command(BaseCommand):
                 checkpoint_data.append(device_checkpoint_data)
 
         unlock_data = self.data_extraction_service.transform_df_list_to_df(unlock_data)
-        checkpoint_data = self.data_extraction_service.transform_df_list_to_df(checkpoint_data)
+        # checkpoint_data = self.data_extraction_service.transform_df_list_to_df(checkpoint_data)
 
         # TODO: local profile saving
         # unlock_data.to_pickle('unlock_data.pkl')
@@ -202,8 +203,8 @@ class Command(BaseCommand):
         self.logger.info('Profile creation: creating unlock profiles...')
         self.profile_service.create_profiles(run, unlock_data, 'UNLOCK')
         self.logger.info('Profile creation: unlock profiles created')
-        self.logger.info('Profile creation: creating continuous profiles...')
-        self.profile_service.create_profiles(run, checkpoint_data, 'CONTINUOUS')
-        self.logger.info('Profile creation: continuous profiles created')
+        # self.logger.info('Profile creation: creating continuous profiles...')
+        # self.profile_service.create_profiles(run, checkpoint_data, 'CONTINUOUS')
+        # self.logger.info('Profile creation: continuous profiles created')
 
         self.logger.info('Profile creation finished...')
