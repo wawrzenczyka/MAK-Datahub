@@ -6,20 +6,17 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import UploadFileForm
-
-from core.services.simple_auth_service import SimpleAuthService
-from core.services.device_service import DeviceService
-from core.services.data_file_service import DataFileService
-from core.services.google_drive_service import GoogleDriveService
+from MAKDataHub.services import Services
 
 from core.utils import get_form_error_message
 
+from .forms import UploadFileForm
+
 __logger = logging.getLogger(__name__)
-__auth_service = SimpleAuthService()
-__device_service = DeviceService()
-__file_storage_service = GoogleDriveService()
-__data_file_service = DataFileService(__file_storage_service)
+__auth_service = Services.auth_service()
+__device_service = Services.device_service()
+__storage_service = Services.storage_service()
+__data_file_service = Services.data_file_service()
 
 def index(request):
     if request.method != 'GET':
@@ -40,7 +37,7 @@ def details(request, data_file_id):
     if data_file == None:
         return HttpResponse('File not found')
 
-    content = __file_storage_service.get_file(data_file.file_uri)
+    content = __storage_service.get_file(data_file.file_uri)
     
     response = HttpResponse(content, content_type="application/octet-stream")
     response['Content-Disposition'] = f'attachment; filename="{str(data_file)}.bin"'

@@ -4,21 +4,16 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import GetProfileForm, GetAuthResultForm
-
-from core.services.simple_auth_service import SimpleAuthService
-from core.services.device_service import DeviceService
-from core.services.profile_service import ProfileService
-from core.services.google_drive_service import GoogleDriveService
-from core.services.ml_service import MLService
-from core.services.data_extraction_service import DataExtractionService
+from MAKDataHub.services import Services
 
 from core.utils import get_form_error_message
 
+from .forms import GetProfileForm, GetAuthResultForm
+
 __logger = logging.getLogger(__name__)
-__auth_service = SimpleAuthService()
-__device_service = DeviceService()
-__profile_service = ProfileService(MLService(), GoogleDriveService(), DataExtractionService())
+__auth_service = Services.auth_service()
+__device_service = Services.device_service()
+__profile_service = Services.profile_service()
 
 @csrf_exempt
 def get_profile(request):

@@ -2,27 +2,22 @@ import logging, os, datetime, pytz, pickle
 
 from django.core.management.base import BaseCommand, CommandError
 
-from core.services.data_file_service import DataFileService
-from core.services.device_service import DeviceService
-from core.services.google_drive_service import GoogleDriveService
-from core.services.data_extraction_service import DataExtractionService
-from core.services.profile_service import ProfileService
-from core.services.ml_service import MLService
-from core.models import DataFile, Device
+from MAKDataHub.services import Services
 
 from ProfileCreator.parsers.event_parser import EventType
+from core.models import DataFile, Device
 
 class Command(BaseCommand):
     help = 'Performs data processing'
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.data_extraction_service = DataExtractionService()
-        self.device_service = DeviceService()
-        self.google_drive_service = GoogleDriveService()
-        self.data_file_service = DataFileService(self.google_drive_service)
-        self.ml_service = MLService()
-        self.profile_service = ProfileService(self.ml_service, self.google_drive_service, self.data_extraction_service)
+        self.data_extraction_service = Services.data_extraction_service()
+        self.data_file_service = Services.data_file_service()
+        self.device_service = Services.device_service()
+        self.storage = Services.storage_service()
+        self.ml_service = Services.ml_service()
+        self.profile_service = Services.profile_service()
 
         self.PREUNLOCK_TIME = 3000
         self.POSTUNLOCK_TIME = 1000
@@ -45,9 +40,9 @@ class Command(BaseCommand):
 
         last_run = self.profile_service.get_last_profile_creation_run()
         if last_run is not None:
-            parsed_event_files = pickle.loads(self.google_drive_service.get_file(last_run.parsed_event_files_uri))
-            unlock_data.append(pickle.loads(self.google_drive_service.get_file(last_run.unlock_data_uri)))
-            checkpoint_data.append(pickle.loads(self.google_drive_service.get_file(last_run.checkpoint_data_uri)))
+            parsed_event_files = pickle.loads(self.storage.get_file(last_run.parsed_event_files_uri))
+            unlock_data.append(pickle.loads(self.storage.get_file(last_run.unlock_data_uri)))
+            checkpoint_data.append(pickle.loads(self.storage.get_file(last_run.checkpoint_data_uri)))
 
         # TODO: local profile reading
         # if os.path.exists('unlocks.pkl'):
@@ -91,11 +86,11 @@ class Command(BaseCommand):
 
     def save_processing_results(self, processing_start_date, unlock_data, checkpoint_data, parsed_event_files):
         unlock_data_uri = \
-            self.google_drive_service.save_event_data(unlock_data, processing_start_date, 'unlock_data')
+            self.storage.save_event_data(unlock_data, processing_start_date, 'unlock_data')
         checkpoint_data_uri = \
-            self.google_drive_service.save_event_data(checkpoint_data, processing_start_date, 'checkpoint_data')
+            self.storage.save_event_data(checkpoint_data, processing_start_date, 'checkpoint_data')
         parsed_event_files_uri = \
-            self.google_drive_service.save_event_data(parsed_event_files, processing_start_date, 'parsed_event_files')
+            self.storage.save_event_data(parsed_event_files, processing_start_date, 'parsed_event_files')
 
         run = self.profile_service.create_profile_creation_run(processing_start_date, parsed_event_files_uri, unlock_data_uri, checkpoint_data_uri)
 
@@ -106,7 +101,7 @@ class Command(BaseCommand):
         screen_offs = []
 
         for ef in new_event_files:
-            filename = self.google_drive_service.download_file(ef.file_uri)
+            filename = self.storage.download_file(ef.file_uri)
             file_unlocks, file_screen_offs = self.data_extraction_service.extract_events(filename)
             os.remove(filename)
 
@@ -156,7 +151,7 @@ class Command(BaseCommand):
 
             if current_sensor_file is None:
                 # download current file
-                current_sensor_file = self.google_drive_service.download_file(sensor_files[index].file_uri)
+                current_sensor_file = self.storage.download_file(sensor_files[index].file_uri)
                 current_reading_list = \
                     self.data_extraction_service.get_readings_from_sensor_files(current_sensor_file)
 
@@ -166,7 +161,7 @@ class Command(BaseCommand):
                         or (event.EventType == EventType.CONTINUOUS_AUTH_CHECKPOINT and event_date - datetime.timedelta(milliseconds=self.CONTINUOUS_AUTH_INTERVAL) < sensor_files[index].start_date) \
                     ):
                 # download prev file
-                prev_sensor_file = self.google_drive_service.download_file(sensor_files[index - 1].file_uri)
+                prev_sensor_file = self.storage.download_file(sensor_files[index - 1].file_uri)
                 prev_reading_list = \
                     self.data_extraction_service.get_readings_from_sensor_files(prev_sensor_file)
 
@@ -174,7 +169,7 @@ class Command(BaseCommand):
                     and event.EventType == EventType.SCREEN_ON \
                     and event_date + datetime.timedelta(milliseconds=self.POSTUNLOCK_TIME) > sensor_files[index + 1].start_date:
                 # download next file
-                next_sensor_file = self.google_drive_service.download_file(sensor_files[index + 1].file_uri)
+                next_sensor_file = self.storage.download_file(sensor_files[index + 1].file_uri)
                 next_reading_list = \
                     self.data_extraction_service.get_readings_from_sensor_files(next_sensor_file)
 

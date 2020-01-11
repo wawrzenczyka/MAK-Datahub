@@ -2,14 +2,13 @@ import logging, os, math
 import numpy as np
 import pandas as pd
 
-from ProfileCreator.parsers.sensors_parser import SensorParser
-from ProfileCreator.parsers.event_parser import EventParser, EventType, EventReading
+from ProfileCreator.parsers.event_parser import EventType, EventReading
 
 class DataExtractionService:
-    def __init__(self):
+    def __init__(self, sensor_parser, event_parser):
         self.logger = logging.getLogger(__name__)
-        self.sensor_parser = SensorParser(open('ProfileCreator/parsers/sensor_config.json'))
-        self.event_parser = EventParser()
+        self.sensor_parser = sensor_parser
+        self.event_parser = event_parser
 
         self.PREUNLOCK_TIME = 3000
         self.POSTUNLOCK_TIME = 1000

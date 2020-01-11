@@ -7,24 +7,26 @@ import os
 
 class SensorParser:
     int4_max = 2**31 - 1 
-    def __init__(self, config_json: TextIO):
-        try:
-            config = json.load(config_json)
-            self.limits = config["limits"]
-        except:
-            raise ValueError("JSON is not valid")
-        if "acceleration" not in self.limits:
-            raise ValueError("Limits are not set correctly - acceleration missing")
-        if "magneticField" not in self.limits:
-            raise ValueError("Limits are not set correctly - magneticField missing")
-        if "gyroscope" not in self.limits:
-            raise ValueError("Limits are not set correctly - gyroscope missing")
-        if "gravity" not in self.limits:
-            raise ValueError("Limits are not set correctly - gravity missing")
-        if "linearAcceleration" not in self.limits:
-            raise ValueError("Limits are not set correctly - linearAcceleration missing")
-        if "rotation" not in self.limits:
-            raise ValueError("Limits are not set correctly - rotation missing")
+    
+    def __init__(self, config_json_path: str):
+        with open(config_json_path) as config_json:
+            try:
+                config = json.load(config_json)
+                self.limits = config["limits"]
+            except:
+                raise ValueError("JSON is not valid")
+            if "acceleration" not in self.limits:
+                raise ValueError("Limits are not set correctly - acceleration missing")
+            if "magneticField" not in self.limits:
+                raise ValueError("Limits are not set correctly - magneticField missing")
+            if "gyroscope" not in self.limits:
+                raise ValueError("Limits are not set correctly - gyroscope missing")
+            if "gravity" not in self.limits:
+                raise ValueError("Limits are not set correctly - gravity missing")
+            if "linearAcceleration" not in self.limits:
+                raise ValueError("Limits are not set correctly - linearAcceleration missing")
+            if "rotation" not in self.limits:
+                raise ValueError("Limits are not set correctly - rotation missing")
 
     def parseFile(self, file: BinaryIO) -> List[SensorReading]:
         if not is_opened_binary(file):

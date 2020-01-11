@@ -6,9 +6,9 @@ from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUpload
 from ..models import DataFile, Device
 
 class DataFileService:
-    def __init__(self, file_storage_service):
+    def __init__(self, storage_service):
         self.logger = logging.getLogger(__name__)
-        self.file_storage_service = file_storage_service
+        self.storage_service = storage_service
 
     def create_data_file(self, file_data, device, start_date, file_type):
         assert (type(file_data) is InMemoryUploadedFile or type(file_data) is TemporaryUploadedFile) and type(device) is Device and (type(start_date) is str or type(start_date) is datetime)
@@ -16,7 +16,7 @@ class DataFileService:
 
         data_file = DataFile(device = device, start_date = start_date, file_type = file_type)
         sensor_filename = f'{device.id}_{file_data.name}'
-        file_uri = self.file_storage_service.save_form_file(file_data, device.id, sensor_filename)
+        file_uri = self.storage_service.save_form_file(file_data, device.id, sensor_filename)
         data_file.file_uri = file_uri
         data_file.save()
         return data_file

@@ -1,3 +1,7 @@
+import logging, pickle, os
+
+from pathlib import Path
+
 from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 
@@ -24,11 +28,17 @@ class FileSystemService(AbstractFileStorageService):
         return file_id
     
     def save_event_data(self, event_data, start_date, filename):
-        path = f'event_info/{start_date.strftime("%Y%m%d_%H%M%S")}/{filename}.pkl'
-        pickle.dump(event_data, self.fs.open(path))
-        return self.fs.url(path)
+        dir = Path('event_info') / f'{start_date.strftime("%Y%m%d_%H%M%S")}'
+        dir.mkdir(exist_ok=True, parents=True)
+        path = dir / f'{filename}.pkl'
+        with path.open('wb') as f:
+            pickle.dump(event_data, f)
+            return str(path.resolve())
 
     def save_profile(self, selector, start_date, device_id, profile_type):
-        path = f'profiles/{start_date.strftime("%Y%m%d_%H%M%S")}/{device_id}_{profile_type}.joblib'
-        joblib.dump(selector, self.fs.open(path))
-        return self.fs.url(path)
+        dir = Path('profiles') / f'{start_date.strftime("%Y%m%d_%H%M%S")}'
+        dir.mkdir(exist_ok=True, parents=True)
+        path = dir / f'{device_id}_{profile_type}.joblib'
+        with path.open('wb') as f:
+            joblib.dump(selector, f)
+            return str(path.resolve())
