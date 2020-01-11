@@ -14,7 +14,7 @@ class ProfileService:
         self.storage_service = storage_service
         self.data_extraction_service = data_extraction_service
     
-    def authorize(self, device, sensor_data_string):
+    def authorize(self, device, profile_type, sensor_data_string):
         assert type(device) is Device
         assert type(sensor_data_string) is str
 
@@ -22,7 +22,7 @@ class ProfileService:
 
         df = self.data_extraction_service.create_df_from_json_data(sensor_data)        
         aggregated_df = self.data_extraction_service.aggregate_df_with_stats_functions(df)
-        profile_info, profile = self.get_latest_profile_for_device(device, 'UNLOCK')
+        profile_info, profile = self.get_latest_profile_for_device(device, profile_type)
 
         if profile_info is None or profile is None:
             return None

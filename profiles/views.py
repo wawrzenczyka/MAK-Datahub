@@ -28,6 +28,7 @@ def get_profile(request):
             app_token = form.cleaned_data['app_token']
             device_token = form.cleaned_data['device_token']
             device_id = form.cleaned_data['device_id']
+            profile_type = form.cleaned_data['profile_type']
 
             __logger.info(f'Get profile request for device ${device_id} received\n\tapp_token: ${app_token}\n\tdevice_token: ${device_token}')
 
@@ -44,7 +45,7 @@ def get_profile(request):
                 __logger.error(f'Get profile request DENIED for device ${device_id} - device not registered')
                 return JsonResponse({ 'error': f'Device ${device_id} is not registered' })
             
-            profile_info, profile = __profile_service.get_latest_profile_for_device(device, 'UNLOCK')
+            profile_info, profile = __profile_service.get_latest_profile_for_device(device, profile_type)
             if (profile_info != None):
                 __logger.info(f'Get profile request for device ${device_id} - profile ready, created: ${profile_info.run.run_date}')
                 serialized_profile, serialized_support = __profile_service.serialize_profile(profile)
@@ -72,6 +73,7 @@ def get_auth_result(request):
             device_token = form.cleaned_data['device_token']
             device_id = form.cleaned_data['device_id']
             sensor_data = form.cleaned_data['sensor_data']
+            profile_type = form.cleaned_data['profile_type']
 
             __logger.info(f'Get auth result request for device ${device_id} received\n\tapp_token: ${app_token}\n\tdevice_token: ${device_token}')
 
@@ -88,7 +90,7 @@ def get_auth_result(request):
                 __logger.error(f'Get auth result request DENIED for device ${device_id} - device not registered')
                 return JsonResponse({ 'error': f'Device ${device_id} is not registered' })
             
-            yes_proba = __profile_service.authorize(device, sensor_data)
+            yes_proba = __profile_service.authorize(device, profile_type, sensor_data)
             if (yes_proba != None):
                 __logger.info(f'Get auth result request for device ${device_id} - profile ready, probability of matching user: ${yes_proba * 100}%')
                 return JsonResponse({ 'profile_ready': True, 'matching_user_probability': yes_proba })

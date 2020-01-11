@@ -6,11 +6,13 @@ class GetProfileForm(forms.Form):
     device_id = forms.CharField(max_length=50)
     app_token = forms.CharField(max_length=36)
     device_token = forms.CharField(max_length=36)
+    profile_type = forms.CharField(max_length=20)
 
 class GetAuthResultForm(forms.Form):
     device_id = forms.CharField(max_length=50)
     app_token = forms.CharField(max_length=36)
     device_token = forms.CharField(max_length=36)
+    profile_type = forms.CharField(max_length=20)
     sensor_data = forms.CharField()
     
     def clean_sensor_data(self):
