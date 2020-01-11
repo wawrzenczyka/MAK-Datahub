@@ -26,7 +26,7 @@ class MLService:
 
         detailed_proba_log = ''
         for i in range(len(probabilities[0])):
-            detailed_proba_log += f'\n\tProbability of {bool(estimator.classes_[i])}: {probabilities[0][i] * 100}%'
+            detailed_proba_log += f'\n\tProbability of {bool(estimator.classes_[i])}: {round(probabilities[0][i] * 100, 2)}%'
         self.logger.info(f'Prediction for data from class ${expected_y} - predicted class ${bool(predicted_y)}' + detailed_proba_log)
         return yes_probability
 
@@ -44,7 +44,9 @@ class MLService:
         selector = RFE(classifier, n_features_to_select=10, step=1)
         selector = selector.fit(X_train, y_train)
 
-        self.logger.info(f'Profile creation: device {device_id}\n\tSelector score: {selector.score(X_test, y_test)}' 
+        self.logger.info(f'Profile creation: device {device_id}' \
+            + f'\n\tSelector score: {round(selector.score(X_test, y_test) * 100, 2)}%' 
+            + f'\n\tSelected features: {X.columns[selector.support_]}' 
             + f'\n\tClassification report:\n{classification_report(y_test, selector.predict(X_test))}')
 
         return selector
