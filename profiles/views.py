@@ -30,7 +30,7 @@ def get_profile(request):
             device_id = form.cleaned_data['device_id']
             profile_type = form.cleaned_data['profile_type']
 
-            __logger.info(f'Get profile request for device ${device_id} received\n\tapp_token: ${app_token}\n\tdevice_token: ${device_token}')
+            __logger.info(f'Get profile request for device ${device_id} received\n\tprofile_type: ${profile_type}\n\tapp_token: ${app_token}\n\tdevice_token: ${device_token}')
 
             if not __auth_service.verify_app_token(app_token):
                 __logger.error(f'Get profile request DENIED for device ${device_id} - application token ${app_token} is not valid')
@@ -75,7 +75,7 @@ def get_auth_result(request):
             sensor_data = form.cleaned_data['sensor_data']
             profile_type = form.cleaned_data['profile_type']
 
-            __logger.info(f'Get auth result request for device ${device_id} received\n\tprofile_type: ${profile_type}\n\tprofile_type: ${profile_type}\n\tapp_token: ${app_token}\n\tdevice_token: ${device_token}')
+            __logger.info(f'Get auth result request for device ${device_id} received\n\tprofile_type: ${profile_type}\n\tapp_token: ${app_token}\n\tdevice_token: ${device_token}')
 
             if not __auth_service.verify_app_token(app_token):
                 __logger.error(f'Get auth result request DENIED for device ${device_id} - application token ${app_token} is not valid')
