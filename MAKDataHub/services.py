@@ -5,7 +5,7 @@ from ProfileCreator.parsers.event_parser import EventParser
 from ProfileCreator.parsers.sensors_parser import SensorParser
 
 class Parsers(containers.DeclarativeContainer):
-    """IoC container of service providers."""
+    """IoC container of parser providers."""
     event_parser = providers.Factory(EventParser)
     sensor_parser = providers.Factory(SensorParser, config_json_path = 'ProfileCreator/parsers/sensor_config.json')
 
