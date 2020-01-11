@@ -48,7 +48,7 @@ class ProfileService:
         porter = Porter(estimator, language='js')
         serialized_profile = porter.export(embed_data=True)
         serialized_support = json.dumps(support.tolist())
-        
+
         return serialized_profile, serialized_support
 
     def create_profile_creation_run(self, run_date, parsed_event_files_uri, unlock_data_uri, checkpoint_data_uri):
@@ -72,7 +72,7 @@ class ProfileService:
                 continue
             
             selector = self.ml_service.rfe_rf_oversampled_10_features(X, y, device_id)
-            profile_file_uri = self.storage_service.upload_profile(selector, run.run_date, device_id, profile_type)
+            profile_file_uri = self.storage_service.save_profile(selector, run.run_date, device_id, profile_type)
             connection.close()
             profile_file = ProfileFile(device = Device.objects.get(id = device_id), profile_file_uri = profile_file_uri, run = run, profile_type = profile_type)
             profile_file.save()
