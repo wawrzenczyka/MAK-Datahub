@@ -16,7 +16,7 @@ class DataFileService:
 
         data_file = DataFile(device = device, start_date = start_date, file_type = file_type)
         sensor_filename = f'{device.id}_{file_data.name}'
-        file_uri = self.file_storage_service.save_file(file_data, device.id, sensor_filename)
+        file_uri = self.file_storage_service.save_form_file(file_data, device.id, sensor_filename)
         data_file.file_uri = file_uri
         data_file.save()
         return data_file
