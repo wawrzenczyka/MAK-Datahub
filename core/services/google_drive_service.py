@@ -35,7 +35,7 @@ class GoogleDriveService(AbstractFileStorageService):
     def save_form_file(self, f, folder, filename):
         assert (type(f) is InMemoryUploadedFile or type(f) is TemporaryUploadedFile) and type(folder) is str and type(filename) is str
         
-        self.__get_or_create_folder_id(folder, None)
+        folder_id = self.__get_or_create_folder_id(folder, None)
 
         drive_file = self.drive.CreateFile({ 'title': filename, "parents": [{ "kind": "drive#fileLink", "id": folder_id }] })
 
