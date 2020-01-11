@@ -46,9 +46,9 @@ def get_profile(request):
             
             profile_info, profile = __profile_service.get_latest_profile_for_device(device, 'UNLOCK')
             if (profile_info != None):
-                __logger.info(f'Get profile request for device ${device_id} - profile ready, created: ${profile_info.creation_date}')
+                __logger.info(f'Get profile request for device ${device_id} - profile ready, created: ${profile_info.run.run_date}')
                 serialized_profile, serialized_support = __profile_service.serialize_profile(profile)
-                return JsonResponse({ 'profile_ready': True, 'profile': serialized_profile, 'support': serialized_support, 'creation_date': profile_info.creation_date })
+                return JsonResponse({ 'profile_ready': True, 'profile': serialized_profile, 'support': serialized_support, 'creation_date': profile_info.run.run_date })
             else:
                 __logger.info(f'Get profile request for device ${device_id} - profile not ready')
                 return JsonResponse({ 'profile_ready': False })
