@@ -69,9 +69,9 @@ class ProfileService:
                     + f'not enough data ({sample_count}/{self.MIN_SAMPLES_TO_CREATE_PROFILE} samples) to create profile')
                 continue
 
-            current_profile_info = self.__get_latest_profile_info_for_device(device_service.get_device(device_id), profile_type)
+            current_profile_info = self.__get_latest_profile_info_for_device(self.device_service.get_device(device_id), profile_type)
             new_samples_count = sample_count
-            if latest_profile is not None:
+            if current_profile_info is not None:
                 new_samples_count -= current_profile_info.used_class_samples
 
             if new_samples_count < self.MIN_SAMPLES_TO_UPDATE_PROFILE:
