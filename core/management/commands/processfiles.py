@@ -19,9 +19,9 @@ class Command(BaseCommand):
         self.ml_service = Services.ml_service()
         self.profile_service = Services.profile_service()
 
-        self.PREUNLOCK_TIME = 3000
-        self.POSTUNLOCK_TIME = 1000
-        self.CONTINUOUS_AUTH_INTERVAL = 20000
+        self.PREUNLOCK_TIME = self.data_extraction_service.PREUNLOCK_TIME
+        self.POSTUNLOCK_TIME = self.data_extraction_service.POSTUNLOCK_TIME
+        self.CONTINUOUS_AUTH_INTERVAL = self.data_extraction_service.CONTINUOUS_AUTH_INTERVAL
 
     def add_arguments(self, parser):
         pass
