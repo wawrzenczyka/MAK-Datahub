@@ -55,9 +55,9 @@ class RFE10_RF100_SMOTE_MLService(AbstractMLService):
             + f'\n\tClassification report:\n{classification_report(y_test, selector.predict(X_test))}')
 
         report = classification_report(y_test, selector.predict(X_test), output_dict=True)
-        precision = report[1]['precision']
-        recall = report[1]['recall']
-        fscore = report[1]['f1-score']
+        precision = report['1']['precision']
+        recall = report['1']['recall']
+        fscore = report['1']['f1-score']
 
         return selector, score, precision, recall, fscore
 
