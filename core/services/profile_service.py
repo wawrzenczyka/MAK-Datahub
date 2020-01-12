@@ -69,6 +69,7 @@ class ProfileService:
                     + f'not enough data ({sample_count}/{self.MIN_SAMPLES_TO_CREATE_PROFILE} samples) to create profile')
                 continue
 
+            connection.close()
             current_profile_info = self.__get_latest_profile_info_for_device(self.device_service.get_device(device_id), profile_type)
             new_samples_count = sample_count
             if current_profile_info is not None:
@@ -81,9 +82,9 @@ class ProfileService:
             
             profile, score, precision, recall, fscore = self.ml_service.train(X, y, device_id)
             profile_file_uri = self.storage_service.save_profile(profile, run.run_date, device_id, profile_type)
-            connection.close()
             profile_file = ProfileFile(device = Device.objects.get(id = device_id), \
                 profile_file_uri = profile_file_uri, run = run, profile_type = profile_type, \
                 score = score, precision = precision, recall = recall, fscore = fscore, \
                 used_class_samples = sample_count)
+            connection.close()
             profile_file.save()
