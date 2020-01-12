@@ -28,7 +28,7 @@ class ProfileCreationRun(models.Model):
 
     def __str__(self):
         tz = timezone('Europe/Warsaw')
-        return f'RUN_{self.creation_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
+        return f'RUN_{self.run_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
 
 class ProfileFile(models.Model):
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
