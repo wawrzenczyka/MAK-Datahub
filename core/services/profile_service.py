@@ -3,8 +3,6 @@ import logging, json, joblib, os
 from django.utils import timezone # remove later after deleting the stub
 from django.db import connection
 
-from sklearn_porter import Porter
-
 from ..models import ProfileFile, Device, ProfileCreationRun
 
 class ProfileService:
@@ -20,7 +18,7 @@ class ProfileService:
 
         sensor_data = json.loads(sensor_data_string)
 
-        df = self.data_extraction_service.create_df_from_json_data(sensor_data)        
+        df = self.data_extraction_service.create_df_from_json_data(sensor_data)
         aggregated_df = self.data_extraction_service.aggregate_df_with_stats_functions(df)
         profile_info, profile = self.get_latest_profile_for_device(device, profile_type)
 
@@ -42,14 +40,7 @@ class ProfileService:
         return latest_profile, profile
 
     def serialize_profile(self, profile):
-        estimator = profile.estimator_
-        support = profile.support_
-
-        porter = Porter(estimator, language='js')
-        serialized_profile = porter.export(embed_data=True)
-        serialized_support = json.dumps(support.tolist())
-
-        return serialized_profile, serialized_support
+        return self.ml_service.serialize(profile)
 
     def create_profile_creation_run(self, run_date, parsed_event_files_uri, unlock_data_uri, checkpoint_data_uri):
         run = ProfileCreationRun(run_date = run_date, unlock_data_uri = unlock_data_uri, parsed_event_files_uri = parsed_event_files_uri, checkpoint_data_uri = checkpoint_data_uri)
@@ -63,16 +54,16 @@ class ProfileService:
     def create_profiles(self, run, profile_data, profile_type):
         X, y = profile_data.iloc[:, 0:-1], profile_data.iloc[:, -1]
         
-        min_samples = 10
+        min_samples = 100
 
         for device_id in y.unique():
-            sample_count = self.ml_service.get_class_sample_count(y, device_id)
+            sample_count = self.data_extraction_service.get_class_sample_count(y, device_id)
             if sample_count < min_samples:
                 self.logger.info(f'Profile creation: device {device_id}, not enough data ({sample_count} samples) to create profile')
                 continue
             
-            selector = self.ml_service.rfe_rf_oversampled_10_features(X, y, device_id)
-            profile_file_uri = self.storage_service.save_profile(selector, run.run_date, device_id, profile_type)
+            profile = self.ml_service.train(X, y, device_id)
+            profile_file_uri = self.storage_service.save_profile(profile, run.run_date, device_id, profile_type)
             connection.close()
             profile_file = ProfileFile(device = Device.objects.get(id = device_id), profile_file_uri = profile_file_uri, run = run, profile_type = profile_type)
             profile_file.save()

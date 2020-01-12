@@ -231,3 +231,6 @@ class DataExtractionService:
         if df is None:
             return None
         return df.assign(DeviceId = device_id)
+    
+    def get_class_sample_count(self, y, device_id):
+        return np.sum(y == device_id)
