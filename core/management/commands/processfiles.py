@@ -57,7 +57,7 @@ class Command(BaseCommand):
             if device.id not in parsed_event_files:
                 parsed_event_files[device.id] = set()
             new_event_files = [ef for ef in event_files if ef.id not in parsed_event_files[device.id]]
-            parsed_event_files[device.id] = parsed_event_files[device.id].union(set(new_event_files))
+            parsed_event_files[device.id] = parsed_event_files[device.id].union({ef.id for ef in new_event_files})
 
             events = self.get_events_from_files(device.id, new_event_files)
             device_unlock_data, device_checkpoint_data = self.process_events(device.id, events, sensor_files)
