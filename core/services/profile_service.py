@@ -31,6 +31,9 @@ class ProfileService:
         
         return self.ml_service.predict(profile, aggregated_df, device.id)
 
+    def get_last_profile_creation_run(self):
+        return ProfileCreationRun.objects.order_by('-run_date').first()
+
     def get_latest_profile_for_device(self, device, profile_type):
         latest_profile = self.__get_latest_profile_info_for_device(device, profile_type)
 
