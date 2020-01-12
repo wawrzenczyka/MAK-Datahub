@@ -43,4 +43,4 @@ class ProfileFile(models.Model):
 
     def __str__(self):
         tz = timezone('Europe/Warsaw')
-        return f'PROFILE_{self.device.id}_{self.run.creation_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
+        return f'PROFILE_{self.device.id}_{self.run.run_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
