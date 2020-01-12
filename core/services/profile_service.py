@@ -83,5 +83,6 @@ class ProfileService:
             profile_file_uri = self.storage_service.save_profile(profile, run.run_date, device_id, profile_type)
             connection.close()
             profile_file = ProfileFile(device = Device.objects.get(id = device_id), \
-                profile_file_uri = profile_file_uri, run = run, profile_type = profile_type)
+                profile_file_uri = profile_file_uri, run = run, profile_type = profile_type, \
+                used_class_sample = sample_count)
             profile_file.save()
