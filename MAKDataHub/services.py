@@ -12,7 +12,7 @@ class Parsers(containers.DeclarativeContainer):
 from core.services.data_extraction_service import DataExtractionService
 from core.services.data_file_service import DataFileService
 from core.services.device_service import DeviceService
-from core.services.google_drive_service import GoogleDriveService
+from core.services.storage_service import GoogleDriveService
 from core.services.ml_service import MLService
 from core.services.profile_service import ProfileService
 from core.services.simple_auth_service import SimpleAuthService

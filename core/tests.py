@@ -66,7 +66,7 @@ class DeviceServiceTestCase(TestCase):
 
 from .models import DataFile
 from .services.data_file_service import DataFileService
-from .services.google_drive_service import GoogleDriveService
+from .services.storage_service import GoogleDriveService
 
 import pytz, datetime
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
@@ -166,7 +166,7 @@ class DataFileServiceTestCase(TestCase):
 
 from .services.profile_service import ProfileService
 from .services.ml_service import MLService
-from .services.google_drive_service import GoogleDriveService
+from .services.storage_service import GoogleDriveService
 from .services.data_extraction_service import DataExtractionService
 
 import pandas as pd
