@@ -1,4 +1,4 @@
-import logging, os
+import logging, os, json
 import joblib
 
 import pandas as pd
@@ -48,12 +48,18 @@ class RFE10_RF100_SMOTE_MLService(AbstractMLService):
         selector = RFE(classifier, n_features_to_select=10, step=1)
         selector = selector.fit(X_train, y_train)
 
+        score = selector.score(X_test, y_test)
         self.logger.info(f'Profile creation: device {device_id}' \
-            + f'\n\tSelector score: {round(selector.score(X_test, y_test) * 100, 2)}%' 
+            + f'\n\tSelector score: {round(score * 100, 2)}%' 
             + f'\n\tSelected features: {X.columns[selector.support_]}' 
             + f'\n\tClassification report:\n{classification_report(y_test, selector.predict(X_test))}')
 
-        return selector
+        report = classification_report(y_test, selector.predict(X_test), output_dict=True)
+        precision = report[1]['precision']
+        recall = report[1]['recall']
+        fscore = report[1]['f1-score']
+
+        return selector, score, precision, recall, fscore
 
     def predict(self, estimator, x, expected_y):
         predicted_y = estimator.predict(x)

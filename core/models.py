@@ -36,6 +36,10 @@ class ProfileFile(models.Model):
     profile_file_uri = models.CharField(max_length=200)
     profile_type = models.CharField(max_length=20)
     used_class_samples = models.IntegerField()
+    score = models.FloatField()
+    precision = models.FloatField()
+    recall = models.FloatField()
+    fscore = models.FloatField()
 
     def __str__(self):
         tz = timezone('Europe/Warsaw')

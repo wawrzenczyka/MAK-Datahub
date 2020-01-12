@@ -79,10 +79,11 @@ class ProfileService:
                     + f'skipping updating profile (progress: {new_samples_count}/{self.MIN_SAMPLES_TO_UPDATE_PROFILE} new samples)')
                 continue
             
-            profile = self.ml_service.train(X, y, device_id)
+            profile, score, precision, recall, fscore = self.ml_service.train(X, y, device_id)
             profile_file_uri = self.storage_service.save_profile(profile, run.run_date, device_id, profile_type)
             connection.close()
             profile_file = ProfileFile(device = Device.objects.get(id = device_id), \
                 profile_file_uri = profile_file_uri, run = run, profile_type = profile_type, \
+                score = score, precision = precision, recall = recall, fscore = fscore, \
                 used_class_samples = sample_count)
             profile_file.save()
