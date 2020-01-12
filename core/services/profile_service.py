@@ -82,9 +82,11 @@ class ProfileService:
             
             profile, score, precision, recall, fscore = self.ml_service.train(X, y, device_id)
             profile_file_uri = self.storage_service.save_profile(profile, run.run_date, device_id, profile_type)
-            profile_file = ProfileFile(device = Device.objects.get(id = device_id), \
+            
+            connection.close()
+            device = self.device_service.get_device(device_id)
+            profile_file = ProfileFile(device = device, \
                 profile_file_uri = profile_file_uri, run = run, profile_type = profile_type, \
                 score = score, precision = precision, recall = recall, fscore = fscore, \
                 used_class_samples = sample_count)
-            connection.close()
             profile_file.save()

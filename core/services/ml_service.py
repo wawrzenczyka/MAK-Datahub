@@ -38,15 +38,12 @@ class RFE10_RF100_SMOTE_MLService(AbstractMLService):
         y_device = np.where(y == device_id, 1, 0)
         self.logger.info(f'Profile creation: device {device_id}, {np.sum(y_device)} class / {len(y_device)} total samples')
 
-        X_oversampled, y_oversampled = SMOTE().fit_resample(X, y_device)
-        self.logger.info(f'Profile creation (post-oversampling): device {device_id}, {np.sum(y_oversampled)} class / {len(y_oversampled)} total samples')
+        X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+        X_oversampled, y_oversampled = SMOTE().fit_resample(X_train, y_train)
 
-        X_train, X_test, y_train, y_test = train_test_split(X_oversampled, y_oversampled, test_size=0.2)
-
-        cv = StratifiedKFold(5)
         classifier = RandomForestClassifier(n_estimators = 100)
         selector = RFE(classifier, n_features_to_select=10, step=1)
-        selector = selector.fit(X_train, y_train)
+        selector = selector.fit(X_oversampled, y_oversampled)
 
         score = selector.score(X_test, y_test)
         self.logger.info(f'Profile creation: device {device_id}' \
