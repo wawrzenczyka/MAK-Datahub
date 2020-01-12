@@ -26,4 +26,5 @@ class Services(containers.DeclarativeContainer):
 
     data_extraction_service = providers.Factory(DataExtractionService, event_parser = Parsers.event_parser, sensor_parser = Parsers.sensor_parser)
     data_file_service = providers.Factory(DataFileService, storage_service = storage_service)
-    profile_service = providers.Factory(ProfileService, ml_service = ml_service, storage_service = storage_service, data_extraction_service = data_extraction_service)
+    profile_service = providers.Factory(ProfileService, ml_service = ml_service, storage_service = storage_service, \
+        data_extraction_service = data_extraction_service, device_service = device_service)

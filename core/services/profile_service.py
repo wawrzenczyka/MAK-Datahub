@@ -6,11 +6,12 @@ from django.db import connection
 from ..models import ProfileFile, Device, ProfileCreationRun
 
 class ProfileService:
-    def __init__(self, ml_service, storage_service, data_extraction_service):
+    def __init__(self, ml_service, storage_service, data_extraction_service, device_service):
         self.logger = logging.getLogger(__name__)
         self.ml_service = ml_service
         self.storage_service = storage_service
         self.data_extraction_service = data_extraction_service
+        self.device_service = device_service
     
     def authorize(self, device, profile_type, sensor_data_string):
         assert type(device) is Device
@@ -28,7 +29,7 @@ class ProfileService:
         return self.ml_service.predict(profile, aggregated_df, device.id)
 
     def get_latest_profile_for_device(self, device, profile_type):
-        latest_profile = device.profilefile_set.filter(profile_type = profile_type).order_by('-run__run_date').first()
+        latest_profile = self.__get_latest_profile_info_for_device(device, profile_type)
 
         if latest_profile is None:
             return None, None
@@ -39,6 +40,9 @@ class ProfileService:
 
         return latest_profile, profile
 
+    def __get_latest_profile_info_for_device(self, device, profile_type):
+        return device.profilefile_set.filter(profile_type = profile_type).order_by('-run__run_date').first()
+
     def serialize_profile(self, profile):
         return self.ml_service.serialize(profile)
 
@@ -48,9 +52,6 @@ class ProfileService:
         run.save()
         return run
 
-    def get_last_profile_creation_run(self):
-        return ProfileCreationRun.objects.order_by('-run_date').first()
-
     def create_profiles(self, run, profile_data, profile_type):
         X, y = profile_data.iloc[:, 0:-1], profile_data.iloc[:, -1]
         
@@ -59,7 +60,16 @@ class ProfileService:
         for device_id in y.unique():
             sample_count = self.data_extraction_service.get_class_sample_count(y, device_id)
             if sample_count < min_samples:
-                self.logger.info(f'Profile creation: device {device_id}, not enough data ({sample_count} samples) to create profile')
+                self.logger.info(f'Profile creation: device {device_id}, not enough data ({sample_count}/{min_samples} samples) to create profile')
+                continue
+
+            current_profile_info = self.__get_latest_profile_info_for_device(device_service.get_device(device_id), profile_type)
+            new_samples_count = sample_count
+            if latest_profile is not None:
+                new_samples_count -= current_profile_info.used_class_samples
+
+            if new_samples_count < min_samples:
+                self.logger.info(f'Profile creation: device {device_id}, skipping updating profile (progress: {new_samples_count}/{min_samples} new samples)')
                 continue
             
             profile = self.ml_service.train(X, y, device_id)

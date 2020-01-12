@@ -35,6 +35,7 @@ class ProfileFile(models.Model):
     run = models.ForeignKey(ProfileCreationRun, on_delete=models.CASCADE)
     profile_file_uri = models.CharField(max_length=200)
     profile_type = models.CharField(max_length=20)
+    used_class_samples = models.IntegerField()
 
     def __str__(self):
         tz = timezone('Europe/Warsaw')

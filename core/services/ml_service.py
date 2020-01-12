@@ -17,7 +17,6 @@ from sklearn_porter import Porter
 
 from imblearn.over_sampling import SMOTE
 
-
 class AbstractMLService(ABC):
     @abstractmethod
     def train(self, X, y, device_id):
