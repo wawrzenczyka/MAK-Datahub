@@ -93,7 +93,7 @@ DATABASES = {
         'NAME': 'mak-database',
         'USER': 'admin',
         'PASSWORD': 'admin123$',
-        'HOST': 'makengineering.mysql.pythonanywhere-services.com',
+        'HOST': 'mak-database.cnslitlzorh7.us-east-1.rds.amazonaws.com',
     }
 }
 
