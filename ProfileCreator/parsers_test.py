@@ -10,8 +10,8 @@ class SensorParserTests(unittest.TestCase):
 
     def setUp(self):
         self._files_test_data = [
-            "unittests\\data\\good_sensor_data_1.bin",
-            "unittests\\data\\good_sensor_data_2.bin"
+            "unittests/data/good_sensor_data_1.bin",
+            "unittests/data/good_sensor_data_2.bin"
             #"data\\good_sensor_data_3.bin"
         ]
 
@@ -30,20 +30,25 @@ class SensorParserTests(unittest.TestCase):
             readings_3
         ]
 
-        self._empty_file = "unittests\\data\\empty.bin"
-        self._eight_zeros_file = "unittests\\data\\eight_zeros.bin"
-        self._eight_zeros_in_the_middle_file = "unittests\\data\\eight_zeros_in_the_middle.bin"
-        self._no_eight_zeros_file = "unittests\\data\\no_eight_zeros.bin"
-        self._incorrect_formating_file = "unittests\\data\\incorrect_formatting.bin"
-        self._correct_config_file = "unittests\\data\\sensor_config.json"
-        self._empty_config_file = "unittests\\data\\sensor_config_empty.json"
-        self._config_no_acceleration_file = "unittests\\data\\sensor_config_no_acceleration.json"
-        self._config_no_magnetic_field_file = "unittests\\data\\sensor_config_no_magnetic_field.json"
-        self._config_no_gyroscope_file = "unittests\\data\\sensor_config_no_gyroscope.json"
-        self._config_no_gravity_file = "unittests\\data\\sensor_config_no_gravity.json"
-        self._config_no_linear_acceleration_file = "unittests\\data\\sensor_config_no_linear_acceleration.json"
-        self._config_no_rotation_file = "unittests\\data\\sensor_config_no_rotation.json"
-        self._temp_dir = "unittests\\data\\tmp"
+        self._empty_file = "unittests/data/empty.bin"
+        self._eight_zeros_file = "unittests/data/eight_zeros.bin"
+        self._eight_zeros_in_the_middle_file = "unittests/data/eight_zeros_in_the_middle.bin"
+        self._no_eight_zeros_file = "unittests/data/no_eight_zeros.bin"
+        self._incorrect_formating_file = "unittests/data/incorrect_formatting.bin"
+        self._correct_config_file = "unittests/data/sensor_config.json"
+        self._empty_config_file = "unittests/data/sensor_config_empty.json"
+        self._config_no_acceleration_file = "unittests/data/sensor_config_no_acceleration.json"
+        self._config_no_magnetic_field_file = "unittests/data/sensor_config_no_magnetic_field.json"
+        self._config_no_gyroscope_file = "unittests/data/sensor_config_no_gyroscope.json"
+        self._config_no_gravity_file = "unittests/data/sensor_config_no_gravity.json"
+        self._config_no_linear_acceleration_file = "unittests/data/sensor_config_no_linear_acceleration.json"
+        self._config_no_rotation_file = "unittests/data/sensor_config_no_rotation.json"
+        self._temp_dir = "unittests/data/tmp"
+
+        try:
+            os.mkdir(self.relativeFilename(self._temp_dir))
+        except FileExistsError:
+            pass
         
 
     def tearDown(self):
