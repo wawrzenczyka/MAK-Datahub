@@ -25,7 +25,7 @@ SECRET_KEY = 'k)rie=jguysq9!x54z1*13v32om-i$qiptr8)v#a91_+d5q000'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['makengineering.pythonanywhere.com', '127.0.0.1']
+ALLOWED_HOSTS = ['makengineering.pythonanywhere.com', '127.0.0.1', '.execute-api.us-east-2.amazonaws.com']
 
 
 # Application definition
