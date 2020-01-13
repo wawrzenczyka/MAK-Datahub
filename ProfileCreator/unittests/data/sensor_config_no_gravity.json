@@ -1,9 +1,0 @@
-{
-    "limits" : {
-        "acceleration" : 32.0,
-        "magneticField": 500.0,
-        "gyroscope": 100.0,
-        "linearAcceleration": 32.0,
-        "rotation": 10.0
-    }
-}
