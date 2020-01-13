@@ -2,10 +2,11 @@
     "production": {
         "django_settings": "MAKDataHub.settings",
         "profile_name": "default",
-        "project_name": "makdatahub",
+        "project_name": "makdatahub_v2",
         "runtime": "python3.6",
         "s3_bucket": "zappa-mak-datahub",
         "aws_region": "us-east-1",
-        "slim_handler": true
+        "slim_handler": true,
+        "use_precompiled_packages": false
     }
 }
