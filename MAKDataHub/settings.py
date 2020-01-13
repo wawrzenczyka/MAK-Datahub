@@ -90,10 +90,10 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mak-database',
+        'NAME': 'makdb',
         'USER': 'admin',
-        'PASSWORD': 'admin123$',
-        'HOST': 'mak-database.cnslitlzorh7.us-east-1.rds.amazonaws.com',
+        'PASSWORD': 'Admin123$',
+        'HOST': 'mak-db-server.cnslitlzorh7.us-east-1.rds.amazonaws.com',
     }
 }
 
