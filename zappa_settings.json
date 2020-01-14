@@ -7,6 +7,6 @@
         "s3_bucket": "zappa-mak-datahub",
         "aws_region": "us-east-1",
         "slim_handler": true,
-        "use_precompiled_packages": false
+        "use_precompiled_packages": true
     }
 }
