@@ -3,7 +3,7 @@ import logging, json, joblib, os
 from django.utils import timezone # remove later after deleting the stub
 from django.db import connection
 
-from ..models import ProfileFile, Device, ProfileCreationRun
+from ..models import ProfileInfo, Device, ProfileCreationRun
 
 class ProfileService:
     def __init__(self, ml_service, storage_service, data_extraction_service, device_service):
@@ -83,7 +83,7 @@ class ProfileService:
             
             connection.close()
             device = self.device_service.get_device(device_id)
-            profile_file = ProfileFile(device = device, \
+            profile_file = ProfileInfo(device = device, \
                 profile_file_uri = profile_file_uri, run = run, profile_type = profile_type, \
                 score = score, precision = precision, recall = recall, fscore = fscore, \
                 used_class_samples = sample_count)

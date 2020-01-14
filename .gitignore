@@ -108,3 +108,6 @@ venv.bak/
 
 # Test sets
 /t
+
+media/
+token.json

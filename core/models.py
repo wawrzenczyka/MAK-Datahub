@@ -1,5 +1,6 @@
 from tzlocal import get_localzone
 from pytz import timezone
+from enum import Enum
 
 from django.db import models
 
@@ -10,31 +11,48 @@ class Device(models.Model):
     def __str__(self):
         return f'Device {self.id}'
 
-class DataFile(models.Model):
-    file_uri = models.CharField(max_length=200)
+class DataFileInfo(models.Model):
+    class DataFileType(Enum):
+        Event = 'Event'
+        Sensor = 'Sensor'
+    
+    def generate_data_path(self, filename):
+        return f'data/{self.device.id}/{filename}'
+    
+    data = models.FileField(upload_to=generate_data_path)
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
     start_date = models.DateTimeField()
-    file_type = models.CharField(max_length=1)
+    file_type = models.CharField(max_length=20, choices=[(tag, tag.value) for tag in DataFileType])
 
     def __str__(self):
         tz = timezone('Europe/Warsaw')
         return f'{self.file_type}_{self.device.id}_{self.start_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
 
 class ProfileCreationRun(models.Model):
+    def generate_file_path(self, filename):
+        return f'event_info/{self.run_date.strftime("%Y%m%d_%H%M%S")}/{filename}'
+    
     run_date = models.DateTimeField()
-    parsed_event_files_uri = models.CharField(max_length=200)
-    unlock_data_uri = models.CharField(max_length=200)
-    checkpoint_data_uri = models.CharField(max_length=200)
+    parsed_event_files = models.FileField(upload_to=generate_file_path)
+    unlock_data = models.FileField(upload_to=generate_file_path)
+    checkpoint_data = models.FileField(upload_to=generate_file_path)
 
     def __str__(self):
         tz = timezone('Europe/Warsaw')
-        return f'RUN_{self.run_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
+        return f'Run_{self.run_date.astimezone(tz).strftime("%Y%m%d_%H%M%S")}'
 
-class ProfileFile(models.Model):
+class ProfileInfo(models.Model):
+    class ProfileType(Enum):
+        Unlock = 'Unlock'
+        Continuous = 'Continuous'
+    
+    def generate_profile_path(self, filename):
+        return f'profiles/{self.run.run_date.strftime("%Y%m%d_%H%M%S")}/{filename}'
+    
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
     run = models.ForeignKey(ProfileCreationRun, on_delete=models.CASCADE)
-    profile_file_uri = models.CharField(max_length=200)
-    profile_type = models.CharField(max_length=20)
+    profile_file = models.FileField(upload_to=generate_profile_path)
+    profile_type = models.CharField(max_length=20, choices=[(tag, tag.value) for tag in ProfileType])
     used_class_samples = models.IntegerField()
     score = models.FloatField()
     precision = models.FloatField()

@@ -64,7 +64,7 @@ class DeviceServiceTestCase(TestCase):
         with self.assertRaises(ValueError):
             self.device_service.create_device(device_id)
 
-from .models import DataFile
+from .models import DataFileInfo
 from .services.data_file_service import DataFileService
 from .services.storage_service import GoogleDriveService
 
@@ -78,9 +78,9 @@ class DataFileServiceTestCase(TestCase):
         self.mockDevice = Device(id = '1', token = '1234')
         self.mockDevice.save()
 
-        self.mockDataFile1 = DataFile(id = 1, file_uri = "drive_id_1", device = self.mockDevice, file_type = 'S', \
+        self.mockDataFile1 = DataFileInfo(id = 1, file_uri = "drive_id_1", device = self.mockDevice, file_type = 'S', \
             start_date = datetime.datetime(2013, 11, 20, 20, 8, 7, 127325, tzinfo=pytz.UTC))
-        self.mockDataFile2 = DataFile(id = 2, file_uri = "drive_id_2", device = self.mockDevice, file_type = 'E', \
+        self.mockDataFile2 = DataFileInfo(id = 2, file_uri = "drive_id_2", device = self.mockDevice, file_type = 'E', \
             start_date = datetime.datetime(2019, 1, 1, 12, 0, 0, 0, tzinfo=pytz.UTC))
 
         self.mockDataFile1.save()
@@ -117,7 +117,7 @@ class DataFileServiceTestCase(TestCase):
 
         data_file = self.data_file_service.get_data_file(data_file_id)
 
-        self.assertIsInstance(data_file, DataFile)
+        self.assertIsInstance(data_file, DataFileInfo)
         self.assertEqual(data_file, self.mockDataFile1)
         
     # create_data_file
@@ -149,7 +149,7 @@ class DataFileServiceTestCase(TestCase):
 
         data_file = self.data_file_service.create_data_file(correct_file_data, correct_device, correct_start_date, correct_file_type)
 
-        self.assertIsInstance(data_file, DataFile)
+        self.assertIsInstance(data_file, DataFileInfo)
         self.assertEqual(data_file.file_type, correct_file_type)
         self.assertEqual(data_file.device, correct_device)
         self.assertIsNotNone(data_file.file_uri)

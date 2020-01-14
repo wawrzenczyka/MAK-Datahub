@@ -1,8 +1,8 @@
-import logging, os, json
-import joblib
-
+import logging, os, json, joblib
 import pandas as pd
 import numpy as np
+
+from django.core.files.storage import default_storage
 
 from abc import ABC, abstractmethod
 
@@ -72,6 +72,17 @@ class RFE10_RF100_SMOTE_MLService(AbstractMLService):
         return yes_probability
 
     def serialize(self, profile):
+        estimator = profile.estimator_
+        support = profile.support_
+
+        porter = Porter(estimator, language='js')
+        serialized_profile = porter.export(embed_data=True)
+        serialized_support = json.dumps(support.tolist())
+
+        return serialized_profile, serialized_support
+
+    def serialize_joblib(self, profile_info):
+        profile = joblib.load(profile_info)
         estimator = profile.estimator_
         support = profile.support_
 

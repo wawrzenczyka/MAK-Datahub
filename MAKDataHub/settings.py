@@ -25,7 +25,7 @@ SECRET_KEY = 'k)rie=jguysq9!x54z1*13v32om-i$qiptr8)v#a91_+d5q000'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['makengineering.pythonanywhere.com', '127.0.0.1', '.execute-api.us-east-1.amazonaws.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.pythonanywhere.com', '.execute-api.us-east-1.amazonaws.com']
 
 
 # Application definition
@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -77,10 +79,10 @@ WSGI_APPLICATION = 'MAKDataHub.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME': 'makengineering$makdb',
@@ -88,13 +90,13 @@ DATABASES = {
     #     'PASSWORD': 'admin123$',
     #     'HOST': 'makengineering.mysql.pythonanywhere-services.com',
     # }
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'makdb',
-        'USER': 'admin',
-        'PASSWORD': 'Admin123$',
-        'HOST': 'mak-db-server.cnslitlzorh7.us-east-1.rds.amazonaws.com',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'makdb',
+    #     'USER': 'admin',
+    #     'PASSWORD': 'Admin123$',
+    #     'HOST': 'mak-db-server.cnslitlzorh7.us-east-1.rds.amazonaws.com',
+    # }
 }
 
 
@@ -177,3 +179,14 @@ LOGGING = {
         },
     },
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# AWS_S3_SECURE_URLS = False       # use http instead of https
+# AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
+
+# AWS_STORAGE_BUCKET_NAME = 'makdatahub.media'

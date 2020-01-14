@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 from MAKDataHub.services import Services
 
 from ProfileCreator.parsers.event_parser import EventType
-from core.models import DataFile, Device
+from core.models import DataFileInfo, Device
 
 class Command(BaseCommand):
     help = 'Performs data processing'

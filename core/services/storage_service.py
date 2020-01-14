@@ -197,7 +197,7 @@ from pathlib import Path
 from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 
-class FileSystemService(AbstractFileStorageService):
+class LocalFileSystemService(AbstractFileStorageService):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.fs = FileSystemStorage()
