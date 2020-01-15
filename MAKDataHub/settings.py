@@ -87,10 +87,10 @@ WSGI_APPLICATION = 'MAKDataHub.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME': 'makengineering$makdb',
@@ -98,13 +98,13 @@ DATABASES = {
     #     'PASSWORD': 'admin123$',
     #     'HOST': 'makengineering.mysql.pythonanywhere-services.com',
     # }
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'makdb',
-    #     'USER': 'admin',
-    #     'PASSWORD': 'Admin123$',
-    #     'HOST': 'mak-db-server.cnslitlzorh7.us-east-1.rds.amazonaws.com',
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'makdb',
+        'USER': 'admin',
+        'PASSWORD': 'Admin123$',
+        'HOST': 'mak-db-server.cnslitlzorh7.us-east-1.rds.amazonaws.com',
+    }
 }
 
 
