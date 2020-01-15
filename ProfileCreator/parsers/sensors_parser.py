@@ -29,8 +29,8 @@ class SensorParser:
                 raise ValueError("Limits are not set correctly - rotation missing")
 
     def parseFile(self, file: BinaryIO) -> List[SensorReading]:
-        if not is_opened_binary(file):
-            raise ValueError("file is not opened as a binary stream")
+        # if not is_opened_binary(file):
+        #     raise ValueError("file is not opened as a binary stream")
         return self.parseData(file.read())
 
     def parseData(self, data: bytes) -> List[SensorReading]:

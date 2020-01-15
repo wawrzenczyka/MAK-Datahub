@@ -10,27 +10,24 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
     )
     class Meta:
         model = Device
-        fields = ['user', 'id', 'datafileinfo_set', 'profileinfo_set']
-        read_only_fields = ['datafileinfo_set', 'profileinfo_set']
+        fields = ['id', 'android_id', 'user', 'datafileinfo_set', 'profileinfo_set']
+        read_only_fields = ['id', 'user', 'datafileinfo_set', 'profileinfo_set']
 
 class DeviceSimpleSerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.HiddenField(
-        default=serializers.CurrentUserDefault()
-    )
     class Meta:
         model = Device
-        fields = ['user', 'id']
+        fields = ['id', 'android_id']
 
 class DataFileInfoSerializer(serializers.ModelSerializer):
     file_type = serializers.ChoiceField(choices = [tag.value for tag in DataFileInfo.DataFileType])
     class Meta:
         model = DataFileInfo
-        fields = ['device', 'file_type', 'start_date', 'data']
+        fields = ['id', 'device', 'file_type', 'start_date', 'data']
 
 class ProfileCreationRunSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProfileCreationRun
-        fields = ['run_date', 'parsed_event_files', 'unlock_data', 'checkpoint_data', 'profileinfo_set']
+        fields = ['id', 'run_date', 'parsed_event_files', 'unlock_data', 'checkpoint_data', 'profileinfo_set']
 
 class ProfileInfoSerializer(serializers.HyperlinkedModelSerializer):
     profile_type = serializers.ChoiceField(choices = [tag.value for tag in ProfileInfo.ProfileType])
@@ -61,8 +58,8 @@ class ProfileDataSerializer(serializers.ModelSerializer):
         return support
 
 class AuthorizeDataSerializer(serializers.Serializer):
-    device_id = serializers.CharField()
-    profile_type = serializers.CharField()
+    device = serializers.PrimaryKeyRelatedField(queryset = Device.objects.all())
+    profile_type = serializers.ChoiceField(choices = [tag.value for tag in ProfileInfo.ProfileType])
     sensor_data = serializers.CharField()
     
     def validate_sensor_data(self, obj):

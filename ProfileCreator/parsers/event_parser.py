@@ -8,8 +8,8 @@ class EventParser:
         pass
 
     def parseFile(self, file: BinaryIO) -> List[EventReading]:
-        if not is_opened_binary(file):
-            raise ValueError("file is not opened as a binary stream")
+        # if not is_opened_binary(file):
+        #     raise ValueError("file is not opened as a binary stream")
         return self.parseData(file.read())
 
     def parseData(self, data: bytes) -> List[EventReading]:

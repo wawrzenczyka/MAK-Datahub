@@ -24,13 +24,13 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
         return view.action in ['retrieve', 'update', 'partial_update'] and obj.user.id == request.user.id or request.user.is_staff
 
 class DeviceViewSet(viewsets.ModelViewSet):
-    authentication_classes = (authentication.TokenAuthentication,)
+    # authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, AnonCreateAndUpdateOwnerOnly,)
     serializer_class = DeviceSerializer
     queryset = Device.objects.all()
 
 class UserDevices(viewsets.GenericViewSet, mixins.ListModelMixin):
-    authentication_classes = (authentication.TokenAuthentication,)
+    # authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = DeviceSimpleSerializer
     def get_queryset(self):
@@ -39,25 +39,25 @@ class UserDevices(viewsets.GenericViewSet, mixins.ListModelMixin):
         return qs
 
 class DataFileInfoViewSet(viewsets.ModelViewSet):
-    authentication_classes = (authentication.TokenAuthentication,)
+    # authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
     serializer_class = DataFileInfoSerializer
     queryset = DataFileInfo.objects.all()
 
 class ProfileCreationRunViewSet(viewsets.ModelViewSet):
-    authentication_classes = (authentication.TokenAuthentication,)
+    # authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
     serializer_class = ProfileCreationRunSerializer
     queryset = ProfileCreationRun.objects.all()
 
 class ProfileInfoViewSet(viewsets.ModelViewSet):
-    authentication_classes = (authentication.TokenAuthentication,)
+    # authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
     serializer_class = ProfileInfoSerializer
     queryset = ProfileInfo.objects.all()
 
 class DeviceProfileInfos(viewsets.GenericViewSet, mixins.ListModelMixin):
-    authentication_classes = (authentication.TokenAuthentication,)
+    # authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
     serializer_class = ProfileInfoSerializer
 
@@ -71,7 +71,7 @@ class LatestDeviceProfileInfo(generics.RetrieveAPIView):
         def has_object_permission(self, request, view, obj):
             return obj.device.user.id == request.user.id or request.user.is_staff
     
-    authentication_classes = (authentication.TokenAuthentication,)
+    # authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, IsOwnerOrStaff)
     serializer_class = ProfileInfoSimpleSerializer
     queryset = ProfileInfo.objects.all()
@@ -90,7 +90,7 @@ class RetrieveProfileData(generics.RetrieveAPIView):
         def has_object_permission(self, request, view, obj):
             return obj.device.user.id == request.user.id or request.user.is_staff
 
-    authentication_classes = (authentication.TokenAuthentication,)
+    # authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, IsOwnerOrStaff)
     serializer_class = ProfileDataSerializer
     queryset = ProfileInfo.objects.all()
@@ -105,7 +105,7 @@ class RetrieveProfileData(generics.RetrieveAPIView):
             raise status.HTTP_404_NOT_FOUND
 
 class AuthorizeEndpoint(views.APIView):
-    authentication_classes = (authentication.TokenAuthentication,)
+    # authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, )
 
     def __init__(self, *args, **kwargs):
@@ -119,11 +119,10 @@ class AuthorizeEndpoint(views.APIView):
     def post(self, request, format=None):
         serializer = AuthorizeDataSerializer(data=request.data)
         if serializer.is_valid():
-            device_id = serializer.data['device_id']
+            device = serializer.data['device']
             sensor_data = serializer.data['sensor_data']
             profile_type = serializer.data['profile_type']
 
-            device = get_object_or_404(Device, id = device_id)
             yes_proba = self.profile_service.authorize(device, profile_type, sensor_data)
             if (yes_proba != None):
                 response = { 'profile_ready': True, 'matching_user_probability': yes_proba }

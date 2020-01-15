@@ -12,19 +12,17 @@ class Parsers(containers.DeclarativeContainer):
 from core.services.data_extraction_service import DataExtractionService
 from core.services.data_file_service import DataFileService
 from core.services.device_service import DeviceService
-from core.services.storage_service import GoogleDriveService, LocalFileSystemService
+from core.services.storage_service import StorageService
 from core.services.ml_service import RFE10_RF100_SMOTE_MLService
 from core.services.profile_service import ProfileService
-from core.services.simple_auth_service import SimpleAuthService
 
 class Services(containers.DeclarativeContainer):
     """IoC container of service providers."""
-    auth_service = providers.Factory(SimpleAuthService)
     device_service = providers.Factory(DeviceService)
     ml_service = providers.Factory(RFE10_RF100_SMOTE_MLService)
-    storage_service = providers.Factory(GoogleDriveService)
+    storage_service = providers.Factory(StorageService)
+    data_file_service = providers.Factory(DataFileService)
 
     data_extraction_service = providers.Factory(DataExtractionService, event_parser = Parsers.event_parser, sensor_parser = Parsers.sensor_parser)
-    data_file_service = providers.Factory(DataFileService, storage_service = storage_service)
     profile_service = providers.Factory(ProfileService, ml_service = ml_service, storage_service = storage_service, \
         data_extraction_service = data_extraction_service, device_service = device_service)

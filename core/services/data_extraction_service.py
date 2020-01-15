@@ -14,28 +14,30 @@ class DataExtractionService:
         self.POSTUNLOCK_TIME = 1000
         self.CONTINUOUS_AUTH_INTERVAL = 20000
 
-    def extract_events(self, event_file_path):
+    def extract_events(self, event_file):
         unlocks = []
         screen_offs = []
-        if event_file_path is not None:
+        if event_file is not None:
             try:
-                event_list = self.event_parser.parseFile(open(event_file_path, 'rb'))
-                for event in event_list:
-                    if (event.EventType == EventType.SCREEN_ON):
-                        unlocks.append(event)
-                    if (event.EventType == EventType.SCREEN_OFF):
-                        screen_offs.append(event)
+                with event_file.open('rb') as f:
+                    event_list = self.event_parser.parseFile(f)
+                    for event in event_list:
+                        if (event.EventType == EventType.SCREEN_ON):
+                            unlocks.append(event)
+                        if (event.EventType == EventType.SCREEN_OFF):
+                            screen_offs.append(event)
             except ValueError:
-                self.logger.error(f'Parsing error in file {event_file_path}')
+                self.logger.error(f'Parsing error in file {event_file.name}')
 
         return unlocks, screen_offs
 
-    def get_readings_from_sensor_files(self, sensor_file_path):
-        if sensor_file_path is None:
+    def get_readings_from_sensor_file(self, sensor_file):
+        if sensor_file is None:
             return []
 
         try:
-            return self.sensor_parser.parseFile(open(sensor_file_path, 'rb'))
+            with sensor_file.open('rb') as f:
+                return self.sensor_parser.parseFile(f)
         except ValueError:
             return []
 
@@ -224,7 +226,10 @@ class DataExtractionService:
 
     def transform_df_list_to_df(self, df_list):
         if len(df_list) > 0:
-            return pd.concat(df_list).reset_index(drop = True)
+            try:
+                return pd.concat(df_list).reset_index(drop = True)
+            except ValueError:
+                return None
         return None
 
     def add_device_id_to_df(self, df, device_id):

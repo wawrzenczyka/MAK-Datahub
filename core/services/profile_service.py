@@ -1,6 +1,5 @@
 import logging, json, joblib, os
 
-from django.utils import timezone # remove later after deleting the stub
 from django.db import connection
 
 from ..models import ProfileInfo, Device, ProfileCreationRun
@@ -17,9 +16,6 @@ class ProfileService:
         self.MIN_SAMPLES_TO_UPDATE_PROFILE = 100
     
     def authorize(self, device, profile_type, sensor_data_string):
-        assert type(device) is Device
-        assert type(sensor_data_string) is str
-
         sensor_data = json.loads(sensor_data_string)
 
         df = self.data_extraction_service.create_df_from_json_data(sensor_data)
@@ -36,7 +32,7 @@ class ProfileService:
 
     def get_latest_profile_for_device(self, device, profile_type):
         latest_profile = self.__get_latest_profile_info_for_device(device, profile_type)
-        profile = joblib.load(latest_profile.profile_file)
+        profile = joblib.load(latest_profile.profile_file.open('rb'))
         return latest_profile, profile
 
     def __get_latest_profile_info_for_device(self, device, profile_type):
@@ -45,9 +41,9 @@ class ProfileService:
     def serialize_profile(self, profile):
         return self.ml_service.serialize(profile)
 
-    def create_profile_creation_run(self, run_date, parsed_event_files_uri, unlock_data_uri, checkpoint_data_uri):
-        run = ProfileCreationRun(run_date = run_date, unlock_data_uri = unlock_data_uri, \
-            parsed_event_files_uri = parsed_event_files_uri, checkpoint_data_uri = checkpoint_data_uri)
+    def create_profile_creation_run(self, run_date, parsed_event_files, unlock_data, checkpoint_data):
+        run = ProfileCreationRun(run_date = run_date, unlock_data = unlock_data, \
+            parsed_event_files = parsed_event_files, checkpoint_data = checkpoint_data)
         connection.close()
         run.save()
         return run
@@ -55,29 +51,36 @@ class ProfileService:
     def create_profiles(self, run, profile_data, profile_type):
         X, y = profile_data.iloc[:, 0:-1], profile_data.iloc[:, -1]
 
-        for device_id in y.unique():
+        classes = y.unique()
+        if len(classes) < 2:
+            self.logger.info(f'Profile creation: not enough classes ({len(classes)}), aborting')
+            return
+        
+        for device_id in classes:
             sample_count = self.data_extraction_service.get_class_sample_count(y, device_id)
-            if sample_count < self.MIN_SAMPLES_TO_CREATE_PROFILE:
-                self.logger.info(f'Profile creation: device {device_id}, not enough data ({sample_count}/{self.MIN_SAMPLES_TO_CREATE_PROFILE} samples) to create profile')
-                continue
+            # if sample_count < self.MIN_SAMPLES_TO_CREATE_PROFILE:
+            #     self.logger.info(f'Profile creation: device {device_id}, not enough data ({sample_count}/{self.MIN_SAMPLES_TO_CREATE_PROFILE} samples) to create profile')
+            #     continue
 
             connection.close()
             current_profile_info = self.__get_latest_profile_info_for_device(self.device_service.get_device(device_id), profile_type)
-            new_samples_count = sample_count
-            if current_profile_info is not None:
-                new_samples_count -= current_profile_info.used_class_samples
+            new_sample_count = sample_count
+            # if current_profile_info is not None:
+            #     new_sample_count -= current_profile_info.used_class_samples
 
-            if new_samples_count < self.MIN_SAMPLES_TO_UPDATE_PROFILE:
-                self.logger.info(f'Profile creation: device {device_id}, skipping updating profile (progress: {new_samples_count}/{self.MIN_SAMPLES_TO_UPDATE_PROFILE} new samples)')
-                continue
+            # if new_sample_count < self.MIN_SAMPLES_TO_UPDATE_PROFILE:
+            #     self.logger.info(f'Profile creation: device {device_id}, skipping updating profile (progress: {new_samples_count}/{self.MIN_SAMPLES_TO_UPDATE_PROFILE} new samples)')
+            #     continue
             
-            profile, score, precision, recall, fscore = self.ml_service.train(X, y, device_id)
-            profile_file_uri = self.storage_service.save_profile(profile, run.run_date, device_id, profile_type)
+            profile, score, precision, recall, fscore, description = self.ml_service.train(X, y, device_id)
+            tmp_file = self.storage_service.create_joblib_file(profile, run.run_date, device_id, profile_type)
             
             connection.close()
             device = self.device_service.get_device(device_id)
             profile_file = ProfileInfo(device = device, \
-                profile_file_uri = profile_file_uri, run = run, profile_type = profile_type, \
+                profile_file = tmp_file, run = run, profile_type = profile_type, \
                 score = score, precision = precision, recall = recall, fscore = fscore, \
-                used_class_samples = sample_count)
+                used_class_samples = sample_count, description = description)
             profile_file.save()
+            
+            self.storage_service.dispose(tmp_file)

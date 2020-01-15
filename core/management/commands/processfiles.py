@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 from MAKDataHub.services import Services
 
 from ProfileCreator.parsers.event_parser import EventType
-from core.models import DataFileInfo, Device
+from core.models import DataFileInfo, Device, ProfileInfo
 
 class Command(BaseCommand):
     help = 'Performs data processing'
@@ -40,14 +40,9 @@ class Command(BaseCommand):
 
         last_run = self.profile_service.get_last_profile_creation_run()
         if last_run is not None:
-            parsed_event_files = pickle.loads(self.storage.get_file(last_run.parsed_event_files_uri))
-            unlock_data.append(pickle.loads(self.storage.get_file(last_run.unlock_data_uri)))
-            checkpoint_data.append(pickle.loads(self.storage.get_file(last_run.checkpoint_data_uri)))
-
-        # TODO: local profile reading
-        # if os.path.exists('unlocks.pkl'):
-        #     with open('unlocks.pkl', 'rb') as f:
-        #         old_unlocks = pickle.load(f)
+            parsed_event_files = pickle.load(last_run.parsed_event_files.open('rb'))
+            unlock_data.append(pickle.load(last_run.unlock_data.open('rb')))
+            checkpoint_data.append(pickle.load(last_run.checkpoint_data.open('rb')))
         
         for device in devices:
             event_files = device_event_files[device.id]
@@ -70,11 +65,6 @@ class Command(BaseCommand):
         unlock_data = self.data_extraction_service.transform_df_list_to_df(unlock_data)
         # checkpoint_data = self.data_extraction_service.transform_df_list_to_df(checkpoint_data)
 
-        # TODO: local profile saving
-        # unlock_data.to_pickle('unlock_data.pkl')
-        # with open('unlocks.pkl', 'wb') as f:
-        #     pickle.dump(parsed_event_files, f)
-
         run = self.save_processing_results(processing_start_date, unlock_data, checkpoint_data, parsed_event_files)
 
         self.logger.info('Data processing finished...')
@@ -85,14 +75,18 @@ class Command(BaseCommand):
         self.logger.info('Profile creation finished...')
 
     def save_processing_results(self, processing_start_date, unlock_data, checkpoint_data, parsed_event_files):
-        unlock_data_uri = \
-            self.storage.save_event_data(unlock_data, processing_start_date, 'unlock_data')
-        checkpoint_data_uri = \
-            self.storage.save_event_data(checkpoint_data, processing_start_date, 'checkpoint_data')
-        parsed_event_files_uri = \
-            self.storage.save_event_data(parsed_event_files, processing_start_date, 'parsed_event_files')
+        unlock_data = \
+            self.storage.create_pickle_file(unlock_data, processing_start_date, 'unlock_data')
+        checkpoint_data = \
+            self.storage.create_pickle_file(checkpoint_data, processing_start_date, 'checkpoint_data')
+        parsed_event_files = \
+            self.storage.create_pickle_file(parsed_event_files, processing_start_date, 'parsed_event_files')
 
-        run = self.profile_service.create_profile_creation_run(processing_start_date, parsed_event_files_uri, unlock_data_uri, checkpoint_data_uri)
+        run = self.profile_service.create_profile_creation_run(processing_start_date, parsed_event_files, unlock_data, checkpoint_data)
+
+        self.storage.dispose(unlock_data)
+        self.storage.dispose(checkpoint_data)
+        self.storage.dispose(parsed_event_files)
 
         return run
 
@@ -101,9 +95,7 @@ class Command(BaseCommand):
         screen_offs = []
 
         for ef in new_event_files:
-            filename = self.storage.download_file(ef.file_uri)
-            file_unlocks, file_screen_offs = self.data_extraction_service.extract_events(filename)
-            os.remove(filename)
+            file_unlocks, file_screen_offs = self.data_extraction_service.extract_events(ef.data)
 
             unlocks += file_unlocks
             screen_offs += file_screen_offs
@@ -140,20 +132,19 @@ class Command(BaseCommand):
 
             while index < len(sensor_files) - 1 and event_date >= sensor_files[index + 1].start_date:
                 index += 1
-                if prev_sensor_file is not None:
-                    os.remove(prev_sensor_file)
                 prev_sensor_file = current_sensor_file
-                prev_reading_list = current_reading_list
                 current_sensor_file = next_sensor_file
-                current_reading_list = next_reading_list
                 next_sensor_file = None
+
+                prev_reading_list = current_reading_list
+                current_reading_list = next_reading_list
                 next_reading_list = []
 
             if current_sensor_file is None:
                 # download current file
-                current_sensor_file = self.storage.download_file(sensor_files[index].file_uri)
+                current_sensor_file = sensor_files[index].data
                 current_reading_list = \
-                    self.data_extraction_service.get_readings_from_sensor_files(current_sensor_file)
+                    self.data_extraction_service.get_readings_from_sensor_file(current_sensor_file)
 
             if prev_sensor_file is None and index > 0 \
                     and ( \
@@ -161,9 +152,9 @@ class Command(BaseCommand):
                         or (event.EventType == EventType.CONTINUOUS_AUTH_CHECKPOINT and event_date - datetime.timedelta(milliseconds=self.CONTINUOUS_AUTH_INTERVAL) < sensor_files[index].start_date) \
                     ):
                 # download prev file
-                prev_sensor_file = self.storage.download_file(sensor_files[index - 1].file_uri)
+                prev_sensor_file = sensor_files[index - 1].data
                 prev_reading_list = \
-                    self.data_extraction_service.get_readings_from_sensor_files(prev_sensor_file)
+                    self.data_extraction_service.get_readings_from_sensor_file(prev_sensor_file)
 
             if next_sensor_file is None and index < len(sensor_files) - 1 \
                     and event.EventType == EventType.SCREEN_ON \
@@ -171,7 +162,7 @@ class Command(BaseCommand):
                 # download next file
                 next_sensor_file = self.storage.download_file(sensor_files[index + 1].file_uri)
                 next_reading_list = \
-                    self.data_extraction_service.get_readings_from_sensor_files(next_sensor_file)
+                    self.data_extraction_service.get_readings_from_sensor_file(next_sensor_file)
 
             reading_list = prev_reading_list + current_reading_list + next_reading_list
 
@@ -196,13 +187,6 @@ class Command(BaseCommand):
             if (event_number + 1) % 100 == 0:
                 self.logger.info(f'Data processing: device {device_id}, {event_number + 1}/{len(events)} events processed')
 
-        if prev_sensor_file is not None:
-            os.remove(prev_sensor_file)
-        if current_sensor_file is not None:
-            os.remove(current_sensor_file)
-        if next_sensor_file is not None:
-            os.remove(next_sensor_file)
-
         device_unlock_data = self.data_extraction_service.transform_df_list_to_df(unlock_dfs)
         device_checkpoint_data = self.data_extraction_service.transform_df_list_to_df(checkpoint_dfs)
 
@@ -213,9 +197,9 @@ class Command(BaseCommand):
 
     def create_profiles(self, run, unlock_data, checkpoint_data):
         self.logger.info('Profile creation: creating unlock profiles...')
-        self.profile_service.create_profiles(run, unlock_data, 'UNLOCK')
+        self.profile_service.create_profiles(run, unlock_data, ProfileInfo.ProfileType.Unlock)
         self.logger.info('Profile creation: unlock profiles created')
 
         # self.logger.info('Profile creation: creating continuous profiles...')
-        # self.profile_service.create_profiles(run, checkpoint_data, 'CONTINUOUS')
+        # self.profile_service.create_profiles(run, checkpoint_data, ProfileInfo.ProfileType.Continuous)
         # self.logger.info('Profile creation: continuous profiles created')
