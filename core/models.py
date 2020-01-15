@@ -3,10 +3,11 @@ from pytz import timezone
 from enum import Enum
 
 from django.db import models
+from django.contrib.auth.models import User
 
 class Device(models.Model):
     id = models.CharField(max_length=50, primary_key=True)
-    token = models.CharField(max_length=36)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'Device {self.id}'

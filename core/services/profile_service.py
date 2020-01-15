@@ -36,18 +36,11 @@ class ProfileService:
 
     def get_latest_profile_for_device(self, device, profile_type):
         latest_profile = self.__get_latest_profile_info_for_device(device, profile_type)
-
-        if latest_profile is None:
-            return None, None
-        
-        profile_filename = self.storage_service.download_file(latest_profile.profile_file_uri)
-        profile = joblib.load(profile_filename)
-        os.remove(profile_filename)
-
+        profile = joblib.load(latest_profile.profile_file)
         return latest_profile, profile
 
     def __get_latest_profile_info_for_device(self, device, profile_type):
-        return device.profilefile_set.filter(profile_type = profile_type).order_by('-run__run_date').first()
+        return device.profileinfo_set.filter(profile_type = profile_type).order_by('-run__run_date').first()
 
     def serialize_profile(self, profile):
         return self.ml_service.serialize(profile)

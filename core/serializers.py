@@ -1,13 +1,27 @@
+import json
+
 from rest_framework import serializers
 from .models import Device, DataFileInfo, ProfileCreationRun, ProfileInfo
 from MAKDataHub.services import Services
 
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
     class Meta:
         model = Device
-        fields = ['id', 'token', 'datafileinfo_set', 'profileinfo_set']
+        fields = ['user', 'id', 'datafileinfo_set', 'profileinfo_set']
+        read_only_fields = ['datafileinfo_set', 'profileinfo_set']
 
-class DataFileInfoSerializer(serializers.HyperlinkedModelSerializer):
+class DeviceSimpleSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+    class Meta:
+        model = Device
+        fields = ['user', 'id']
+
+class DataFileInfoSerializer(serializers.ModelSerializer):
     file_type = serializers.ChoiceField(choices = [tag.value for tag in DataFileInfo.DataFileType])
     class Meta:
         model = DataFileInfo
@@ -20,11 +34,23 @@ class ProfileCreationRunSerializer(serializers.HyperlinkedModelSerializer):
 
 class ProfileInfoSerializer(serializers.HyperlinkedModelSerializer):
     profile_type = serializers.ChoiceField(choices = [tag.value for tag in ProfileInfo.ProfileType])
+    creation_date = serializers.DateTimeField(source='run.run_date', read_only=True)
+    class Meta:
+        model = ProfileInfo
+        fields = ['id', 'device', 'run', 'profile_file', 'profile_type', 'creation_date', 'used_class_samples', 'score', 'precision', 'recall', 'fscore']
+
+class ProfileInfoSimpleSerializer(serializers.HyperlinkedModelSerializer):
+    creation_date = serializers.DateTimeField(source='run.run_date', read_only=True)
+    class Meta:
+        model = ProfileInfo
+        fields = ['id', 'creation_date']
+
+class ProfileDataSerializer(serializers.ModelSerializer):
     profile_serialized = serializers.SerializerMethodField()
     support_serialized = serializers.SerializerMethodField()
     class Meta:
         model = ProfileInfo
-        fields = ['device', 'run', 'profile_file', 'profile_serialized', 'support_serialized', 'profile_type', 'used_class_samples', 'score', 'precision', 'recall', 'fscore']
+        fields = ['profile_serialized', 'support_serialized', 'used_class_samples', 'score', 'precision', 'recall', 'fscore']
 
     def get_profile_serialized(self, obj):
         profile, _ = Services.ml_service().serialize_joblib(obj.profile_file)
@@ -33,3 +59,26 @@ class ProfileInfoSerializer(serializers.HyperlinkedModelSerializer):
     def get_support_serialized(self, obj):
         _, support = Services.ml_service().serialize_joblib(obj.profile_file)
         return support
+
+class AuthorizeDataSerializer(serializers.Serializer):
+    device_id = serializers.CharField()
+    profile_type = serializers.CharField()
+    sensor_data = serializers.CharField()
+    
+    def validate_sensor_data(self, obj):
+        json_string = obj
+        try:
+            json_data = json.loads(json_string)
+            if type(json_data) is not list:
+                raise serializers.ValidationError("Invalid json structure")
+            for json_row in json_data:
+                if len(json_row) != 6*3 + 1:
+                    raise serializers.ValidationError("Json should have 19 columns")
+                if type(json_row) is not list:
+                    raise serializers.ValidationError("Invalid json structure")
+                for value in json_row:
+                    if type(value) is not float and type(value) is not int:
+                        raise serializers.ValidationError("Invalid json structure")
+        except:
+            raise serializers.ValidationError("Invalid data in sensor_data")
+        return json_string
