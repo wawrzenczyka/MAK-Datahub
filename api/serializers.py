@@ -1,7 +1,7 @@
 import json
 
 from rest_framework import serializers
-from .models import Device, DataFileInfo, ProfileCreationRun, ProfileInfo
+from core.models import Device, DataFileInfo, ProfileCreationRun, ProfileInfo
 from MAKDataHub.services import Services
 
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):

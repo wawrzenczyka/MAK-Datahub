@@ -4,7 +4,7 @@ from rest_framework import viewsets, mixins, permissions, generics, views, statu
 
 from MAKDataHub.services import Services
 
-from .models import Device, DataFileInfo, ProfileCreationRun, ProfileInfo
+from core.models import Device, DataFileInfo, ProfileCreationRun, ProfileInfo
 from .serializers import DeviceSerializer, DataFileInfoSerializer, ProfileCreationRunSerializer, \
     ProfileInfoSerializer, ProfileDataSerializer, AuthorizeDataSerializer, DeviceSimpleSerializer, \
     ProfileInfoSimpleSerializer
