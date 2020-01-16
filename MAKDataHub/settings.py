@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
+# valid values ['LOCAL', 'AWS_S3', 'GOOGLE_DRIVE']
+DATAHUB_STORAGE = 'GOOGLE_DRIVE' 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -32,8 +35,6 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.pythonanywhere.com', '.execute-api.
 
 INSTALLED_APPS = [
     'core.apps.CoreConfig',
-    'profiles.apps.ProfilesConfig',
-    'uploader.apps.UploaderConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_auth',
     'storages',
+    'gdstorage'
 ]
 
 SITE_ID = 1
@@ -87,10 +89,10 @@ WSGI_APPLICATION = 'MAKDataHub.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME': 'makengineering$makdb',
@@ -98,13 +100,13 @@ DATABASES = {
     #     'PASSWORD': 'admin123$',
     #     'HOST': 'makengineering.mysql.pythonanywhere-services.com',
     # }
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'makdb',
-        'USER': 'admin',
-        'PASSWORD': 'Admin123$',
-        'HOST': 'mak-db-server.cnslitlzorh7.us-east-1.rds.amazonaws.com',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'makdb',
+    #     'USER': 'admin',
+    #     'PASSWORD': 'Admin123$',
+    #     'HOST': 'mak-db-server.cnslitlzorh7.us-east-1.rds.amazonaws.com',
+    # }
 }
 
 
@@ -188,13 +190,20 @@ LOGGING = {
     },
 }
 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-# AWS_S3_SECURE_URLS = False       # use http instead of https
-# AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
-
-# AWS_STORAGE_BUCKET_NAME = 'makdatahub.media'
+if DATAHUB_STORAGE == 'GOOGLE_DRIVE':
+    GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = '../gdrive-credentials.json'
+    DEFAULT_FILE_STORAGE = 'gdstorage.storage.GoogleDriveStorage'
+elif DATAHUB_STORAGE == 'AWS_S3':
+    # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    # AWS_S3_SECURE_URLS = False       # use http instead of https
+    # AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
+    # AWS_STORAGE_BUCKET_NAME = 'makdatahub.media'
+    pass
+elif DATAHUB_STORAGE == 'LOCAL':
+    pass
