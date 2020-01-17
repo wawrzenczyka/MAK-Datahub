@@ -146,5 +146,5 @@ class AuthorizeEndpoint(views.APIView):
                     raise Http404
                 return Response(response, status=status.HTTP_200_OK)
             except Device.DoesNotExist:
-                return Response({'non_field_errors': 'Device doesn\'t exist'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'device': 'Device doesn\'t exist'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
