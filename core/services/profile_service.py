@@ -32,6 +32,8 @@ class ProfileService:
 
     def get_latest_profile_for_device(self, device, profile_type):
         latest_profile = self.__get_latest_profile_info_for_device(device, profile_type)
+        if latest_profile is None:
+            return None, None
         profile = joblib.load(latest_profile.profile_file.open('rb'))
         return latest_profile, profile
 

@@ -97,7 +97,7 @@ class LatestDeviceProfileInfo(generics.RetrieveAPIView):
         except ProfileInfo.DoesNotExist:
             raise Http404
         except Device.DoesNotExist:
-            return Response({'non_field_errors': 'Device doesn\'t exist'}, status=status.HTTP_400_BAD_REQUEST)
+            raise Http404
 
 class RetrieveProfileData(generics.RetrieveAPIView):
     class IsOwnerOrStaff(permissions.BasePermission):
