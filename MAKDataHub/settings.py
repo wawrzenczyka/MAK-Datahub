@@ -100,6 +100,10 @@ DATABASES = {
         'USER': 'makengineering',
         'PASSWORD': 'admin123$',
         'HOST': 'makengineering.mysql.pythonanywhere-services.com',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+        }
     }
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
@@ -107,6 +111,10 @@ DATABASES = {
     #     'USER': 'admin',
     #     'PASSWORD': 'Admin123$',
     #     'HOST': 'mak-db-server.cnslitlzorh7.us-east-1.rds.amazonaws.com',
+        # 'OPTIONS': {
+        #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        #     'charset': 'utf8mb4',
+        # }
     # }
 }
 
