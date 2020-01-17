@@ -110,4 +110,5 @@ venv.bak/
 /t
 
 media/
-token.json
+.vscode/settings.json
+gdrive-credentials.json
