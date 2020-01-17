@@ -97,6 +97,8 @@ class LatestDeviceProfileInfo(generics.RetrieveAPIView):
             return obj
         except ProfileInfo.DoesNotExist:
             raise Http404
+        except Device.DoesNotExist:
+            return Response({'non_field_errors': 'Device doesn\'t exist'}, status=status.HTTP_400_BAD_REQUEST)
 
 class RetrieveProfileData(generics.RetrieveAPIView):
     class IsOwnerOrStaff(permissions.BasePermission):
@@ -130,14 +132,19 @@ class AuthorizeEndpoint(views.APIView):
     def post(self, request, format=None):
         serializer = AuthorizeDataSerializer(data=request.data)
         if serializer.is_valid():
-            device = serializer.data['device']
+            device_id = serializer.data['device']
             sensor_data = serializer.data['sensor_data']
             profile_type = serializer.data['profile_type']
 
-            yes_proba = self.profile_service.authorize(device, profile_type, sensor_data)
-            if (yes_proba != None):
-                response = { 'profile_ready': True, 'matching_user_probability': yes_proba }
-            else:
-                response = { 'profile_ready': False }
-            return Response(response, status=status.HTTP_200_OK)
+            try:
+                device = get_object_or_404(Device, id = device_id)
+
+                yes_proba = self.profile_service.authorize(device, profile_type, sensor_data)
+                if (yes_proba != None):
+                    response = { 'matching_user_probability': yes_proba }
+                else:
+                    raise Http404
+                return Response(response, status=status.HTTP_200_OK)
+            except Device.DoesNotExist:
+                return Response({'non_field_errors': 'Device doesn\'t exist'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
