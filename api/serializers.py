@@ -14,9 +14,12 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ['id', 'user', 'datafileinfo_set', 'profileinfo_set']
 
 class DeviceSimpleSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
     class Meta:
         model = Device
-        fields = ['id', 'android_id']
+        fields = ['user', 'id', 'android_id']
 
 class DataFileInfoSerializer(serializers.ModelSerializer):
     file_type = serializers.ChoiceField(choices = [tag.value for tag in DataFileInfo.DataFileType])
