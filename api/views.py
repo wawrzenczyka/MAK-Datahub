@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
+from django.http.response import Http404
 from rest_framework.response import Response
-from rest_framework import viewsets, mixins, permissions, generics, views, status, authentication
+from rest_framework import viewsets, mixins, permissions, generics, views, authentication
 
 from MAKDataHub.services import Services
 
@@ -95,7 +96,7 @@ class LatestDeviceProfileInfo(generics.RetrieveAPIView):
             self.check_object_permissions(self.request, obj)
             return obj
         except ProfileInfo.DoesNotExist:
-            raise status.HTTP_404_NOT_FOUND
+            raise Http404
 
 class RetrieveProfileData(generics.RetrieveAPIView):
     class IsOwnerOrStaff(permissions.BasePermission):
@@ -113,7 +114,7 @@ class RetrieveProfileData(generics.RetrieveAPIView):
             self.check_object_permissions(self.request, obj)
             return obj
         except ProfileInfo.DoesNotExist:
-            raise status.HTTP_404_NOT_FOUND
+            raise Http404
 
 class AuthorizeEndpoint(views.APIView):
     permission_classes = (permissions.IsAuthenticated, )
