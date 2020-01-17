@@ -28,6 +28,25 @@ class DeviceViewSet(viewsets.ModelViewSet):
     serializer_class = DeviceSerializer
     queryset = Device.objects.all()
 
+    def __init__(self, *args, **kwargs):
+        super(DeviceViewSet, self).__init__(*args, **kwargs)
+        self.serializer_action_classes = {
+            'list': DeviceSerializer,
+            'create': DeviceSimpleSerializer,
+            'retrieve': DeviceSerializer,
+            'update': DeviceSimpleSerializer,
+            'partial_update': DeviceSimpleSerializer,
+            'destroy': DeviceSimpleSerializer,
+        }
+
+    def get_serializer_class(self, *args, **kwargs):
+        """Instantiate the list of serializers per action from class attribute (must be defined)."""
+        kwargs['partial'] = True
+        try:
+            return self.serializer_action_classes[self.action]
+        except (KeyError, AttributeError):
+            return super(DeviceViewSet, self).get_serializer_class()
+
 class UserDevices(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = DeviceSimpleSerializer
