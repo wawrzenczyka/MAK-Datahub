@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from django.http.response import Http404
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, permissions, generics, views, authentication, status
@@ -137,7 +136,7 @@ class AuthorizeEndpoint(views.APIView):
             profile_type = serializer.data['profile_type']
 
             try:
-                device = get_object_or_404(Device, id = device_id)
+                device = Device.objects.get(id = device_id)
 
                 yes_proba = self.profile_service.authorize(device, profile_type, sensor_data)
                 if (yes_proba != None):
