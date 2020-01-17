@@ -197,7 +197,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 if DATAHUB_STORAGE == 'GOOGLE_DRIVE':
-    GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = '../gdrive-credentials.json'
+    GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'gdrive-credentials.json'
     DEFAULT_FILE_STORAGE = 'gdstorage.storage.GoogleDriveStorage'
 elif DATAHUB_STORAGE == 'AWS_S3':
     # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
