@@ -28,7 +28,7 @@ SECRET_KEY = 'k)rie=jguysq9!x54z1*13v32om-i$qiptr8)v#a91_+d5q000'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.pythonanywhere.com', '.execute-api.us-east-1.amazonaws.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'makservice.space', '.pythonanywhere.com', '.execute-api.us-east-1.amazonaws.com']
 
 
 # Application definition
