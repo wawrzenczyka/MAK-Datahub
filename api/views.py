@@ -76,8 +76,11 @@ class DeviceProfileInfos(viewsets.GenericViewSet, mixins.ListModelMixin):
 
     def get_queryset(self):
         id = self.kwargs['id']
-        qs = ProfileInfo.objects.filter(device = Device.objects.get(id = id))
-        return qs
+        try:
+            qs = ProfileInfo.objects.filter(device = Device.objects.get(id = id))
+            return qs
+        except Device.DoesNotExist:
+            raise Http404
 
 class LatestDeviceProfileInfo(generics.RetrieveAPIView):
     class IsOwnerOrStaff(permissions.BasePermission):

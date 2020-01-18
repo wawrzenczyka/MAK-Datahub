@@ -53,11 +53,11 @@ class ProfileDataSerializer(serializers.ModelSerializer):
         fields = ['profile_serialized', 'support_serialized', 'used_class_samples', 'score', 'precision', 'recall', 'fscore']
 
     def get_profile_serialized(self, obj):
-        profile, _ = Services.ml_service().serialize_joblib(obj.profile_file)
+        profile, _ = Services.ml_service().serialize(obj.profile_file)
         return profile
 
     def get_support_serialized(self, obj):
-        _, support = Services.ml_service().serialize_joblib(obj.profile_file)
+        _, support = Services.ml_service().serialize(obj.profile_file)
         return support
 
 class AuthorizeDataSerializer(serializers.Serializer):
