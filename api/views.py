@@ -76,8 +76,9 @@ class DeviceProfileInfos(viewsets.GenericViewSet, mixins.ListModelMixin):
 
     def get_queryset(self):
         id = self.kwargs['id']
+        profile_type = self.request.query_params.get('profile_type')
         try:
-            qs = ProfileInfo.objects.filter(device = Device.objects.get(id = id))
+            qs = ProfileInfo.objects.filter(device = Device.objects.get(id = id), profile_type = profile_type)
             return qs
         except Device.DoesNotExist:
             raise Http404
@@ -93,8 +94,9 @@ class LatestDeviceProfileInfo(generics.RetrieveAPIView):
     
     def get_object(self, *args, **kwargs):
         id = self.kwargs['id']
+        profile_type = self.request.query_params.get('profile_type')
         try:
-            obj = self.queryset.filter(device = Device.objects.get(id = id)).latest('-run__run_date')
+            obj = self.queryset.filter(device = Device.objects.get(id = id), profile_type = profile_type).latest('-run__run_date')
             self.check_object_permissions(self.request, obj)
             return obj
         except ProfileInfo.DoesNotExist:
