@@ -73,6 +73,7 @@ class ProfileInfoViewSet(viewsets.ModelViewSet):
 class DeviceProfileInfos(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
     serializer_class = ProfileInfoSerializer
+    queryset = ProfileInfo.objects.all()
 
     def get_queryset(self):
         id = self.kwargs['id']
