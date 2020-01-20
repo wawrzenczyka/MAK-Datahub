@@ -46,6 +46,7 @@ class ProfileInfoSimpleSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'creation_date']
 
 class ProfileDataSerializer(serializers.ModelSerializer):
+    creation_date = serializers.DateTimeField(source='run.run_date', read_only=True)
     class Meta:
         model = ProfileInfo
         fields = ['creation_date', 'score', 'precision', 'recall', 'fscore', 'used_class_samples', 'profile_file']
