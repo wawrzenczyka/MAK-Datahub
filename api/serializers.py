@@ -50,7 +50,7 @@ class ProfileDataSerializer(serializers.ModelSerializer):
     support_serialized = serializers.SerializerMethodField()
     class Meta:
         model = ProfileInfo
-        fields = ['profile_serialized', 'support_serialized', 'used_class_samples', 'score', 'precision', 'recall', 'fscore']
+        fields = ['score', 'precision', 'recall', 'fscore', 'used_class_samples', 'support_serialized', 'profile_serialized']
 
     def get_profile_serialized(self, obj):
         profile, _ = Services.ml_service().serialize(obj.profile_file)
