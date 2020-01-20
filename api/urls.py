@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^rest-auth/register/', include('rest_auth.registration.urls')),
     url(r'devices/(?P<id>\w+)/profiles/latest', LatestDeviceProfileInfo.as_view()),
-    url(r'profiles/(?P<id>\d+)/data', RetrieveProfileData.as_view()),
+    url(r'profiles/(?P<id>\d+)/info', RetrieveProfileData.as_view()),
     url(r'profiles/(?P<id>\d+)/file', RetrieveProfileFile.as_view()),
     url(r'biometric-auth/', AuthorizeEndpoint.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
