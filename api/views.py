@@ -1,4 +1,6 @@
 from django.http.response import Http404
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, permissions, generics, views, authentication, status
 
@@ -136,6 +138,23 @@ class RetrieveProfileData(generics.RetrieveAPIView):
             obj = self.queryset.get(id = id)
             self.check_object_permissions(self.request, obj)
             return obj
+        except ProfileInfo.DoesNotExist:
+            raise Http404
+
+
+class RetrieveProfileFile(views.APIView):
+    class IsOwnerOrStaff(permissions.BasePermission):
+        def has_object_permission(self, request, view, obj):
+            return obj.device.user.id == request.user.id or request.user.is_staff
+    
+    permission_classes = (permissions.IsAuthenticated, IsOwnerOrStaff)
+    
+    def get(self, request, id, format=None):
+        try:
+            profile = ProfileInfo.objects.get(id = id)
+            f = profile.profile_file.open('rb')
+            response = HttpResponse(FileWrapper(f), content_type='application/octet-stream')
+            return response
         except ProfileInfo.DoesNotExist:
             raise Http404
 
