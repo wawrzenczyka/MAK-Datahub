@@ -46,19 +46,9 @@ class ProfileInfoSimpleSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'creation_date']
 
 class ProfileDataSerializer(serializers.ModelSerializer):
-    profile_serialized = serializers.SerializerMethodField()
-    support_serialized = serializers.SerializerMethodField()
     class Meta:
         model = ProfileInfo
-        fields = ['score', 'precision', 'recall', 'fscore', 'used_class_samples', 'support_serialized', 'profile_serialized']
-
-    def get_profile_serialized(self, obj):
-        profile, _ = Services.ml_service().serialize(obj.profile_file)
-        return profile
-
-    def get_support_serialized(self, obj):
-        _, support = Services.ml_service().serialize(obj.profile_file)
-        return support
+        fields = ['score', 'precision', 'recall', 'fscore', 'used_class_samples', 'profile_file']
 
 class AuthorizeDataSerializer(serializers.Serializer):
     device = serializers.PrimaryKeyRelatedField(queryset = Device.objects.all())
