@@ -48,7 +48,7 @@ class ProfileInfoSimpleSerializer(serializers.HyperlinkedModelSerializer):
 class ProfileDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileInfo
-        fields = ['score', 'precision', 'recall', 'fscore', 'used_class_samples', 'profile_file']
+        fields = ['creation_date', 'score', 'precision', 'recall', 'fscore', 'used_class_samples', 'profile_file']
 
 class AuthorizeDataSerializer(serializers.Serializer):
     device = serializers.PrimaryKeyRelatedField(queryset = Device.objects.all())
