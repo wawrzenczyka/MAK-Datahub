@@ -9,21 +9,21 @@ from .serializers import DeviceSerializer, DataFileInfoSerializer, ProfileCreati
     ProfileInfoSerializer, ProfileDataSerializer, AuthorizeDataSerializer, DeviceSimpleSerializer, \
     ProfileInfoSimpleSerializer
 
-class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
-    """
-    Custom permission:
-        - allow anonymous POST
-        - allow authenticated GET and PUT on *own* record
-        - allow all actions for staff
-    """
-    def has_permission(self, request, view):
-        return (view.action == 'list' and request.user.is_staff) or \
-            (view.action != 'list' and (view.action == 'create' or (request.user and request.user.is_authenticated)))
-
-    def has_object_permission(self, request, view, obj):
-        return view.action in ['retrieve', 'update', 'partial_update'] and obj.user.id == request.user.id or request.user.is_staff
-
 class DeviceViewSet(viewsets.ModelViewSet):
+    class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
+        """
+        Custom permission:
+            - allow anonymous POST
+            - allow authenticated GET and PUT on *own* record
+            - allow all actions for staff
+        """
+        def has_permission(self, request, view):
+            return (view.action == 'list' and request.user.is_staff) or \
+                (view.action != 'list' and (view.action == 'create' or (request.user and request.user.is_authenticated)))
+
+        def has_object_permission(self, request, view, obj):
+            return view.action in ['retrieve', 'update', 'partial_update'] and obj.user.id == request.user.id or request.user.is_staff
+
     permission_classes = (permissions.IsAuthenticated, AnonCreateAndUpdateOwnerOnly,)
     serializer_class = DeviceSerializer
     queryset = Device.objects.all()
@@ -56,7 +56,18 @@ class UserDevices(viewsets.GenericViewSet, mixins.ListModelMixin):
         return qs
 
 class DataFileInfoViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
+    class OwnDeviceOnlyCreate(permissions.BasePermission):
+        def has_permission(self, request, view):
+            try:
+                return request.user.is_staff or \
+                    (view.action == 'create' and (request.user and request.user.is_authenticated) \
+                        and (request.data['device'] and Device.objects.get(id = request.data['device']).user == request.user))
+            except Device.DoesNotExist:
+                return False
+        def has_object_permission(self, request, view, obj):
+            return request.user.is_staff
+    
+    permission_classes = (permissions.IsAuthenticated, OwnDeviceOnlyCreate)
     serializer_class = DataFileInfoSerializer
     queryset = DataFileInfo.objects.all()
 
