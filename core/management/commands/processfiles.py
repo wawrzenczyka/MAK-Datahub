@@ -63,7 +63,7 @@ class Command(BaseCommand):
                 checkpoint_data.append(device_checkpoint_data)
 
         unlock_data = self.data_extraction_service.transform_df_list_to_df(unlock_data)
-        # checkpoint_data = self.data_extraction_service.transform_df_list_to_df(checkpoint_data)
+        checkpoint_data = self.data_extraction_service.transform_df_list_to_df(checkpoint_data)
 
         run = self.save_processing_results(processing_start_date, unlock_data, checkpoint_data, parsed_event_files)
 
@@ -102,8 +102,7 @@ class Command(BaseCommand):
 
         self.logger.info(f'Data processing: device {device_id}, {len(new_event_files)} new event files')
 
-        # checkpoints = self.data_extraction_service.generate_continuous_auth_checkpoints(unlocks, screen_offs)
-        checkpoints = []
+        checkpoints = self.data_extraction_service.generate_continuous_auth_checkpoints(unlocks, screen_offs)
         self.logger.info(f'Data processing: device {device_id}, {len(unlocks)} new unlocks')
         self.logger.info(f'Data processing: device {device_id}, {len(checkpoints)} new continuous data points')
 
@@ -200,6 +199,6 @@ class Command(BaseCommand):
         self.profile_service.create_profiles(run, unlock_data, ProfileInfo.ProfileType.Unlock)
         self.logger.info('Profile creation: unlock profiles created')
 
-        # self.logger.info('Profile creation: creating continuous profiles...')
-        # self.profile_service.create_profiles(run, checkpoint_data, ProfileInfo.ProfileType.Continuous)
-        # self.logger.info('Profile creation: continuous profiles created')
+        self.logger.info('Profile creation: creating continuous profiles...')
+        self.profile_service.create_profiles(run, checkpoint_data, ProfileInfo.ProfileType.Continuous)
+        self.logger.info('Profile creation: continuous profiles created')
