@@ -28,7 +28,7 @@ SECRET_KEY = 'k)rie=jguysq9!x54z1*13v32om-i$qiptr8)v#a91_+d5q000'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.makservice.space', 'makservice.space', '.pythonanywhere.com', '.execute-api.us-east-1.amazonaws.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.makservice.space', 'makservice.space', '.pythonanywhere.com', '.execute-api.us-east-1.amazonaws.com', '35.156.102.209']
 
 
 # Application definition
@@ -96,10 +96,10 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'makengineering$mak-db-new-schema',
-        'USER': 'makengineering',
-        'PASSWORD': 'admin123$',
-        'HOST': 'makengineering.mysql.pythonanywhere-services.com',
+        'NAME': 'makdb',
+        'USER': 'admin',
+        'PASSWORD': 'MAKSystem#31!',
+        'HOST': 'testdb.cmrskgza3dnr.eu-central-1.rds.amazonaws.com',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'charset': 'utf8mb4',
