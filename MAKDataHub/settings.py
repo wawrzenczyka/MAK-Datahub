@@ -28,7 +28,7 @@ SECRET_KEY = 'k)rie=jguysq9!x54z1*13v32om-i$qiptr8)v#a91_+d5q000'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.makservice.space', 'makservice.space', '.pythonanywhere.com', '.execute-api.us-east-1.amazonaws.com', '35.156.102.209']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.makservice.space', 'makservice.space', '.pythonanywhere.com', '.execute-api.us-east-1.amazonaws.com', '35.156.102.209', '.eu-central-1.compute.amazonaws.com']
 
 
 # Application definition
@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_auth',
     'storages',
-    'gdstorage'
+    'gdstorage',
+    'request_logging.middleware.LoggingMiddleware',
 ]
 
 SITE_ID = 1
@@ -175,6 +176,14 @@ LOGGING = {
             'backupCount': 10,
             'formatter': 'verbose'
         },
+        'requests_file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'requests.log',
+            'maxBytes': 1048576,  # 1024 * 1024B = 1MB
+            'backupCount': 10,
+            'formatter': 'verbose'
+        },
     },
     'loggers': {
         'profiles': {
@@ -195,6 +204,11 @@ LOGGING = {
             'handlers': ['file'],
             'level': 'INFO',
             'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['requests_file'],
+            'level': 'DEBUG',  # change debug level as appropiate
+            'propagate': False,
         },
     },
 }
