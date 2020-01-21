@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'rest_auth',
     'storages',
     'gdstorage',
-    'sslserver',
 ]
 
 SITE_ID = 1
