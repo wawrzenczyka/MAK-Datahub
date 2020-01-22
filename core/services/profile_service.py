@@ -61,6 +61,8 @@ class ProfileService:
         for device_id in classes:
             connection.close()
             device = self.device_service.get_device(device_id)
+            if device is None:
+                continue
 
             sample_count = self.data_extraction_service.get_class_sample_count(y, device_id)
             if sample_count < self.MIN_SAMPLES_TO_CREATE_PROFILE:
