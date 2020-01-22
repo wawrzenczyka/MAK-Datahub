@@ -196,9 +196,9 @@ class Command(BaseCommand):
 
     def create_profiles(self, run, unlock_data, checkpoint_data):
         self.logger.info('Profile creation: creating unlock profiles...')
-        self.profile_service.create_profiles(run, unlock_data, ProfileInfo.ProfileType.Unlock)
+        self.profile_service.create_profiles(run, unlock_data, ProfileInfo.ProfileType.Unlock.value)
         self.logger.info('Profile creation: unlock profiles created')
 
         self.logger.info('Profile creation: creating continuous profiles...')
-        self.profile_service.create_profiles(run, checkpoint_data, ProfileInfo.ProfileType.Continuous)
+        self.profile_service.create_profiles(run, checkpoint_data, ProfileInfo.ProfileType.Continuous.value)
         self.logger.info('Profile creation: continuous profiles created')
