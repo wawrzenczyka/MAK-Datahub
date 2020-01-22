@@ -59,9 +59,12 @@ class ProfileService:
             return
         
         for device_id in classes:
+            connection.close()
+            device = self.device_service.get_device(device_id)
+
             sample_count = self.data_extraction_service.get_class_sample_count(y, device_id)
             if sample_count < self.MIN_SAMPLES_TO_CREATE_PROFILE:
-                self.logger.info(f'Profile creation: device {device_id}, not enough data ({sample_count}/{self.MIN_SAMPLES_TO_CREATE_PROFILE} samples) to create profile')
+                self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), not enough data ({sample_count}/{self.MIN_SAMPLES_TO_CREATE_PROFILE} samples) to create profile')
                 continue
 
             connection.close()
@@ -71,14 +74,16 @@ class ProfileService:
                 new_sample_count -= current_profile_info.used_class_samples
 
             if new_sample_count < self.MIN_SAMPLES_TO_UPDATE_PROFILE:
-                self.logger.info(f'Profile creation: device {device_id}, skipping updating profile (progress: {new_samples_count}/{self.MIN_SAMPLES_TO_UPDATE_PROFILE} new samples)')
+                self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), skipping updating profile (progress: {new_sample_count}/{self.MIN_SAMPLES_TO_UPDATE_PROFILE} new samples)')
                 continue
-            
-            profile, score, precision, recall, fscore, description = self.ml_service.train(X, y, device_id)
+
+            connection.close()
+            user_device_ids = [device.id for device in Device.objects.filter(user = device.user)]
+
+            profile, score, precision, recall, fscore, description = self.ml_service.train(X, y, device, user_device_ids)
             tmp_file = self.storage_service.create_joblib_file(profile, run.run_date, device_id, profile_type)
             
             connection.close()
-            device = self.device_service.get_device(device_id)
             profile_file = ProfileInfo(device = device, \
                 profile_file = tmp_file, run = run, profile_type = profile_type, \
                 score = score, precision = precision, recall = recall, fscore = fscore, \
