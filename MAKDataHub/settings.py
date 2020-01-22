@@ -241,6 +241,6 @@ elif DATAHUB_STORAGE == 'AWS_S3':
     pass
 elif DATAHUB_STORAGE == 'DROPBOX':
     DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
-    DROPBOX_OAUTH2_TOKEN = open('dropbox-token.txt', 'r')
+    DROPBOX_OAUTH2_TOKEN = open('dropbox-token.txt', 'r').read()
 elif DATAHUB_STORAGE == 'LOCAL':
     pass
