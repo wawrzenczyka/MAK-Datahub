@@ -169,6 +169,10 @@ LOGGING = {
         },
     },
     'handlers': {
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
         'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -187,22 +191,12 @@ LOGGING = {
         },
     },
     'loggers': {
-        'profiles': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'uploader': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
         'googleapiclient.discovery': {
             'handlers': ['file'],
             'level': 'ERROR',
         },
         'core': {
-            'handlers': ['file'],
+            'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': True,
         },

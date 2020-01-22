@@ -34,9 +34,9 @@ class RFE10_RF100_SMOTE_MLService(AbstractMLService):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def train(self, X, y, device_id):
-        y_device = np.where(y == device_id, 1, 0)
-        self.logger.info(f'Profile creation: device {device_id}, {np.sum(y_device)} class / {len(y_device)} total samples')
+    def train(self, X, y, device, user_device_ids):
+        y_device = np.where(y == np.isin(y, user_device_ids), 1, 0)
+        self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), {np.sum(y_device)} class / {len(y_device)} total samples')
 
         X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
         X_oversampled, y_oversampled = RandomOverSampler().fit_resample(X_train, y_train)
@@ -46,7 +46,7 @@ class RFE10_RF100_SMOTE_MLService(AbstractMLService):
         selector = selector.fit(X_oversampled, y_oversampled)
 
         score = selector.score(X_test, y_test)
-        self.logger.info(f'Profile creation: device {device_id}' \
+        self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id})' \
             + f'\n\tSelector score: {round(score * 100, 2)}%' 
             + f'\n\tSelected features: {X.columns[selector.support_]}' 
             + f'\n\tClassification report:\n{classification_report(y_test, selector.predict(X_test))}')
