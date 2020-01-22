@@ -35,7 +35,7 @@ class RFE10_RF100_SMOTE_MLService(AbstractMLService):
         self.logger = logging.getLogger(__name__)
 
     def train(self, X, y, device, user_device_ids):
-        y_device = np.where(y == np.isin(y, user_device_ids), 1, 0)
+        y_device = np.where(np.isin(y, user_device_ids), 1, 0)
         self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), {np.sum(y_device)} class / {len(y_device)} total samples')
 
         X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
