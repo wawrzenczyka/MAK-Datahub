@@ -112,5 +112,5 @@ venv.bak/
 media/
 .vscode/settings.json
 gdrive-credentials.json
-
 /certs
+dropbox-token.txt
