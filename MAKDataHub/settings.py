@@ -28,7 +28,7 @@ SECRET_KEY = 'k)rie=jguysq9!x54z1*13v32om-i$qiptr8)v#a91_+d5q000'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.makservice.space', 'makservice.space', '.pythonanywhere.com', '.execute-api.us-east-1.amazonaws.com', '35.156.102.209', '.eu-central-1.compute.amazonaws.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -180,7 +180,7 @@ LOGGING = {
         'requests_file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'my_requests.log',
+            'filename': 'all_requests.log',
             'maxBytes': 1048576,  # 1024 * 1024B = 1MB
             'backupCount': 10,
             'formatter': 'verbose'
@@ -225,6 +225,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
 
 if DATAHUB_STORAGE == 'GOOGLE_DRIVE':
     GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'gdrive-credentials.json'
