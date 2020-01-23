@@ -177,7 +177,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': 'my_debug.log',
-            'maxBytes': 1048576,  # 1024 * 1024B = 1MB
+            'maxBytes': 10485760,  # 10 * 1024 * 1024B = 10MB
             'backupCount': 10,
             'formatter': 'verbose'
         },
@@ -185,7 +185,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': 'all_requests.log',
-            'maxBytes': 1048576,  # 1024 * 1024B = 1MB
+            'maxBytes': 1048576000,  # 1000 * 1024 * 1024B = 1000MB
             'backupCount': 10,
             'formatter': 'verbose'
         },
@@ -226,9 +226,8 @@ if DATAHUB_STORAGE == 'GOOGLE_DRIVE':
     # GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'gdrive-credentials.json'
     # DEFAULT_FILE_STORAGE = 'gdstorage.storage.GoogleDriveStorage'
     pass
-elif DATAHUB_STORAGE == 'AWS_S3':
+elif DATAHUB_STORAGE == 'S3':
     # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     # AWS_S3_SECURE_URLS = False       # use http instead of https
     # AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
     # AWS_STORAGE_BUCKET_NAME = 'makdatahub.media'
