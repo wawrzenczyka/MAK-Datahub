@@ -114,3 +114,5 @@ media/
 gdrive-credentials.json
 /certs
 dropbox-token.txt
+AWSAccessKey.txt
+AWSSecretKey.txt

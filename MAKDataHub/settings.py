@@ -12,12 +12,11 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
-# valid values ['LOCAL', 'AWS_S3', 'GOOGLE_DRIVE', 'DROPBOX']
-DATAHUB_STORAGE = 'LOCAL' 
+# valid values ['LOCAL', 'S3', 'GOOGLE_DRIVE']
+DATAHUB_STORAGE = 'S3' 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -29,7 +28,6 @@ SECRET_KEY = 'k)rie=jguysq9!x54z1*13v32om-i$qiptr8)v#a91_+d5q000'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -50,7 +48,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_auth',
     'storages',
-    # 'gdstorage',
+    'gdstorage',
     'sslserver',
 ]
 
@@ -107,17 +105,6 @@ DATABASES = {
             'charset': 'utf8mb4',
         }
     }
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'makdb',
-    #     'USER': 'admin',
-    #     'PASSWORD': 'Admin123$',
-    #     'HOST': 'mak-db-server.cnslitlzorh7.us-east-1.rds.amazonaws.com',
-        # 'OPTIONS': {
-        #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        #     'charset': 'utf8mb4',
-        # }
-    # }
 }
 
 
@@ -202,7 +189,7 @@ LOGGING = {
         },
         'django.request': {
             'handlers': ['requests_file'],
-            'level': 'DEBUG',  # change debug level as appropiate
+            'level': 'DEBUG',
             'propagate': False,
         },
     },
@@ -220,20 +207,16 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760 # 10MB
+
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'gdrive-credentials.json'
 
 if DATAHUB_STORAGE == 'GOOGLE_DRIVE':
-    # GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'gdrive-credentials.json'
-    # DEFAULT_FILE_STORAGE = 'gdstorage.storage.GoogleDriveStorage'
-    pass
+    DEFAULT_FILE_STORAGE = 'gdstorage.storage.GoogleDriveStorage'
 elif DATAHUB_STORAGE == 'S3':
-    # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    # AWS_S3_SECURE_URLS = False       # use http instead of https
-    # AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
-    # AWS_STORAGE_BUCKET_NAME = 'makdatahub.media'
-    pass
-elif DATAHUB_STORAGE == 'DROPBOX':
-    DEFAULT_FILE_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
-    DROPBOX_OAUTH2_TOKEN = open('dropbox-token.txt', 'r').read()
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_ACCESS_KEY_ID = open('AWSAccessKey.txt', 'r').read()
+    AWS_SECRET_ACCESS_KEY = open('AWSSecretKey.txt', 'r').read()
+    AWS_STORAGE_BUCKET_NAME = 'mak-datahub-bucket'
 elif DATAHUB_STORAGE == 'LOCAL':
     pass
