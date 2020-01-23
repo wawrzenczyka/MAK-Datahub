@@ -2,6 +2,8 @@ from django.core.management.base import BaseCommand, CommandError
 from core.models import DataFileInfo, ProfileInfo, ProfileCreationRun
 from django.core.files import File
 
+import os
+
 class Command(BaseCommand):
     help = 'Performs data processing'
 
@@ -13,7 +15,7 @@ class Command(BaseCommand):
         runs = [run for run in ProfileCreationRun.objects.all()]
 
         for df in datafiles:
-            with open(df.data.path, 'rb') as f:
+            with open(os.path.join('media', df.data.name), 'rb') as f:
                 ff = File(f)
                 dup = DataFileInfo(data = ff, \
                     device = df.device, \
@@ -24,9 +26,9 @@ class Command(BaseCommand):
                 
         for r in runs:
             dup = None
-            with open(r.parsed_event_files.path, 'rb') as fp:
-                with open(r.unlock_data.path, 'rb') as fu:
-                    with open(r.checkpoint_data.path, 'rb') as fc:
+            with open(os.path.join('media', r.parsed_event_files.name), 'rb') as fp:
+                with open(os.path.join('media', r.unlock_data.name), 'rb') as fu:
+                    with open(os.path.join('media', r.checkpoint_data.name), 'rb') as fc:
                         ffp = File(fp)
                         ffu = File(fu)
                         ffc = File(fc)
@@ -37,7 +39,7 @@ class Command(BaseCommand):
                         dup.save()
 
             for p in r.profileinfo_set:
-                with open(p.profile_file.path, 'rb') as f:
+                with open(os.path.join('media', p.profile_file.name), 'rb') as f:
                     ff = File(f)
                     pdup = ProfileInfo(device = p.device, \
                         run = dup, \
