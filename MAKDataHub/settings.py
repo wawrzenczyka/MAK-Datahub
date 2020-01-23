@@ -184,7 +184,7 @@ LOGGING = {
         'requests_file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'all_requests.log',
+            'filename': 'my_requests.log',
             'maxBytes': 1048576,  # 1024 * 1024B = 1MB
             'backupCount': 10,
             'formatter': 'verbose'
