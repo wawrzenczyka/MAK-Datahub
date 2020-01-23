@@ -9,8 +9,8 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        datafiles = DataFileInfo.objects.all()
-        runs = ProfileCreationRun.objects.all()
+        datafiles = [df for df in DataFileInfo.objects.all()]
+        runs = [run for run in ProfileCreationRun.objects.all()]
 
         for df in datafiles:
             with open(df.data.path, 'rb') as f:
