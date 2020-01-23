@@ -22,6 +22,7 @@ class Command(BaseCommand):
                     start_date = df.start_date, \
                     file_type = df.file_type)
                 dup.save()
+            print(f'df {df.id} replaced')
             df.delete()
                 
         for r in runs:
@@ -52,6 +53,8 @@ class Command(BaseCommand):
                         fscore = p.fscore, \
                         description = p.description)
                     pdup.save()
+                print(f'profile {p.id} replaced')
                 p.delete()
 
+            print(f'run {r.id} replaced')
             r.delete()
