@@ -15,7 +15,7 @@ from sklearn.metrics import classification_report
 
 from sklearn_porter import Porter
 
-from imblearn.over_sampling import RandomOverSampler
+from imblearn.over_sampling import SMOTE
 
 class AbstractMLService(ABC):
     @abstractmethod
@@ -39,9 +39,9 @@ class RFE10_RF100_SMOTE_MLService(AbstractMLService):
         self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), {np.sum(y_device)} class / {len(y_device)} total samples')
 
         X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
-        X_oversampled, y_oversampled = RandomOverSampler().fit_resample(X_train, y_train)
+        X_oversampled, y_oversampled = SMOTE().fit_resample(X_train, y_train)
 
-        classifier = RandomForestClassifier(n_estimators = 100)
+        classifier = RandomForestClassifier(n_estimators = 10)
         selector = RFE(classifier, n_features_to_select=10, step=1)
         selector = selector.fit(X_oversampled, y_oversampled)
 
@@ -56,7 +56,7 @@ class RFE10_RF100_SMOTE_MLService(AbstractMLService):
         recall = report['1']['recall']
         fscore = report['1']['f1-score']
 
-        return selector, score, precision, recall, fscore, 'RandomForestClassifier(n_estimators = 100), RFE(n_features_to_select=10, step=1), SMOTE()'
+        return selector, score, precision, recall, fscore, 'RandomForestClassifier(n_estimators = 10), RFE(n_features_to_select=10, step=1), SMOTE()'
 
     def predict(self, estimator, x, expected_y):
         predicted_y = estimator.predict(x)
