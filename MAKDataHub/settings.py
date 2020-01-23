@@ -218,5 +218,6 @@ elif DATAHUB_STORAGE == 'S3':
     AWS_ACCESS_KEY_ID = open('AWSAccessKey.txt', 'r').read()
     AWS_SECRET_ACCESS_KEY = open('AWSSecretKey.txt', 'r').read()
     AWS_STORAGE_BUCKET_NAME = 'mak-datahub-bucket'
+    AWS_DEFAULT_ACL = None
 elif DATAHUB_STORAGE == 'LOCAL':
     pass
