@@ -76,7 +76,7 @@ class Command(BaseCommand):
             self.logger.info('Profile creation finished...')
         except Exception as e:
             self.logger.exception(e)
-            raise
+            return
 
     def save_processing_results(self, processing_start_date, unlock_data, checkpoint_data, parsed_event_files):
         unlock_data = \
