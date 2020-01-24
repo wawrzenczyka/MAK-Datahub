@@ -37,6 +37,7 @@ class ProfileCreationRun(models.Model):
     parsed_event_files = models.FileField(upload_to=generate_file_path)
     unlock_data = models.FileField(upload_to=generate_file_path)
     checkpoint_data = models.FileField(upload_to=generate_file_path)
+    is_64bit = models.BooleanField()
 
     def __str__(self):
         tz = timezone('Europe/Warsaw')

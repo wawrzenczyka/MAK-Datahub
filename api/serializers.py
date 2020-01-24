@@ -30,14 +30,15 @@ class DataFileInfoSerializer(serializers.ModelSerializer):
 class ProfileCreationRunSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProfileCreationRun
-        fields = ['id', 'run_date', 'parsed_event_files', 'unlock_data', 'checkpoint_data', 'profileinfo_set']
+        fields = ['id', 'is_64bit', 'run_date', 'parsed_event_files', 'unlock_data', 'checkpoint_data', 'profileinfo_set']
 
 class ProfileInfoSerializer(serializers.HyperlinkedModelSerializer):
     profile_type = serializers.ChoiceField(choices = [tag.value for tag in ProfileInfo.ProfileType])
     creation_date = serializers.DateTimeField(source='run.run_date', read_only=True)
+    is_64bit = serializers.BooleanField(source='run.is_64bit', read_only=True)
     class Meta:
         model = ProfileInfo
-        fields = ['id', 'device', 'run', 'profile_file', 'profile_type', 'creation_date', 'used_class_samples', 'score', 'precision', 'recall', 'fscore']
+        fields = ['id', 'device', 'run', 'profile_file', 'profile_type', 'is_64bit', 'creation_date', 'used_class_samples', 'score', 'precision', 'recall', 'fscore']
 
 class ProfileInfoSimpleSerializer(serializers.HyperlinkedModelSerializer):
     creation_date = serializers.DateTimeField(source='run.run_date', read_only=True)

@@ -111,10 +111,15 @@ class LatestDeviceProfileInfo(generics.RetrieveAPIView):
     def get_object(self, *args, **kwargs):
         id = self.kwargs['id']
         profile_type = self.request.query_params.get('profile_type')
+        is_64bit = self.request.query_params.get('is_64bit')
         try:
             qs = self.queryset.filter(device = Device.objects.get(id = id))
             if profile_type is not None:
                 qs = qs.filter(profile_type = profile_type)
+            if is_64bit is not None:
+                qs = qs.filter(run__is_64bit = is_64bit)
+            else:
+                qs = qs.filter(run__is_64bit = False)
             obj = qs.latest('run__run_date')
             self.check_object_permissions(self.request, obj)
             return obj

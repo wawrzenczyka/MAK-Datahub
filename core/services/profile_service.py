@@ -1,4 +1,4 @@
-import logging, json, joblib, os
+import logging, json, joblib, os, sys
 
 from django.db import connection
 
@@ -20,7 +20,7 @@ class ProfileService:
 
         df = self.data_extraction_service.create_df_from_json_data(sensor_data)
         aggregated_df = self.data_extraction_service.aggregate_df_with_stats_functions(df)
-        profile_info, profile = self.get_latest_profile_for_device(device, profile_type)
+        profile_info, profile = self.get_latest_profile_for_device(device, profile_type, self.__is_execution_64bit())
 
         if profile_info is None or profile is None:
             return None
@@ -28,27 +28,37 @@ class ProfileService:
         return self.ml_service.predict(profile, aggregated_df, device.id)
 
     def get_last_profile_creation_run(self):
-        return ProfileCreationRun.objects.order_by('-run_date').first()
+        return ProfileCreationRun.objects\
+            .filter(is_64bit = self.__is_execution_64bit())\
+            .order_by('-run_date')\
+            .first()
 
-    def get_latest_profile_for_device(self, device, profile_type):
-        latest_profile = self.__get_latest_profile_info_for_device(device, profile_type)
+    def get_latest_profile_for_device(self, device, profile_type, is_64bit):
+        latest_profile = self.__get_latest_profile_info_for_device(device, profile_type, is_64bit)
         if latest_profile is None:
             return None, None
         profile = joblib.load(latest_profile.profile_file.open('rb'))
         return latest_profile, profile
 
-    def __get_latest_profile_info_for_device(self, device, profile_type):
-        return device.profileinfo_set.filter(profile_type = profile_type).order_by('-run__run_date').first()
+    def __get_latest_profile_info_for_device(self, device, profile_type, is_64bit):
+        return device.profileinfo_set\
+            .filter(is_64bit = is_64bit)\
+            .filter(profile_type = profile_type)\
+            .order_by('-run__run_date').first()
 
     def serialize_profile(self, profile):
         return self.ml_service.serialize(profile)
 
     def create_profile_creation_run(self, run_date, parsed_event_files, unlock_data, checkpoint_data):
         run = ProfileCreationRun(run_date = run_date, unlock_data = unlock_data, \
-            parsed_event_files = parsed_event_files, checkpoint_data = checkpoint_data)
+            parsed_event_files = parsed_event_files, checkpoint_data = checkpoint_data, \
+            is_64bit = self.__is_execution_64bit())
         connection.close()
         run.save()
         return run
+    
+    def __is_execution_64bit(self):
+        return sys.maxsize > 2**32
 
     def create_profiles(self, run, profile_data, profile_type):
         X, y = profile_data.iloc[:, 0:-1], profile_data.iloc[:, -1]
@@ -70,7 +80,7 @@ class ProfileService:
                 continue
 
             connection.close()
-            current_profile_info = self.__get_latest_profile_info_for_device(self.device_service.get_device(device_id), profile_type)
+            current_profile_info = self.__get_latest_profile_info_for_device(self.device_service.get_device(device_id), profile_type, self.__is_execution_64bit())
             new_sample_count = sample_count
             if current_profile_info is not None:
                 new_sample_count -= current_profile_info.used_class_samples
