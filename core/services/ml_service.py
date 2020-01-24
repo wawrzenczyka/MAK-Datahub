@@ -30,7 +30,7 @@ class AbstractMLService(ABC):
     def serialize(self, profile):
         pass
 
-class RFE10_RF100_SMOTE_MLService(AbstractMLService):
+class RFE10_RF10_SMOTE_MLService(AbstractMLService):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 

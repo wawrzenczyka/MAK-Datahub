@@ -133,6 +133,9 @@ class Command(BaseCommand):
             event_timestamp = event.Timestamp
             event_date = utc.localize(datetime.datetime.utcfromtimestamp(event_timestamp/1000))
 
+            if len(sensor_files) == 0:
+                break
+
             while index < len(sensor_files) - 1 and event_date >= sensor_files[index + 1].start_date:
                 index += 1
                 prev_sensor_file = current_sensor_file
@@ -163,7 +166,7 @@ class Command(BaseCommand):
                     and event.EventType == EventType.SCREEN_ON \
                     and event_date + datetime.timedelta(milliseconds=self.POSTUNLOCK_TIME) > sensor_files[index + 1].start_date:
                 # download next file
-                next_sensor_file = self.storage.download_file(sensor_files[index + 1].file_uri)
+                next_sensor_file = sensor_files[index + 1].data
                 next_reading_list = \
                     self.data_extraction_service.get_readings_from_sensor_file(next_sensor_file)
 
