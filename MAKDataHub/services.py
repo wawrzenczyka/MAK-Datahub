@@ -13,13 +13,13 @@ from core.services.data_extraction_service import DataExtractionService
 from core.services.data_file_service import DataFileService
 from core.services.device_service import DeviceService
 from core.services.storage_service import StorageService
-from core.services.ml_service import RFE10_RF100_SMOTE_MLService
+from core.services.ml_service import RFE10_RF10_SMOTE_MLService
 from core.services.profile_service import ProfileService
 
 class Services(containers.DeclarativeContainer):
     """IoC container of service providers."""
     device_service = providers.Factory(DeviceService)
-    ml_service = providers.Factory(RFE10_RF100_SMOTE_MLService)
+    ml_service = providers.Factory(RFE10_RF10_SMOTE_MLService)
     storage_service = providers.Factory(StorageService)
     data_file_service = providers.Factory(DataFileService)
 
