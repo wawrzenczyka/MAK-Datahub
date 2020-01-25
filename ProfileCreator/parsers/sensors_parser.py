@@ -11,8 +11,7 @@ class SensorParser:
     def __init__(self, config_json_path: str):
         with open(config_json_path) as config_json:
             try:
-                #config = json.load(config_json)
-                config = json.load(config_json_path)
+                config = json.load(config_json)
                 self.limits = config["limits"]
             except:
                 raise ValueError("JSON is not valid")
