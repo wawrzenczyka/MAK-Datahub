@@ -79,15 +79,15 @@ class ProfileService:
                 self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), not enough data ({sample_count}/{self.MIN_SAMPLES_TO_CREATE_PROFILE} samples) to create profile')
                 continue
 
-            connection.close()
-            current_profile_info = self.__get_latest_profile_info_for_device(self.device_service.get_device(device_id), profile_type, self.__is_execution_64bit())
-            new_sample_count = sample_count
-            if current_profile_info is not None:
-                new_sample_count -= current_profile_info.used_class_samples
+            # connection.close()
+            # current_profile_info = self.__get_latest_profile_info_for_device(self.device_service.get_device(device_id), profile_type, self.__is_execution_64bit())
+            # new_sample_count = sample_count
+            # if current_profile_info is not None:
+            #     new_sample_count -= current_profile_info.used_class_samples
 
-            if new_sample_count < self.MIN_SAMPLES_TO_UPDATE_PROFILE:
-                self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), skipping updating profile (progress: {new_sample_count}/{self.MIN_SAMPLES_TO_UPDATE_PROFILE} new samples)')
-                continue
+            # if new_sample_count < self.MIN_SAMPLES_TO_UPDATE_PROFILE:
+            #     self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), skipping updating profile (progress: {new_sample_count}/{self.MIN_SAMPLES_TO_UPDATE_PROFILE} new samples)')
+            #     continue
 
             connection.close()
             user_device_ids = [device.id for device in Device.objects.filter(user = device.user)]

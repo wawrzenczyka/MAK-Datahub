@@ -50,11 +50,11 @@ class Command(BaseCommand):
         unlock_data = []
         checkpoint_data = []
 
-        last_run = self.profile_service.get_last_profile_creation_run()
-        if last_run is not None:
-            parsed_event_files = pickle.load(last_run.parsed_event_files.open('rb'))
-            unlock_data.append(pickle.load(last_run.unlock_data.open('rb')))
-            checkpoint_data.append(pickle.load(last_run.checkpoint_data.open('rb')))
+        # last_run = self.profile_service.get_last_profile_creation_run()
+        # if last_run is not None:
+        #     parsed_event_files = pickle.load(last_run.parsed_event_files.open('rb'))
+        #     unlock_data.append(pickle.load(last_run.unlock_data.open('rb')))
+        #     checkpoint_data.append(pickle.load(last_run.checkpoint_data.open('rb')))
         
         for device in devices:
             event_files = device_event_files[device.id]

@@ -41,7 +41,7 @@ class RFE10_RF10_SMOTE_MLService(AbstractMLService):
         X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
         X_oversampled, y_oversampled = SMOTE().fit_resample(X_train, y_train)
 
-        classifier = RandomForestClassifier(n_estimators = 10)
+        classifier = RandomForestClassifier(n_estimators = 100)
         selector = RFE(classifier, n_features_to_select=10, step=1)
         selector = selector.fit(X_oversampled, y_oversampled)
 
@@ -56,7 +56,7 @@ class RFE10_RF10_SMOTE_MLService(AbstractMLService):
         recall = report['1']['recall']
         fscore = report['1']['f1-score']
 
-        return selector, score, precision, recall, fscore, 'RandomForestClassifier(n_estimators = 10), RFE(n_features_to_select=10, step=1), SMOTE()'
+        return selector, score, precision, recall, fscore, 'RandomForestClassifier(n_estimators = 100), RFE(n_features_to_select=10, step=1), SMOTE()'
 
     def predict(self, estimator, x, expected_y):
         predicted_y = estimator.predict(x)
