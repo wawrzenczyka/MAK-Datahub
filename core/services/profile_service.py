@@ -42,7 +42,7 @@ class ProfileService:
 
     def __get_latest_profile_info_for_device(self, device, profile_type, is_64bit):
         return device.profileinfo_set\
-            .filter(is_64bit = is_64bit)\
+            .filter(run__is_64bit = is_64bit)\
             .filter(profile_type = profile_type)\
             .order_by('-run__run_date').first()
 
