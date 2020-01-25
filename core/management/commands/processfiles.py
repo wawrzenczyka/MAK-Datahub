@@ -28,55 +28,58 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            self.logger.info('Data processing started...')
-
             processing_start_date = datetime.datetime.now()
-            devices = [x for x in self.device_service.get_all_devices()]
-            device_event_files = { device.id: [x for x in self.data_file_service.get_event_files_for_device(device.id)] for device in devices }
-            device_sensor_files = { device.id: [x for x in self.data_file_service.get_sensor_files_for_device(device.id)] for device in devices }
 
-            parsed_event_files = {}
-            unlock_data = []
-            checkpoint_data = []
-
-            last_run = self.profile_service.get_last_profile_creation_run()
-            if last_run is not None:
-                parsed_event_files = pickle.load(last_run.parsed_event_files.open('rb'))
-                unlock_data.append(pickle.load(last_run.unlock_data.open('rb')))
-                checkpoint_data.append(pickle.load(last_run.checkpoint_data.open('rb')))
-            
-            for device in devices:
-                event_files = device_event_files[device.id]
-                sensor_files = device_sensor_files[device.id]
-                self.logger.info(f'Data processing: device {device.id}, {len(event_files)} event files, {len(sensor_files)} sensor files')
-
-                if device.id not in parsed_event_files:
-                    parsed_event_files[device.id] = set()
-                new_event_files = [ef for ef in event_files if ef.id not in parsed_event_files[device.id]]
-                parsed_event_files[device.id] = parsed_event_files[device.id].union({ef.id for ef in new_event_files})
-
-                events = self.get_events_from_files(device.id, new_event_files)
-                device_unlock_data, device_checkpoint_data = self.process_events(device.id, events, sensor_files)
-
-                if device_unlock_data is not None:
-                    unlock_data.append(device_unlock_data)
-                if device_checkpoint_data is not None:
-                    checkpoint_data.append(device_checkpoint_data)
-
-            unlock_data = self.data_extraction_service.transform_df_list_to_df(unlock_data)
-            checkpoint_data = self.data_extraction_service.transform_df_list_to_df(checkpoint_data)
-
-            run = self.save_processing_results(processing_start_date, unlock_data, checkpoint_data, parsed_event_files)
-
+            self.logger.info('Data processing started...')
+            run, unlock_data, checkpoint_data = self.perform_data_processing(processing_start_date)
             self.logger.info('Data processing finished...')
+            
             self.logger.info('Profile creation started...')
-
             self.create_profiles(run, unlock_data, checkpoint_data)
-
             self.logger.info('Profile creation finished...')
         except Exception as e:
             self.logger.exception(e)
             return
+
+    def perform_data_processing(self, processing_start_date):
+        devices = [x for x in self.device_service.get_all_devices()]
+        device_event_files = { device.id: [x for x in self.data_file_service.get_event_files_for_device(device.id)] for device in devices }
+        device_sensor_files = { device.id: [x for x in self.data_file_service.get_sensor_files_for_device(device.id)] for device in devices }
+
+        parsed_event_files = {}
+        unlock_data = []
+        checkpoint_data = []
+
+        last_run = self.profile_service.get_last_profile_creation_run()
+        if last_run is not None:
+            parsed_event_files = pickle.load(last_run.parsed_event_files.open('rb'))
+            unlock_data.append(pickle.load(last_run.unlock_data.open('rb')))
+            checkpoint_data.append(pickle.load(last_run.checkpoint_data.open('rb')))
+        
+        for device in devices:
+            event_files = device_event_files[device.id]
+            sensor_files = device_sensor_files[device.id]
+            self.logger.info(f'Data processing: device {device.id}, {len(event_files)} event files, {len(sensor_files)} sensor files')
+
+            if device.id not in parsed_event_files:
+                parsed_event_files[device.id] = set()
+            new_event_files = [ef for ef in event_files if ef.id not in parsed_event_files[device.id]]
+            parsed_event_files[device.id] = parsed_event_files[device.id].union({ef.id for ef in new_event_files})
+
+            events = self.get_events_from_files(device.id, new_event_files)
+            device_unlock_data, device_checkpoint_data = self.process_events(device.id, events, sensor_files)
+
+            if device_unlock_data is not None:
+                unlock_data.append(device_unlock_data)
+            if device_checkpoint_data is not None:
+                checkpoint_data.append(device_checkpoint_data)
+
+        unlock_data = self.data_extraction_service.transform_df_list_to_df(unlock_data)
+        checkpoint_data = self.data_extraction_service.transform_df_list_to_df(checkpoint_data)
+
+        run = self.save_processing_results(processing_start_date, unlock_data, checkpoint_data, parsed_event_files)
+        return run, unlock_data, checkpoint_data
+
 
     def save_processing_results(self, processing_start_date, unlock_data, checkpoint_data, parsed_event_files):
         unlock_data = \
