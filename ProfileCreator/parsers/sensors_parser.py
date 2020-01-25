@@ -7,11 +7,12 @@ import os
 
 class SensorParser:
     int4_max = 2**31 - 1 
-    
+    v1_offset = 0x0800000000000000
     def __init__(self, config_json_path: str):
         with open(config_json_path) as config_json:
             try:
-                config = json.load(config_json)
+                #config = json.load(config_json)
+                config = json.load(config_json_path)
                 self.limits = config["limits"]
             except:
                 raise ValueError("JSON is not valid")
@@ -41,6 +42,7 @@ class SensorParser:
             raise ValueError("Incorrectly formatted data (wrong length)")
         expected_count = (len(data) - 8) / 80
         i = 0
+        np = True
         while True:
             bytes_timestamp = data[i*80:i*80+8]
             timestamp = int.from_bytes(bytes_timestamp, byteorder='big', signed=False)
@@ -56,6 +58,12 @@ class SensorParser:
             gravity = [float(x)*self.limits["gravity"]/self.int4_max for x in ints[9:12]]
             linearAcceleration = [float(x)*self.limits["linearAcceleration"]/self.int4_max for x in ints[12:15]]
             rotation = [float(x)*self.limits["rotation"]/self.int4_max for x in ints[15:18]]
+            if timestamp < self.v1_offset:
+                magneticField = [x*self.limits["acceleration"]/self.limits["magneticField"] for x in magneticField]
+                gyroscope = [x*self.limits["acceleration"]/self.limits["gyroscope"] for x in gyroscope]
+                rotation = [x*self.limits["acceleration"]/self.limits["rotation"] for x in rotation]
+            else:
+                timestamp -= self.v1_offset
             result.append(SensorReading(timestamp, acceleration, magneticField, gyroscope, gravity,
                 linearAcceleration, rotation))
             i += 1
@@ -68,7 +76,7 @@ class SensorParser:
         if not is_opened_binary(file):
             raise ValueError("file is not opened as a binary stream")
         for reading in readings:
-            file.write(reading.Timestamp.to_bytes(8, byteorder="big"))
+            file.write((reading.Timestamp + self.v1_offset).to_bytes(8, byteorder="big"))
             for x in reading.Acceleration:
                 file.write(int(x*self.int4_max/self.limits["acceleration"]).to_bytes(4, byteorder="big", signed=True))
             for x in reading.MagneticField:
@@ -95,3 +103,8 @@ class SensorParser:
                 os.remove(tmp_file)
             except Exception:
                 pass
+
+    def fixThisReading(reading: SensorReading) -> None:
+        reading.MagneticField = [x*self.limits["acceleration"]/self.limits["magneticField"] for x in reading.MagneticField]
+        reading.Gyroscope = [x*self.limits["acceleration"]/self.limits["gyroscope"] for x in reading.Gyroscope]
+        reading.Rotation = [x*self.limits["acceleration"]/self.limits["rotation"] for x in reading.Rotation]
