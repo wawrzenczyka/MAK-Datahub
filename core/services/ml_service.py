@@ -15,7 +15,7 @@ from sklearn.metrics import classification_report
 
 from sklearn_porter import Porter
 
-from imblearn.over_sampling import SMOTE
+from imblearn.combine import SMOTETomek
 
 class AbstractMLService(ABC):
     @abstractmethod
@@ -30,19 +30,20 @@ class AbstractMLService(ABC):
     def serialize(self, profile):
         pass
 
-class RFE10_RF10_SMOTE_MLService(AbstractMLService):
+class RFE20step005_RF100_SMOTETomek_MLService(AbstractMLService):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
     def train(self, X, y, device, user_device_ids):
+        X = X.iloc[:, list(range(36)) + list(range(72, 108)) + list(range(108, 144)) + list(range(180, 216))]
         y_device = np.where(np.isin(y, user_device_ids), 1, 0)
         self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), {np.sum(y_device)} class / {len(y_device)} total samples')
 
         X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
-        X_oversampled, y_oversampled = SMOTE().fit_resample(X_train, y_train)
+        X_oversampled, y_oversampled = SMOTETomek().fit_resample(X_train, y_train)
 
         classifier = RandomForestClassifier(n_estimators = 100)
-        selector = RFE(classifier, n_features_to_select=10, step=1)
+        selector = RFE(classifier, n_features_to_select = 20, step = 0.05)
         selector = selector.fit(X_oversampled, y_oversampled)
 
         score = selector.score(X_test, y_test)
@@ -56,7 +57,7 @@ class RFE10_RF10_SMOTE_MLService(AbstractMLService):
         recall = report['1']['recall']
         fscore = report['1']['f1-score']
 
-        return selector, score, precision, recall, fscore, 'RandomForestClassifier(n_estimators = 100), RFE(n_features_to_select=10, step=1), SMOTE()'
+        return selector, score, precision, recall, fscore, 'RandomForestClassifier(n_estimators = 100), RFE(n_features_to_select = 20, step = 0.05), SMOTETomek()'
 
     def predict(self, estimator, x, expected_y):
         predicted_y = estimator.predict(x)
