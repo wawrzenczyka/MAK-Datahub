@@ -153,7 +153,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
     from sklearn.svm import LinearSVC
 
@@ -181,7 +181,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
     from sklearn.neighbors import KNeighborsClassifier
 
@@ -209,7 +209,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
     from sklearn.ensemble import RandomForestClassifier
 
@@ -230,7 +230,7 @@ print(f'Accuracy: {round(np.mean(accuracies), 2)}, precision: {round(np.mean(pre
 # %% 
 print('RandomForestClassifier - global model')
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 12369)
 
 from sklearn.ensemble import RandomForestClassifier
 
@@ -253,7 +253,7 @@ for device_id in y.unique():
     X_std = StandardScaler().fit_transform(X)
     
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X_std, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X_std, y_device, test_size=0.2, random_state = 12369)
 
     from sklearn.ensemble import RandomForestClassifier
 
@@ -274,7 +274,7 @@ print(f'Accuracy: {round(np.mean(accuracies), 2)}, precision: {round(np.mean(pre
 # %% 
 print('RandomForestClassifier + RFECV')
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 12369)
 
 from yellowbrick.model_selection import RFECV
 from sklearn.ensemble import RandomForestClassifier
@@ -298,7 +298,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
     from sklearn.feature_selection import RFE
     from sklearn.ensemble import RandomForestClassifier
@@ -329,7 +329,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
     from sklearn.feature_selection import SelectFromModel
     from sklearn.ensemble import RandomForestClassifier
@@ -360,7 +360,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
     
     from sklearn.decomposition import PCA
     pca = PCA(n_components=20).fit(X_train)
@@ -394,7 +394,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
     
     from sklearn.feature_selection import SelectKBest, f_classif
     selector = SelectKBest(score_func = f_classif, k=20).fit(X_train, y_train)
@@ -428,7 +428,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
     
     from sklearn.feature_selection import SelectKBest, mutual_info_classif
     selector = SelectKBest(score_func = mutual_info_classif, k=20).fit(X_train, y_train)
@@ -462,7 +462,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
     from imblearn.under_sampling import RandomUnderSampler
     X_oversampled, y_oversampled = RandomUnderSampler().fit_resample(X_train, y_train)
@@ -496,7 +496,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
     from imblearn.over_sampling import RandomOverSampler
     X_oversampled, y_oversampled = RandomOverSampler().fit_resample(X_train, y_train)
@@ -530,7 +530,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
     from imblearn.over_sampling import SMOTE
     X_oversampled, y_oversampled = SMOTE().fit_resample(X_train, y_train)
@@ -564,7 +564,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
     from imblearn.combine import SMOTEENN
     X_oversampled, y_oversampled = SMOTEENN().fit_resample(X_train, y_train)
@@ -598,7 +598,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
     from imblearn.combine import SMOTETomek
     X_oversampled, y_oversampled = SMOTETomek().fit_resample(X_train, y_train)
@@ -632,7 +632,7 @@ for device_id in y.unique():
     y_device = np.where(y == device_id, 1, 0)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
     from sklearn.feature_selection import RFE
     from imblearn.ensemble import BalancedRandomForestClassifier
@@ -654,37 +654,93 @@ for device_id in y.unique():
 print(f'Accuracy: {round(np.mean(accuracies), 2)}, precision: {round(np.mean(precisions), 2)}, recall: {round(np.mean(recalls), 2)}, fscore: {round(np.mean(fscores), 2)}')
 
 # %%
+print('Hyperparameter tuning')
+for device_id in y.unique():
+    y_device = np.where(y == device_id, 1, 0)
 
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
-# # %%
-# from imblearn.ensemble import BalancedRandomForestClassifier
-# from imblearn.over_sampling import SMOTE
+    from imblearn.combine import SMOTETomek
+    X_oversampled, y_oversampled = SMOTETomek().fit_resample(X_train, y_train)
 
-# from sklearn.neighbors import LocalOutlierFactor
-# from sklearn.feature_selection import RFECV, RFE
-# from sklearn.ensemble import RandomForestClassifier
-# from sklearn.model_selection import StratifiedKFold
-# from sklearn.model_selection import train_test_split
-# from sklearn.metrics import classification_report
+    from sklearn.feature_selection import RFE
+    from sklearn.ensemble import RandomForestClassifier
+    
+    estimator = RandomForestClassifier(random_state = 12369, \
+        n_estimators = 50,
+        min_samples_leaf = 1, \
+        min_samples_split = 2, \
+        bootstrap = False, \
+        max_features = 'sqrt', \
+        max_depth = 20)
+    selector = RFE(estimator, n_features_to_select = 20, step = 0.05)
 
-# from imblearn.combine import SMOTETomek
-# from imblearn.combine import SMOTEENN
+    # from sklearn.model_selection import GridSearchCV
+    # param_grid = { 
+    #     'estimator__n_estimators': [10, 50, 100, 200, 500],
+    #     'estimator__max_features': ['auto', 'sqrt', 'log2'],
+    #     'estimator__max_depth': [4, 5, 6, 7, 8],
+    #     'estimator__criterion': ['gini', 'entropy']
+    # }
+    from sklearn.model_selection import RandomizedSearchCV
+    param_grid = {
+        'estimator__n_estimators': [10, 20, 50, 100],
+        'estimator__max_features': ['auto', 'sqrt', 'log2'],
+        'estimator__max_depth': [int(x) for x in np.linspace(2, 20, num = 2)] + [None],
+        'estimator__min_samples_split': [2, 3, 4, 5],
+        'estimator__min_samples_leaf': [1, 2, 3],
+        'estimator__bootstrap': [True, False]
+    }
+    grid = RandomizedSearchCV(estimator = selector, \
+        param_distributions = param_grid, \
+        n_iter = 100, \
+        cv = 3, \
+        verbose = 2, \
+        random_state = 42, \
+        n_jobs = -1)
+    grid.fit(X_oversampled, y_oversampled)
+    
+    print(grid.best_params_)
 
-# df2 = df.iloc[:, list(range(36)) + list(range(72, 108)) + [216]]
+# %%
+print('RandomForestClassifier + SMOTETomek + parameters')
+accuracies = []
+precisions = []
+recalls = []
+fscores = []
+for device_id in y.unique():
+    y_device = np.where(y == device_id, 1, 0)
 
-# X, y = df2.iloc[:, 0:-1], df2.iloc[:, -1]
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
 
-# for id in y.unique():
-#     y_device = np.where(np.isin(y, [id]), 1, 0)
+    from imblearn.combine import SMOTETomek
+    X_oversampled, y_oversampled = SMOTETomek().fit_resample(X_train, y_train)
 
-#     X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
-#     X_oversampled, y_oversampled = SMOTETomek().fit_resample(X_train, y_train)
+    from sklearn.feature_selection import RFE
+    from sklearn.ensemble import RandomForestClassifier
+    
+    estimator = RandomForestClassifier(random_state = 12369, \
+        n_estimators = 50,
+        min_samples_leaf = 1, \
+        min_samples_split = 2, \
+        bootstrap = False, \
+        max_features = 'sqrt', \
+        max_depth = 20)
+    selector = RFE(estimator, n_features_to_select = 20, step = 0.05)
+    selector.fit(X_oversampled, y_oversampled)
 
-#     classifier = BalancedRandomForestClassifier(n_estimators = 10)
-#     selector = RFE(classifier, n_features_to_select=10, step=1)
-#     selector = selector.fit(X_oversampled, y_oversampled)
+    from sklearn.metrics import classification_report
+    print(f'Device {device_id}:')
+    print(classification_report(y_test, selector.predict(X_test)))
+    
+    report = classification_report(y_test, selector.predict(X_test), output_dict=True)
+    accuracies.append(report['accuracy'])
+    precisions.append(report['1']['precision'])
+    recalls.append(report['1']['recall'])
+    fscores.append(report['1']['f1-score'])
 
-#     # import joblib
-#     # joblib.dump(selector, 'brfc.joblib')
-#     print(classification_report(y_test, selector.predict(X_test)))
-#     break
+print(f'Accuracy: {round(np.mean(accuracies), 2)}, precision: {round(np.mean(precisions), 2)}, recall: {round(np.mean(recalls), 2)}, fscore: {round(np.mean(fscores), 2)}')
+
+# %%
