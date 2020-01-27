@@ -105,6 +105,45 @@ for device_id in y.unique():
 print(f'Accuracy: {round(np.mean(accuracies), 2)}, precision: {round(np.mean(precisions), 2)}, recall: {round(np.mean(recalls), 2)}, fscore: {round(np.mean(fscores), 2)}')
 
 # %% 
+print('IsolationForest')
+accuracies = []
+precisions = []
+recalls = []
+fscores = []
+for device_id in y.unique():
+    y_device = y[y == device_id]
+    X_device = X.loc[y == device_id, :]
+    X_non_device = X.loc[y != device_id, :]
+
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X_device, y_device, test_size=0.2)
+
+    from sklearn.ensemble import IsolationForest
+
+    estimator = IsolationForest(n_estimators = 10)
+    estimator.fit(X_train)
+
+    tp = np.mean(estimator.predict(X_test) == 1)
+    fn = np.mean(estimator.predict(X_test) == -1)
+    tn = np.mean(estimator.predict(X_non_device) == 1)
+    fp = np.mean(estimator.predict(X_non_device) == 1)
+
+    accuracy = (tp + tn) / (tp + tn + fn + fp)
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    fscore = 2 * recall * precision / (recall + precision)
+
+    accuracies.append(accuracy if not np.isnan(accuracy) else 0)
+    precisions.append(precision if not np.isnan(precision) else 0)
+    recalls.append(recall if not np.isnan(recall) else 0)
+    fscores.append(fscore if not np.isnan(fscore) else 0)
+
+    print(f'{device_id} - accuracy: {round(accuracy, 2)}, precision: {round(precision, 2)}, recall: {round(recall, 2)}')
+    # print(f'{device_id} - Class acc: {round(np.mean(estimator.predict(X_device) == 1), 2)}, non-class acc: {round(np.mean(estimator.predict(X_non_device) == -1), 2)}')
+
+print(f'Accuracy: {round(np.mean(accuracies), 2)}, precision: {round(np.mean(precisions), 2)}, recall: {round(np.mean(recalls), 2)}, fscore: {round(np.mean(fscores), 2)}')
+
+# %% 
 print('LOF')
 accuracies = []
 precisions = []
@@ -186,6 +225,34 @@ for device_id in y.unique():
     from sklearn.neighbors import KNeighborsClassifier
 
     estimator = KNeighborsClassifier()
+    estimator.fit(X_train, y_train)
+
+    from sklearn.metrics import classification_report
+    print(classification_report(y_test, estimator.predict(X_test)))
+    
+    report = classification_report(y_test, estimator.predict(X_test), output_dict=True)
+    accuracies.append(report['accuracy'])
+    precisions.append(report['1']['precision'])
+    recalls.append(report['1']['recall'])
+    fscores.append(report['1']['f1-score'])
+
+print(f'Accuracy: {round(np.mean(accuracies), 2)}, precision: {round(np.mean(precisions), 2)}, recall: {round(np.mean(recalls), 2)}, fscore: {round(np.mean(fscores), 2)}')
+
+# %% 
+print('GaussianNB')
+accuracies = []
+precisions = []
+recalls = []
+fscores = []
+for device_id in y.unique():
+    y_device = np.where(y == device_id, 1, 0)
+
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2, random_state = 12369)
+
+    from sklearn.naive_bayes import GaussianNB
+
+    estimator = GaussianNB()
     estimator.fit(X_train, y_train)
 
     from sklearn.metrics import classification_report
