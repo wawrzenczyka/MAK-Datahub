@@ -42,7 +42,8 @@ class RFE20step005_RF100_SMOTETomek_MLService(AbstractMLService):
         X_train, X_test, y_train, y_test = train_test_split(X, y_device, test_size=0.2)
         X_oversampled, y_oversampled = SMOTETomek().fit_resample(X_train, y_train)
 
-        classifier = RandomForestClassifier(n_estimators = 100)
+        classifier = RandomForestClassifier(n_estimators = 50, min_samples_leaf = 1, min_samples_split = 2, \
+            bootstrap = False, max_features = 'sqrt', max_depth = 20)
         selector = RFE(classifier, n_features_to_select = 20, step = 0.05)
         selector = selector.fit(X_oversampled, y_oversampled)
 
@@ -57,7 +58,7 @@ class RFE20step005_RF100_SMOTETomek_MLService(AbstractMLService):
         recall = report['1']['recall']
         fscore = report['1']['f1-score']
 
-        return selector, score, precision, recall, fscore, 'RandomForestClassifier(n_estimators = 100), RFE(n_features_to_select = 20, step = 0.05), SMOTETomek()'
+        return selector, score, precision, recall, fscore, 'RandomForestClassifier(n_estimators = 50), RFE(n_features_to_select = 20, step = 0.05), SMOTETomek()'
 
     def predict(self, estimator, x, expected_y):
         predicted_y = estimator.predict(x)

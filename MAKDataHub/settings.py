@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
-# valid values ['LOCAL', 'S3', 'GOOGLE_DRIVE']
+# Valid values: ['LOCAL', 'S3', 'GOOGLE_DRIVE']
 DATAHUB_STORAGE = 'S3' 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
