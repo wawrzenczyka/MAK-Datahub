@@ -35,7 +35,13 @@ class RFE20step005_RF100_SMOTETomek_MLService(AbstractMLService):
         self.logger = logging.getLogger(__name__)
 
     def train(self, X, y, device, user_device_ids):
-        X = X.iloc[:, list(range(36)) + list(range(72, 108)) + list(range(108, 144)) + list(range(180, 216))]
+        acc_cols = [col for col in X.columns if 'Acc' in col]
+        gyr_cols = [col for col in X.columns if 'Gyr' in col]
+        lin_cols = [col for col in X.columns if 'Lin' in col]
+        rot_cols = [col for col in X.columns if 'Rot' in col]
+        col_mask = acc_cols + gyr_cols + lin_cols + rot_cols
+
+        X = X.iloc[:, col_mask]
         y_device = np.where(np.isin(y, user_device_ids), 1, 0)
         self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), {np.sum(y_device)} class / {len(y_device)} total samples')
 
