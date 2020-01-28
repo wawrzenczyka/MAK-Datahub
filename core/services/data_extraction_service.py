@@ -208,7 +208,7 @@ class DataExtractionService:
                 'GrvX', 'GrvY', 'GrvZ', 'GrvMgn', \
                 'LinX', 'LinY', 'LinZ', 'LinMgn', \
                 'RotX', 'RotY', 'RotZ', 'RotMgn', \
-        ]]
+            ]]
 
         return df
     
@@ -222,7 +222,32 @@ class DataExtractionService:
             .agg([np.min, np.max, np.mean, np.median, np.std, pd.Series.kurt, pd.Series.skew, pd.Series.mad, pd.Series.sem])
         agg_df.columns = ['_'.join(col).strip() for col in agg_df.columns.values]
         agg_df = agg_df.dropna().reset_index(drop = True)
-        return agg_df
+        return agg_df.loc[:, \
+            'AccMgn_amin', 'AccMgn_amax', 'AccMgn_mean', 'AccMgn_median', 'AccMgn_std', 'AccMgn_kurt', 'AccMgn_skew', 'AccMgn_mad', 'AccMgn_sem', \
+            'AccX_amin', 'AccX_amax', 'AccX_mean', 'AccX_median', 'AccX_std', 'AccX_kurt', 'AccX_skew', 'AccX_mad', 'AccX_sem', \
+            'AccY_amin', 'AccY_amax', 'AccY_mean', 'AccY_median', 'AccY_std', 'AccY_kurt', 'AccY_skew', 'AccY_mad', 'AccY_sem', \
+            'AccZ_amin', 'AccZ_amax', 'AccZ_mean', 'AccZ_median', 'AccZ_std', 'AccZ_kurt', 'AccZ_skew', 'AccZ_mad', 'AccZ_sem', \
+            'GrvMgn_amin', 'GrvMgn_amax', 'GrvMgn_mean', 'GrvMgn_median', 'GrvMgn_std', 'GrvMgn_kurt', 'GrvMgn_skew', 'GrvMgn_mad', 'GrvMgn_sem', \
+            'GrvX_amin', 'GrvX_amax', 'GrvX_mean', 'GrvX_median', 'GrvX_std', 'GrvX_kurt', 'GrvX_skew', 'GrvX_mad', 'GrvX_sem', \
+            'GrvY_amin', 'GrvY_amax', 'GrvY_mean', 'GrvY_median', 'GrvY_std', 'GrvY_kurt', 'GrvY_skew', 'GrvY_mad', 'GrvY_sem', \
+            'GrvZ_amin', 'GrvZ_amax', 'GrvZ_mean', 'GrvZ_median', 'GrvZ_std', 'GrvZ_kurt', 'GrvZ_skew', 'GrvZ_mad', 'GrvZ_sem', \
+            'GyrMgn_amin', 'GyrMgn_amax', 'GyrMgn_mean', 'GyrMgn_median', 'GyrMgn_std', 'GyrMgn_kurt', 'GyrMgn_skew', 'GyrMgn_mad', 'GyrMgn_sem', \
+            'GyrX_amin', 'GyrX_amax', 'GyrX_mean', 'GyrX_median', 'GyrX_std', 'GyrX_kurt', 'GyrX_skew', 'GyrX_mad', 'GyrX_sem', \
+            'GyrY_amin', 'GyrY_amax', 'GyrY_mean', 'GyrY_median', 'GyrY_std', 'GyrY_kurt', 'GyrY_skew', 'GyrY_mad', 'GyrY_sem', \
+            'GyrZ_amin', 'GyrZ_amax', 'GyrZ_mean', 'GyrZ_median', 'GyrZ_std', 'GyrZ_kurt', 'GyrZ_skew', 'GyrZ_mad', 'GyrZ_sem', \
+            'LinMgn_amin', 'LinMgn_amax', 'LinMgn_mean', 'LinMgn_median', 'LinMgn_std', 'LinMgn_kurt', 'LinMgn_skew', 'LinMgn_mad', 'LinMgn_sem', \
+            'LinX_amin', 'LinX_amax', 'LinX_mean', 'LinX_median', 'LinX_std', 'LinX_kurt', 'LinX_skew', 'LinX_mad', 'LinX_sem', \
+            'LinY_amin', 'LinY_amax', 'LinY_mean', 'LinY_median', 'LinY_std', 'LinY_kurt', 'LinY_skew', 'LinY_mad', 'LinY_sem', \
+            'LinZ_amin', 'LinZ_amax', 'LinZ_mean', 'LinZ_median', 'LinZ_std', 'LinZ_kurt', 'LinZ_skew', 'LinZ_mad', 'LinZ_sem', \
+            'MgfMgn_amin', 'MgfMgn_amax', 'MgfMgn_mean', 'MgfMgn_median', 'MgfMgn_std', 'MgfMgn_kurt', 'MgfMgn_skew', 'MgfMgn_mad', 'MgfMgn_sem', \
+            'MgfX_amin', 'MgfX_amax', 'MgfX_mean', 'MgfX_median', 'MgfX_std', 'MgfX_kurt', 'MgfX_skew', 'MgfX_mad', 'MgfX_sem', \
+            'MgfY_amin', 'MgfY_amax', 'MgfY_mean', 'MgfY_median', 'MgfY_std', 'MgfY_kurt', 'MgfY_skew', 'MgfY_mad', 'MgfY_sem', \
+            'MgfZ_amin', 'MgfZ_amax', 'MgfZ_mean', 'MgfZ_median', 'MgfZ_std', 'MgfZ_kurt', 'MgfZ_skew', 'MgfZ_mad', 'MgfZ_sem', \
+            'RotMgn_amin', 'RotMgn_amax', 'RotMgn_mean', 'RotMgn_median', 'RotMgn_std', 'RotMgn_kurt', 'RotMgn_skew', 'RotMgn_mad', 'RotMgn_sem', \
+            'RotX_amin', 'RotX_amax', 'RotX_mean', 'RotX_median', 'RotX_std', 'RotX_kurt', 'RotX_skew', 'RotX_mad', 'RotX_sem', \
+            'RotY_amin', 'RotY_amax', 'RotY_mean', 'RotY_median', 'RotY_std', 'RotY_kurt', 'RotY_skew', 'RotY_mad', 'RotY_sem', \
+            'RotZ_amin', 'RotZ_amax', 'RotZ_mean', 'RotZ_median', 'RotZ_std', 'RotZ_kurt', 'RotZ_skew', 'RotZ_mad', 'RotZ_sem']
+
 
     def transform_df_list_to_df(self, df_list):
         if len(df_list) > 0:

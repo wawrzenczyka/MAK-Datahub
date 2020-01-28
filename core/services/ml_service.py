@@ -35,12 +35,7 @@ class RFE20step005_RF100_SMOTETomek_MLService(AbstractMLService):
         self.logger = logging.getLogger(__name__)
 
     def train(self, X, y, device, user_device_ids):
-        acc_cols = [col for col in X.columns if 'Acc' in col]
-        gyr_cols = [col for col in X.columns if 'Gyr' in col]
-        lin_cols = [col for col in X.columns if 'Lin' in col]
-        rot_cols = [col for col in X.columns if 'Rot' in col]
-        col_mask = acc_cols + gyr_cols + lin_cols + rot_cols
-        X = X.loc[:, col_mask]
+        X = self.__filter_features(X)
 
         y_device = np.where(np.isin(y, user_device_ids), 1, 0)
         self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), {np.sum(y_device)} class / {len(y_device)} total samples')
@@ -89,3 +84,22 @@ class RFE20step005_RF100_SMOTETomek_MLService(AbstractMLService):
         serialized_support = json.dumps(support.tolist())
 
         return serialized_profile, serialized_support
+
+    def __filter_features(self, X):
+        return X.loc[:, \
+            ['AccMgn_amin', 'AccMgn_amax', 'AccMgn_mean', 'AccMgn_median', 'AccMgn_std', 'AccMgn_kurt', 'AccMgn_skew', 'AccMgn_mad', 'AccMgn_sem', \
+            'AccX_amin', 'AccX_amax', 'AccX_mean', 'AccX_median', 'AccX_std', 'AccX_kurt', 'AccX_skew', 'AccX_mad', 'AccX_sem', \
+            'AccY_amin', 'AccY_amax', 'AccY_mean', 'AccY_median', 'AccY_std', 'AccY_kurt', 'AccY_skew', 'AccY_mad', 'AccY_sem', \
+            'AccZ_amin', 'AccZ_amax', 'AccZ_mean', 'AccZ_median', 'AccZ_std', 'AccZ_kurt', 'AccZ_skew', 'AccZ_mad', 'AccZ_sem', \
+            'GyrMgn_amin', 'GyrMgn_amax', 'GyrMgn_mean', 'GyrMgn_median', 'GyrMgn_std', 'GyrMgn_kurt', 'GyrMgn_skew', 'GyrMgn_mad', 'GyrMgn_sem', \
+            'GyrX_amin', 'GyrX_amax', 'GyrX_mean', 'GyrX_median', 'GyrX_std', 'GyrX_kurt', 'GyrX_skew', 'GyrX_mad', 'GyrX_sem', \
+            'GyrY_amin', 'GyrY_amax', 'GyrY_mean', 'GyrY_median', 'GyrY_std', 'GyrY_kurt', 'GyrY_skew', 'GyrY_mad', 'GyrY_sem', \
+            'GyrZ_amin', 'GyrZ_amax', 'GyrZ_mean', 'GyrZ_median', 'GyrZ_std', 'GyrZ_kurt', 'GyrZ_skew', 'GyrZ_mad', 'GyrZ_sem', \
+            'LinMgn_amin', 'LinMgn_amax', 'LinMgn_mean', 'LinMgn_median', 'LinMgn_std', 'LinMgn_kurt', 'LinMgn_skew', 'LinMgn_mad', 'LinMgn_sem', \
+            'LinX_amin', 'LinX_amax', 'LinX_mean', 'LinX_median', 'LinX_std', 'LinX_kurt', 'LinX_skew', 'LinX_mad', 'LinX_sem', \
+            'LinY_amin', 'LinY_amax', 'LinY_mean', 'LinY_median', 'LinY_std', 'LinY_kurt', 'LinY_skew', 'LinY_mad', 'LinY_sem', \
+            'LinZ_amin', 'LinZ_amax', 'LinZ_mean', 'LinZ_median', 'LinZ_std', 'LinZ_kurt', 'LinZ_skew', 'LinZ_mad', 'LinZ_sem', \
+            'RotMgn_amin', 'RotMgn_amax', 'RotMgn_mean', 'RotMgn_median', 'RotMgn_std', 'RotMgn_kurt', 'RotMgn_skew', 'RotMgn_mad', 'RotMgn_sem', \
+            'RotX_amin', 'RotX_amax', 'RotX_mean', 'RotX_median', 'RotX_std', 'RotX_kurt', 'RotX_skew', 'RotX_mad', 'RotX_sem', \
+            'RotY_amin', 'RotY_amax', 'RotY_mean', 'RotY_median', 'RotY_std', 'RotY_kurt', 'RotY_skew', 'RotY_mad', 'RotY_sem', \
+            'RotZ_amin', 'RotZ_amax', 'RotZ_mean', 'RotZ_median', 'RotZ_std', 'RotZ_kurt', 'RotZ_skew', 'RotZ_mad', 'RotZ_sem']]
