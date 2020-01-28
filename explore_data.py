@@ -63,9 +63,17 @@ sns.boxplot(df.DeviceId, df.AccMgn_median)
 sns.boxplot(df.DeviceId, df.GyrMgn_amax)
 
 # %%
-sns.pairplot(df, hue="DeviceId", vars=["AccMgn_mean", "AccMgn_median"], markers='.')
+sns.pairplot(df.loc[df.DeviceId != 3, :], hue="DeviceId", vars=["AccMgn_mean", "AccMgn_median"], markers='.')
 
-# %% 
+# %%
+test = df.loc[df.DeviceId != '3', :]
+sns.swarmplot(data = test, x="DeviceId", y="RotMgn_median")
+
+# %%
+test = full_df.loc[:, :]
+sns.boxplot(data = test, x="DeviceId", y="GrvMgn_amax")
+
+# %%
 print('OneClassSVM')
 accuracies = []
 precisions = []

@@ -40,8 +40,8 @@ class RFE20step005_RF100_SMOTETomek_MLService(AbstractMLService):
         lin_cols = [col for col in X.columns if 'Lin' in col]
         rot_cols = [col for col in X.columns if 'Rot' in col]
         col_mask = acc_cols + gyr_cols + lin_cols + rot_cols
+        X = X.loc[:, col_mask]
 
-        X = X.iloc[:, col_mask]
         y_device = np.where(np.isin(y, user_device_ids), 1, 0)
         self.logger.info(f'Profile creation: device {device.id} ({device.user.username}@{device.android_id}), {np.sum(y_device)} class / {len(y_device)} total samples')
 
