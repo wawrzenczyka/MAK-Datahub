@@ -4,10 +4,13 @@ import dependency_injector.providers as providers
 from ProfileCreator.parsers.event_parser import EventParser
 from ProfileCreator.parsers.sensors_parser import SensorParser
 
+import os
+app_home = os.path.dirname(__file__)
+
 class Parsers(containers.DeclarativeContainer):
     """IoC container of parser providers."""
     event_parser = providers.Factory(EventParser)
-    sensor_parser = providers.Factory(SensorParser, config_json_path = 'ProfileCreator/parsers/sensor_config.json')
+    sensor_parser = providers.Factory(SensorParser, config_json_path = os.path.join(app_home, 'ProfileCreator', 'parsers', 'sensor_config.json'))
 
 from core.services.data_extraction_service import DataExtractionService
 from core.services.data_file_service import DataFileService

@@ -209,14 +209,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760 # 10MB
 
-GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'gdrive-credentials.json'
+import os
+app_home = os.path.dirname(__file__)
+
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = os.path.join(app_home, '..', 'gdrive-credentials.json')
 
 if DATAHUB_STORAGE == 'GOOGLE_DRIVE':
     DEFAULT_FILE_STORAGE = 'gdstorage.storage.GoogleDriveStorage'
 elif DATAHUB_STORAGE == 'S3':
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    AWS_ACCESS_KEY_ID = open('AWSAccessKey.txt', 'r').read()
-    AWS_SECRET_ACCESS_KEY = open('AWSSecretKey.txt', 'r').read()
+    AWS_ACCESS_KEY_ID = open(os.path.join(app_home, '..', 'AWSAccessKey.txt'), 'r').read()
+    AWS_SECRET_ACCESS_KEY = open(os.path.join(app_home, '..', 'AWSSecretKey.txt'), 'r').read()
     AWS_STORAGE_BUCKET_NAME = 'mak-datahub-bucket'
     AWS_DEFAULT_ACL = None
 elif DATAHUB_STORAGE == 'LOCAL':
