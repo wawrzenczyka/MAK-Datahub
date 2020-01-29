@@ -223,7 +223,7 @@ class DataExtractionService:
         agg_df.columns = ['_'.join(col).strip() for col in agg_df.columns.values]
         agg_df = agg_df.dropna().reset_index(drop = True)
         return agg_df.loc[:, \
-            'AccMgn_amin', 'AccMgn_amax', 'AccMgn_mean', 'AccMgn_median', 'AccMgn_std', 'AccMgn_kurt', 'AccMgn_skew', 'AccMgn_mad', 'AccMgn_sem', \
+            ['AccMgn_amin', 'AccMgn_amax', 'AccMgn_mean', 'AccMgn_median', 'AccMgn_std', 'AccMgn_kurt', 'AccMgn_skew', 'AccMgn_mad', 'AccMgn_sem', \
             'AccX_amin', 'AccX_amax', 'AccX_mean', 'AccX_median', 'AccX_std', 'AccX_kurt', 'AccX_skew', 'AccX_mad', 'AccX_sem', \
             'AccY_amin', 'AccY_amax', 'AccY_mean', 'AccY_median', 'AccY_std', 'AccY_kurt', 'AccY_skew', 'AccY_mad', 'AccY_sem', \
             'AccZ_amin', 'AccZ_amax', 'AccZ_mean', 'AccZ_median', 'AccZ_std', 'AccZ_kurt', 'AccZ_skew', 'AccZ_mad', 'AccZ_sem', \
@@ -246,7 +246,7 @@ class DataExtractionService:
             'RotMgn_amin', 'RotMgn_amax', 'RotMgn_mean', 'RotMgn_median', 'RotMgn_std', 'RotMgn_kurt', 'RotMgn_skew', 'RotMgn_mad', 'RotMgn_sem', \
             'RotX_amin', 'RotX_amax', 'RotX_mean', 'RotX_median', 'RotX_std', 'RotX_kurt', 'RotX_skew', 'RotX_mad', 'RotX_sem', \
             'RotY_amin', 'RotY_amax', 'RotY_mean', 'RotY_median', 'RotY_std', 'RotY_kurt', 'RotY_skew', 'RotY_mad', 'RotY_sem', \
-            'RotZ_amin', 'RotZ_amax', 'RotZ_mean', 'RotZ_median', 'RotZ_std', 'RotZ_kurt', 'RotZ_skew', 'RotZ_mad', 'RotZ_sem']
+            'RotZ_amin', 'RotZ_amax', 'RotZ_mean', 'RotZ_median', 'RotZ_std', 'RotZ_kurt', 'RotZ_skew', 'RotZ_mad', 'RotZ_sem']]
 
 
     def transform_df_list_to_df(self, df_list):
